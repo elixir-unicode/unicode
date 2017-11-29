@@ -1,6 +1,6 @@
 defmodule Cldr.Unicode.Property do
   @moduledoc """
-  Unicode defines a set of [character   properties]("https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt") which the functions in this module will return for a given codepoint.  The properties supported by this module are a subset of the full set of properties.  They are:
+  Unicode defines a set of [character properties](https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt) which the functions in this module will return for a given codepoint.  The properties supported by this module are a subset of the full set of properties.  They are:
 
   * `:math`
   * `:alphabetic`
@@ -9,7 +9,7 @@ defmodule Cldr.Unicode.Property do
   * `:case_ignorable`
   * `:cased`
 
-  In addition two additional properties are derived from the [Unicode codepoint category data]("https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt).  These are:
+  In addition two additional properties are derived from the [Unicode codepoint category data](https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt). These are:
 
   * `:numeric`
   * `:extended_numberic`

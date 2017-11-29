@@ -1,27 +1,5 @@
 defmodule Cldr.Unicode.Utils do
 
-  def bytes_to_codepoint(byte_list) when is_list(byte_list) do
-    << (byte_list
-        |> :binary.list_to_bin
-        |> :binary.decode_unsigned)
-    :: utf8 >>
-  end
-
-  def append_codepoint(binary, codepoint) when is_integer(codepoint) do
-    << binary :: binary, codepoint :: utf8 >>
-  end
-
-  def codepoint_to_integer(chars) when is_binary(chars) do
-    {grapheme, _rest} = String.next_grapheme(chars)
-    <<codepoint :: utf8 >> = grapheme
-    codepoint
-  end
-
-  def integer_to_codepoint(integer) do
-    << codepoint :: utf8 >> = integer
-    codepoint
-  end
-
   @scripts_path Path.join(Cldr.Unicode.data_dir, "scripts.txt")
   def scripts do
     parse_file(@scripts_path)
@@ -44,6 +22,7 @@ defmodule Cldr.Unicode.Utils do
     parse_file(@properties_path)
   end
 
+  @doc false
   def parse_file(path) do
     Enum.reduce(File.stream!(path), %{}, fn line, map ->
       case line do
@@ -86,6 +65,29 @@ defmodule Cldr.Unicode.Utils do
     end
   end
 
+  def bytes_to_codepoint(byte_list) when is_list(byte_list) do
+    << (byte_list
+        |> :binary.list_to_bin
+        |> :binary.decode_unsigned)
+    :: utf8 >>
+  end
+
+  def append_codepoint(binary, codepoint) when is_integer(codepoint) do
+    << binary :: binary, codepoint :: utf8 >>
+  end
+
+  def codepoint_to_integer(chars) when is_binary(chars) do
+    {grapheme, _rest} = String.next_grapheme(chars)
+    <<codepoint :: utf8 >> = grapheme
+    codepoint
+  end
+
+  def integer_to_codepoint(integer) do
+    << codepoint :: utf8 >> = integer
+    codepoint
+  end
+
+  @doc false
   def ranges_to_guard_clause([{first, last}]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last)
