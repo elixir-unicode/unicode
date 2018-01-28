@@ -1,25 +1,54 @@
 defmodule Cldr.Unicode.Utils do
+  @moduledoc false
 
+  @doc """
+  Returns a map of the Unicode with the `script` name
+  as the key and a list of codepoint ranges as the values.
+  """
   @scripts_path Path.join(Cldr.Unicode.data_dir, "scripts.txt")
   def scripts do
     parse_file(@scripts_path)
   end
 
+  @doc """
+  Returns a map of the Unicode with the `block` name
+  as the key and a list of codepoint ranges as the values.
+  """
   @blocks_path Path.join(Cldr.Unicode.data_dir, "blocks.txt")
   def blocks do
     parse_file(@blocks_path)
   end
 
+  @doc """
+  Returns a map of the Unicode with the `combining_class` number
+  as the key and a list of codepoint ranges as the values.
+  """
+  @combining_class_path Path.join(Cldr.Unicode.data_dir, "combining_class.txt")
+  def combining_classes do
+    parse_file(@combining_class_path)
+    |> Enum.map(fn {k, v} -> {String.to_integer(k), v} end)
+    |> Enum.into(%{})
+  end
+
+  @doc """
+  Returns a map of the Unicode with the `category` name
+  as the key and a list of codepoint ranges as the values.
+  """
   @categories_path Path.join(Cldr.Unicode.data_dir, "categories.txt")
   def categories do
     parse_file(@categories_path)
     |> Enum.map(fn {k, v} -> {titlecase(k), v} end)
-    |> Enum.into(%{})
+    |> atomize_keys
   end
 
+  @doc """
+  Returns a map of the Unicode with the `property` name
+  as the key and a list of codepoint ranges as the values.
+  """
   @properties_path Path.join(Cldr.Unicode.data_dir, "properties.txt")
   def properties do
     parse_file(@properties_path)
+    |> atomize_keys
   end
 
   @doc false
@@ -53,7 +82,7 @@ defmodule Cldr.Unicode.Utils do
       end
     end)
     |> Enum.map(fn {key, ranges} ->
-         {String.to_atom(String.downcase(key)), Enum.reverse(ranges)}
+         {String.downcase(key), Enum.reverse(ranges)}
        end)
     |> Enum.into(%{})
   end
@@ -65,6 +94,10 @@ defmodule Cldr.Unicode.Utils do
     end
   end
 
+  @doc """
+  For a given list of bytes (each in the range 0x00..0xff) return
+  the equivalent codepoint.
+  """
   def bytes_to_codepoint(byte_list) when is_list(byte_list) do
     << (byte_list
         |> :binary.list_to_bin
@@ -72,17 +105,26 @@ defmodule Cldr.Unicode.Utils do
     :: utf8 >>
   end
 
+  @doc """
+  Append a codepoint to a list of codepoints
+  """
   def append_codepoint(binary, codepoint) when is_integer(codepoint) do
     << binary :: binary, codepoint :: utf8 >>
   end
 
-  def codepoint_to_integer(chars) when is_binary(chars) do
-    {grapheme, _rest} = String.next_grapheme(chars)
-    <<codepoint :: utf8 >> = grapheme
-    codepoint
+  @doc """
+  For a given character in binary format, return the
+  integer codepoint.
+  """
+  def binary_to_codepoints(string) when is_binary(string) do
+    String.to_charlist(string)
   end
 
-  def integer_to_codepoint(integer) do
+  @doc """
+  For a given character in binary format, return the
+  integer codepoint.
+  """
+  def integer_to_codepoint(integer) when is_integer(integer) and integer >= 0 do
     << codepoint :: utf8 >> = integer
     codepoint
   end
@@ -106,10 +148,14 @@ defmodule Cldr.Unicode.Utils do
     end
   end
 
-  defp titlecase(atom) do
-    atom
-    |> Atom.to_string
-    |> String.capitalize
-    |> String.to_atom
+  @doc false
+  defp titlecase(string) do
+    String.capitalize(string)
+  end
+
+  @doc false
+  def atomize_keys(map) do
+    Enum.map(map, fn {k, v} -> {String.to_atom(k), v} end)
+    |> Enum.into(%{})
   end
 end

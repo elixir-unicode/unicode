@@ -20,7 +20,7 @@ defmodule Cldr.Unicode.Block do
   def block(string) when is_binary(string) do
     string
     |> String.codepoints
-    |> Enum.map(&Utils.codepoint_to_integer/1)
+    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&block/1)
   end
 

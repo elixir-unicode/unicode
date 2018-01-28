@@ -9,10 +9,11 @@ defmodule Cldr.Unicode.Property do
   * `:case_ignorable`
   * `:cased`
 
-  In addition two additional properties are derived from the [Unicode codepoint category data](https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt). These are:
+  In addition three additional properties are derived from the [Unicode codepoint category data](https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt). These are:
 
   * `:numeric`
-  * `:extended_numberic`
+  * `:extended_numeric`
+  * `:alphanumeric`
 
   """
   alias Cldr.Unicode.Utils
@@ -20,7 +21,8 @@ defmodule Cldr.Unicode.Property do
 
   @type string_or_binary :: String.t | non_neg_integer
 
-  @selected_properties [:math, :alphabetic, :lowercase, :uppercase, :case_ignorable, :cased]
+  @selected_properties [:math, :alphabetic, :lowercase, :uppercase,
+                        :case_ignorable, :cased, :default_ignorable_code_point]
 
   @doc """
   Returns the map of Unicode properties and the list
@@ -94,7 +96,7 @@ defmodule Cldr.Unicode.Property do
   def properties(string) when is_binary(string) do
     string
     |> String.codepoints
-    |> Enum.map(&Utils.codepoint_to_integer/1)
+    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&properties/1)
   end
 
@@ -107,40 +109,47 @@ defmodule Cldr.Unicode.Property do
   end
 
   @doc """
-  Returns either `:math` or nil for a given codepoint
+  Returns either `:math` or nil for a given codepoint or string
   """
   def math(codepoint_or_binary)
 
   @doc """
-  Returns either `:alphabetic` or nil for a given codepoint
+  Returns either `:alphabetic` or nil for a given codepoint or string
   """
   def alphabetic(codepoint_or_binary)
 
   @doc """
-  Returns either `:lowercase` or nil for a given codepoint
+  Returns either `:lowercase` or nil for a given codepoint or string
   """
   def lowercase(codepoint_or_binary)
 
   @doc """
-  Returns either `:uppercase` or nil for a given codepoint
+  Returns either `:uppercase` or nil for a given codepoint or string
   """
   def uppercase(codepoint_or_binary)
 
   @doc """
-  Returns either `:case_ignorable` or nil for a given codepoint
+  Returns either `:case_ignorable` or nil for a given codepoint or string
   """
   def case_ignorable(codepoint_or_binary)
 
   @doc """
-  Returns either `:cased` or nil for a given codepoint
+  Returns either `:cased` or nil for a given codepoint or string
   """
   def cased(codepoint_or_binary)
 
   @doc """
-  Returns either `:numeric` or nil for a given codepoint
+  Returns either `:numeric` or nil for a given codepoint or string
   """
   def numeric(codepoint_or_binary) do
     if numeric?(codepoint_or_binary), do: :numeric, else: nil
+  end
+
+  @doc """
+  Returns either `:alphanumeric` or nil for a given codepoint or string
+  """
+  def alphanumeric(codepoint_or_binary) do
+    if alphanumeric?(codepoint_or_binary), do: :alphanumeric, else: nil
   end
 
   @doc """
@@ -317,13 +326,13 @@ defmodule Cldr.Unicode.Property do
   def uppercase?(codepoint_or_binary)
 
   @doc """
-  Returns either true if the codepoint has the `:case_ignorable` property
+  Returns either `true` if the codepoint has the `:case_ignorable` property
   or `false`.
   """
   def case_ignorable?(codepoint_or_binary)
 
   @doc """
-  Returns either true if the codepoint has the `:cased` property
+  Returns either `true` if the codepoint has the `:cased` property
   or `false`.
   """
   def cased?(codepoint_or_binary)
@@ -396,6 +405,46 @@ defmodule Cldr.Unicode.Property do
 
   def extended_numeric?(_), do: false
 
+  @doc """
+  Returns `true` if a single Unicode codepoint (or all characters
+  in the given binary string) are either `alphabetic?/1` or
+  `numeric?/1 otherwise returns `false`.
+
+  The function takes a unicode codepoint or a string as input.
+
+  For the string-version, the result will be true only if _all_
+  codepoints in the string adhere to the property.
+
+  ### Examples
+
+      iex> Cldr.Unicode.Property.alphanumeric? "1234"
+      true
+
+      iex> Cldr.Unicode.Property.alphanumeric? "KeyserSöze1995"
+      true
+
+      iex> Cldr.Unicode.Property.alphanumeric? "3段"
+      true
+
+      iex> Cldr.Unicode.Property.alphanumeric? "dragon@example.com"
+      false
+
+  """
+  def alphanumeric?(codepoint_or_binary)
+
+  def alphanumeric?(codepoint) when is_integer(codepoint)do
+    alphabetic?(codepoint) or numeric?(codepoint)
+  end
+
+  def alphanumeric?(string) when is_binary(string) do
+    string_has_property?(string, &alphanumeric?/1)
+  end
+
+  def alphanumeric?(_), do: false
+
+  defdelegate ignorable?(codepoint), to: __MODULE__, as: :default_ignorable_code_point?
+  defdelegate ignorable(codepoint), to: __MODULE__, as: :default_ignorable_code_point
+
   for \
     {property, ranges} <- @properties,
     property in @selected_properties
@@ -421,7 +470,8 @@ defmodule Cldr.Unicode.Property do
     end
   end
 
-  defp string_has_property?(string, function) do
+  @doc false
+  def string_has_property?(string, function) do
     case String.next_codepoint(string) do
       nil -> false
       {<< codepoint :: utf8 >>, ""} ->

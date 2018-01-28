@@ -1,6 +1,8 @@
-# CldrCollations
+# Cldr.Unicode
 
-**TODO: Add description**
+Functions to return information about Unicode codepoints and to provide implementation of Cldr Collations.
+
+The information functions are heavily inspired by [@qqwy's elixir-unicode package](https://github.com/Qqwy/elixir-unicode) and compatibility with some of the api is represented by including some of the doctests from that package.
 
 ## Installation
 
@@ -10,7 +12,7 @@ by adding `cldr_collations` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:cldr_collations, "~> 0.1.0"}
+    {:cldr_unicode, "~> 0.1.0"}
   ]
 end
 ```

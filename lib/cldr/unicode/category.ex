@@ -40,7 +40,7 @@ defmodule Cldr.Unicode.Category do
   | :Zp	      | Paragraph separator	    |
   | :Zs	      | Space separator	        |
 
-  Note: `:L` includes the following properties: `:Ll`, `:Lm`, `:Lo`, `:Lt` and `:Lu`.
+  Note: `:L` includes the following categories: `:Ll`, `:Lm`, `:Lo`, `:Lt` and `:Lu`.
 
   """
   alias Cldr.Unicode.Utils
@@ -51,7 +51,7 @@ defmodule Cldr.Unicode.Category do
   end
 
   @known_categories Map.keys(@categories)
-  def known_categorys do
+  def known_categories do
     @known_categories
   end
 
@@ -64,7 +64,7 @@ defmodule Cldr.Unicode.Category do
   def category(string) when is_binary(string) do
     string
     |> String.codepoints
-    |> Enum.map(&Utils.codepoint_to_integer/1)
+    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&category/1)
   end
 

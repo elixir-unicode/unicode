@@ -26,7 +26,9 @@ if File.exists?(Cldr.Unicode.data_dir) do
         {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt",
           data_path("scripts.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt",
-          data_path("properties.txt")}
+          data_path("properties.txt")},
+        {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
+          data_path("combining_class.txt")}
       ]
     end
 
