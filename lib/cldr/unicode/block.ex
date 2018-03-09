@@ -22,6 +22,7 @@ defmodule Cldr.Unicode.Block do
     |> String.codepoints
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&block/1)
+    |> Enum.uniq
   end
 
   for {block, ranges} <- @blocks do
