@@ -17,7 +17,7 @@ defmodule Cldr.Unicode.Script do
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
-  def script_for(string) when is_binary(string) do
+  def script(string) when is_binary(string) do
     string
     |> String.codepoints
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
