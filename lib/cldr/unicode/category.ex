@@ -45,7 +45,7 @@ defmodule Cldr.Unicode.Category do
   """
   alias Cldr.Unicode.Utils
 
-  @categories Utils.categories
+  @categories Utils.categories()
   def categories do
     @categories
   end
@@ -63,7 +63,7 @@ defmodule Cldr.Unicode.Category do
 
   def category(string) when is_binary(string) do
     string
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&category/1)
   end
@@ -77,5 +77,4 @@ defmodule Cldr.Unicode.Category do
   def category(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     :Cn
   end
-
 end

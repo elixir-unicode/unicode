@@ -1,4 +1,4 @@
-if File.exists?(Cldr.Unicode.data_dir) do
+if File.exists?(Cldr.Unicode.data_dir()) do
   defmodule Mix.Tasks.Cldr.Unicode.Download do
     @moduledoc """
     Downloads the required Unicode files to support Cldr.Unicode
@@ -11,24 +11,22 @@ if File.exists?(Cldr.Unicode.data_dir) do
 
     @doc false
     def run(_) do
-      Application.ensure_all_started :inets
-      Application.ensure_all_started :ssl
+      Application.ensure_all_started(:inets)
+      Application.ensure_all_started(:ssl)
 
-      Enum.each required_files(), &download_file/1
+      Enum.each(required_files(), &download_file/1)
     end
 
     defp required_files do
       [
         {"https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
-           data_path("categories.txt")},
-        {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt",
-          data_path("blocks.txt")},
-        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt",
-          data_path("scripts.txt")},
+         data_path("categories.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt", data_path("blocks.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt", data_path("scripts.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt",
-          data_path("properties.txt")},
+         data_path("properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
-          data_path("combining_class.txt")}
+         data_path("combining_class.txt")}
       ]
     end
 
@@ -40,21 +38,28 @@ if File.exists?(Cldr.Unicode.data_dir) do
           destination
           |> File.write!(:erlang.list_to_binary(body))
 
-          Logger.info "Downloaded #{inspect url} to #{inspect destination}"
+          Logger.info("Downloaded #{inspect(url)} to #{inspect(destination)}")
           {:ok, destination}
+
         {_, {{_version, code, message}, _headers, _body}} ->
-          Logger.error "Failed to download #{inspect url}. " <>
-            "HTTP Error: (#{code}) #{inspect message}"
+          Logger.error(
+            "Failed to download #{inspect(url)}. " <> "HTTP Error: (#{code}) #{inspect(message)}"
+          )
+
           {:error, code}
+
         {:error, {:failed_connect, [{_, {host, _port}}, {_, _, sys_message}]}} ->
-          Logger.error "Failed to connect to #{inspect host} to download " <>
-            " #{inspect url}. Reason: #{inspect sys_message}"
+          Logger.error(
+            "Failed to connect to #{inspect(host)} to download " <>
+              " #{inspect(url)}. Reason: #{inspect(sys_message)}"
+          )
+
           {:error, sys_message}
       end
     end
 
     defp data_path(filename) do
-      Path.join(Cldr.Unicode.data_dir, filename)
+      Path.join(Cldr.Unicode.data_dir(), filename)
     end
   end
 end

@@ -1,7 +1,7 @@
 defmodule Cldr.Unicode.Block do
   alias Cldr.Unicode.Utils
 
-  @blocks Utils.blocks
+  @blocks Utils.blocks()
   def blocks do
     @blocks
   end
@@ -19,10 +19,10 @@ defmodule Cldr.Unicode.Block do
 
   def block(string) when is_binary(string) do
     string
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&block/1)
-    |> Enum.uniq
+    |> Enum.uniq()
   end
 
   for {block, ranges} <- @blocks do
@@ -32,7 +32,6 @@ defmodule Cldr.Unicode.Block do
   end
 
   def block(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :no_block
+    nil
   end
-
 end

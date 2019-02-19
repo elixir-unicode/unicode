@@ -1,7 +1,7 @@
 defmodule Cldr.Unicode.Script do
   alias Cldr.Unicode.Utils
 
-  @scripts Utils.scripts
+  @scripts Utils.scripts()
   def scripts do
     @scripts
   end
@@ -19,7 +19,7 @@ defmodule Cldr.Unicode.Script do
 
   def script(string) when is_binary(string) do
     string
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&script/1)
   end
@@ -31,7 +31,6 @@ defmodule Cldr.Unicode.Script do
   end
 
   def script(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :unknown
+    nil
   end
-
 end

@@ -15,20 +15,37 @@ defmodule Cldr.Unicode.Property do
   * `:extended_numeric`
   * `:alphanumeric`
 
+  Lastly, the emoji categories are identified:
+
+  * `:emoji`
+  * `:emoji_component`
+  * `:emoji_modifier`
+  * `:emoji_modifier_base`
+  * `:emoji_presentation`
+  * `:extended_pictograph`
+
   """
   alias Cldr.Unicode.Utils
   alias Cldr.Unicode.Category
+  alias Cldr.Unicode.Emoji
 
-  @type string_or_binary :: String.t | non_neg_integer
+  @type string_or_binary :: String.t() | non_neg_integer
 
-  @selected_properties [:math, :alphabetic, :lowercase, :uppercase,
-                        :case_ignorable, :cased, :default_ignorable_code_point]
+  @selected_properties [
+    :math,
+    :alphabetic,
+    :lowercase,
+    :uppercase,
+    :case_ignorable,
+    :cased,
+    :default_ignorable_code_point
+  ]
 
   @doc """
   Returns the map of Unicode properties and the list
   of codepoint ranges that below to a property.
   """
-  @properties Utils.properties
+  @properties Utils.properties()
   def properties do
     @properties
   end
@@ -40,13 +57,16 @@ defmodule Cldr.Unicode.Property do
 
     iex> Cldr.Unicode.Property.known_properties
     [:alphabetic, :case_ignorable, :cased, :changes_when_casefolded,
-     :changes_when_casemapped, :changes_when_lowercased, :changes_when_titlecased,
-     :changes_when_uppercased, :default_ignorable_code_point, :grapheme_base,
-     :grapheme_extend, :grapheme_link, :id_continue, :id_start, :lowercase, :math,
-     :uppercase, :xid_continue, :xid_start]
+    :changes_when_casemapped, :changes_when_lowercased,
+    :changes_when_titlecased, :changes_when_uppercased,
+    :default_ignorable_code_point, :grapheme_base, :grapheme_extend,
+    :grapheme_link, :id_continue, :id_start, :lowercase, :math,
+    :uppercase, :xid_continue, :xid_start, :emoji, :emoji_component,
+    :emoji_modifier, :emoji_modifier_base, :emoji_presentation,
+    :extended_pictographic]
 
   """
-  @known_properties Map.keys(@properties)
+  @known_properties Map.keys(@properties) ++ Emoji.known_emoji_categories()
   def known_properties do
     @known_properties
   end
@@ -58,7 +78,7 @@ defmodule Cldr.Unicode.Property do
   ## Example
 
       iex> Cldr.Unicode.Property.count :alphabetic
-      126629
+      127257
 
   """
   def count(property) do
@@ -89,22 +109,26 @@ defmodule Cldr.Unicode.Property do
       [:math]
 
       iex> Cldr.Unicode.Property.properties "a1+"
-      [[:alphabetic, :lowercase, :cased], [:numeric], [:math]]
+      [[:alphabetic, :lowercase, :cased], [:numeric, :emoji], [:math]]
 
   """
   @spec properties(string_or_binary) :: [atom, ...] | [[atom, ...], ...]
   def properties(string) when is_binary(string) do
     string
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&properties/1)
   end
 
   @properties_code @selected_properties
-  |> Enum.map(fn fun -> quote do unquote(fun)(var!(codepoint)) end end)
+                   |> Enum.map(fn fun ->
+                     quote do
+                       unquote(fun)(var!(codepoint))
+                     end
+                   end)
 
   def properties(codepoint) when is_integer(codepoint) do
-    [numeric(codepoint) | unquote(@properties_code)]
+    [numeric(codepoint), Emoji.emoji(codepoint) | unquote(@properties_code)]
     |> Enum.reject(&is_nil/1)
   end
 
@@ -355,10 +379,11 @@ defmodule Cldr.Unicode.Property do
   """
   def numeric?(codepoint_or_binary)
 
-  @numeric_ranges Category.categories[:Nd]
+  @numeric_ranges Category.categories()[:Nd]
 
   def numeric?(codepoint)
-    when unquote(Utils.ranges_to_guard_clause(@numeric_ranges)), do: true
+      when unquote(Utils.ranges_to_guard_clause(@numeric_ranges)),
+      do: true
 
   def numeric?(string) when is_binary(string) do
     string_has_property?(string, &numeric?/1)
@@ -392,12 +417,13 @@ defmodule Cldr.Unicode.Property do
 
   """
   @extended_numeric_ranges @numeric_ranges ++
-      Category.categories[:Nl] ++ Category.categories[:No]
+                             Category.categories()[:Nl] ++ Category.categories()[:No]
 
   def extended_numeric?(codepoint_or_binary)
 
   def extended_numeric?(codepoint)
-    when unquote(Utils.ranges_to_guard_clause(@extended_numeric_ranges)), do: true
+      when unquote(Utils.ranges_to_guard_clause(@extended_numeric_ranges)),
+      do: true
 
   def extended_numeric?(string) when is_binary(string) do
     string_has_property?(string, &extended_numeric?/1)
@@ -432,7 +458,7 @@ defmodule Cldr.Unicode.Property do
   """
   def alphanumeric?(codepoint_or_binary)
 
-  def alphanumeric?(codepoint) when is_integer(codepoint)do
+  def alphanumeric?(codepoint) when is_integer(codepoint) do
     alphabetic?(codepoint) or numeric?(codepoint)
   end
 
@@ -442,27 +468,52 @@ defmodule Cldr.Unicode.Property do
 
   def alphanumeric?(_), do: false
 
+  @doc """
+  Returns `true` if a single Unicode codepoint (or all characters
+  in the given binary string) are `emoji` otherwise returns `false`.
+
+  The function takes a unicode codepoint or a string as input.
+
+  For the string-version, the result will be true only if _all_
+  codepoints in the string adhere to the property.
+
+  ### Examples
+
+      iex> Cldr.Unicode.Property.emoji? "🧐🤓🤩🤩️🤯"
+      true
+
+  """
+  def emoji?(codepoint_or_binary)
+
+  def emoji?(codepoint) when is_integer(codepoint) do
+    Emoji.emoji(codepoint) in Emoji.known_emoji_categories()
+  end
+
+  def emoji?(string) when is_binary(string) do
+    string_has_property?(string, &emoji?/1)
+  end
+
+  def emoji?(_), do: false
+
   defdelegate ignorable?(codepoint), to: __MODULE__, as: :default_ignorable_code_point?
   defdelegate ignorable(codepoint), to: __MODULE__, as: :default_ignorable_code_point
 
-  for \
-    {property, ranges} <- @properties,
-    property in @selected_properties
-  do
+  for {property, ranges} <- @properties,
+      property in @selected_properties do
     boolean_function = String.to_atom("#{property}?")
 
     def unquote(boolean_function)(codepoint)
-    when is_integer(codepoint) and unquote(Utils.ranges_to_guard_clause(ranges)) do
+        when is_integer(codepoint) and unquote(Utils.ranges_to_guard_clause(ranges)) do
       true
     end
 
     def unquote(boolean_function)(codepoint)
-    when is_integer(codepoint) and codepoint in 0..0x10FFFF do
+        when is_integer(codepoint) and codepoint in 0..0x10FFFF do
       false
     end
 
     def unquote(boolean_function)(string) when is_binary(string) do
-      string_has_property?(string, &(unquote(boolean_function)(&1)))
+      string_has_property?(string, &unquote(boolean_function)(&1))
     end
 
     def unquote(property)(codepoint) do
@@ -473,10 +524,13 @@ defmodule Cldr.Unicode.Property do
   @doc false
   def string_has_property?(string, function) do
     case String.next_codepoint(string) do
-      nil -> false
-      {<< codepoint :: utf8 >>, ""} ->
+      nil ->
+        false
+
+      {<<codepoint::utf8>>, ""} ->
         function.(codepoint)
-      {<< codepoint :: utf8 >>, rest} ->
+
+      {<<codepoint::utf8>>, rest} ->
         function.(codepoint) && function.(rest)
     end
   end

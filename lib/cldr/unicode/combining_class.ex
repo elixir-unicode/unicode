@@ -1,7 +1,7 @@
 defmodule Cldr.Unicode.CombiningClass do
   alias Cldr.Unicode.Utils
 
-  @combining_classes Utils.combining_classes
+  @combining_classes Utils.combining_classes()
   def combining_classes do
     @combining_classes
   end
@@ -23,7 +23,7 @@ defmodule Cldr.Unicode.CombiningClass do
 
   def combining_class(string) when is_binary(string) do
     string
-    |> String.codepoints
+    |> String.codepoints()
     |> Enum.flat_map(&Utils.binary_to_codepoints/1)
     |> Enum.map(&combining_class/1)
   end
@@ -37,5 +37,4 @@ defmodule Cldr.Unicode.CombiningClass do
   def combining_class(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     0
   end
-
 end
