@@ -58,7 +58,7 @@ defmodule Cldr.Unicode.Category do
   def count(category) do
     categories()
     |> Map.get(category)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
   end
 
   def category(string) when is_binary(string) do

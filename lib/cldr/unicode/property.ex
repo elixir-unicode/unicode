@@ -61,9 +61,9 @@ defmodule Cldr.Unicode.Property do
     :changes_when_titlecased, :changes_when_uppercased,
     :default_ignorable_code_point, :grapheme_base, :grapheme_extend,
     :grapheme_link, :id_continue, :id_start, :lowercase, :math,
-    :uppercase, :xid_continue, :xid_start, :emoji, :emoji_component,
-    :emoji_modifier, :emoji_modifier_base, :emoji_presentation,
-    :extended_pictographic]
+    :uppercase, :xid_continue, :xid_start, :basic_emoji,
+    :emoji_flag_sequence, :emoji_keycap_sequence, :emoji_modifier_sequence,
+    :emoji_tag_sequence]
 
   """
   @known_properties Map.keys(@properties) ++ Emoji.known_emoji_categories()
@@ -78,13 +78,13 @@ defmodule Cldr.Unicode.Property do
   ## Example
 
       iex> Cldr.Unicode.Property.count :alphabetic
-      127257
+      127256
 
   """
   def count(property) do
     properties()
     |> Map.get(property)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
   end
 
   @doc """
@@ -109,7 +109,7 @@ defmodule Cldr.Unicode.Property do
       [:math]
 
       iex> Cldr.Unicode.Property.properties "a1+"
-      [[:alphabetic, :lowercase, :cased], [:numeric, :emoji], [:math]]
+      [[:alphabetic, :lowercase, :cased], [:numeric], [:math]]
 
   """
   @spec properties(string_or_binary) :: [atom, ...] | [[atom, ...], ...]
@@ -486,6 +486,7 @@ defmodule Cldr.Unicode.Property do
   def emoji?(codepoint_or_binary)
 
   def emoji?(codepoint) when is_integer(codepoint) do
+    ignorable?(codepoint) ||
     Emoji.emoji(codepoint) in Emoji.known_emoji_categories()
   end
 
@@ -495,8 +496,10 @@ defmodule Cldr.Unicode.Property do
 
   def emoji?(_), do: false
 
-  defdelegate ignorable?(codepoint), to: __MODULE__, as: :default_ignorable_code_point?
-  defdelegate ignorable(codepoint), to: __MODULE__, as: :default_ignorable_code_point
+  def ignorable?(codepoint) do
+    properties = properties(codepoint)
+    :case_ignorable in properties || :default_ignorable_code_point in properties
+  end
 
   for {property, ranges} <- @properties,
       property in @selected_properties do

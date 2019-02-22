@@ -14,7 +14,7 @@ defmodule Cldr.Unicode.Block do
   def count(block) do
     blocks()
     |> Map.get(block)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
   end
 
   def block(string) when is_binary(string) do

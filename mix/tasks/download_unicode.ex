@@ -7,7 +7,7 @@ if File.exists?(Cldr.Unicode.data_dir()) do
     use Mix.Task
     require Logger
 
-    @shortdoc "Download the Unicode data files required by Cldr.Unicode."
+    @shortdoc "Download Unicode data files"
 
     @doc false
     def run(_) do
@@ -20,13 +20,16 @@ if File.exists?(Cldr.Unicode.data_dir()) do
     defp required_files do
       [
         {"https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
-         data_path("categories.txt")},
+          data_path("categories.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt", data_path("blocks.txt")},
-        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt", data_path("scripts.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt",
+          data_path("scripts.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt",
-         data_path("properties.txt")},
+           data_path("properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
-         data_path("combining_class.txt")}
+         data_path("combining_class.txt")},
+        {"https://unicode.org/Public/emoji/12.0/emoji-data.txt",
+          data_path("emoji.txt")}
       ]
     end
 
