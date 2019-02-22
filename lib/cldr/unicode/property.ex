@@ -434,7 +434,7 @@ defmodule Cldr.Unicode.Property do
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
   in the given binary string) are either `alphabetic?/1` or
-  `numeric?/1 otherwise returns `false`.
+  `numeric?/1` otherwise returns `false`.
 
   The function takes a unicode codepoint or a string as input.
 
