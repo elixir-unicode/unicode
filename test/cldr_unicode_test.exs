@@ -20,5 +20,7 @@ defmodule CldrUnicodeTest do
   test "that our guarded function returns the correct values" do
     assert TestModule.test_fun(?A) === true
     assert TestModule.test_fun(?a) === false
+    assert TestModule.test_fun(?Á) === true
+    assert TestModule.test_fun(?Ę) === true
   end
 end
