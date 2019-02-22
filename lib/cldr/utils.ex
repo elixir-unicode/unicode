@@ -73,27 +73,33 @@ defmodule Cldr.Unicode.Utils do
           map
 
         range ->
-          [range, script | _] = String.split(range, ~r/[;#]/) |> Enum.map(&String.trim/1)
-          [start, finish] = extract_codepoint_range(range)
+          [range, script | tail] = String.split(range, ~r/[;#]/) |> Enum.map(&String.trim/1)
+          [start, finish] =
+            range
+            |> String.split("..")
+            |> extract_codepoint_range
 
           range =
             case Map.get(map, script) do
               nil ->
-                [{start, finish}]
+                [{start, finish, tail}]
 
-              [{first, last}] ->
+              [{first, last, text}] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish}]
+                  [{first, finish, text}]
                 else
-                  [{start, finish}, {first, last}]
+                  [{start, finish, text}, {first, last, tail}]
                 end
 
-              [{first, last} | rest] ->
+              [{first, last, text} | rest] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish} | rest]
+                  [{first, finish, text} | rest]
                 else
-                  [{start, finish}, {first, last} | rest]
+                  [{start, finish, text}, {first, last, tail} | rest]
                 end
+
+              [{first, last, text} | rest] when is_list(first) and is_list(last) ->
+                [{start, finish, tail}, {first, last, text} | rest]
             end
 
           Map.put(map, script, range)
@@ -105,10 +111,22 @@ defmodule Cldr.Unicode.Utils do
     |> Enum.into(%{})
   end
 
-  defp extract_codepoint_range(range) do
-    case String.split(range, "..") do
-      [first, last] -> [String.to_integer(first, 16), String.to_integer(last, 16)]
-      [first] -> [String.to_integer(first, 16), String.to_integer(first, 16)]
+  # Range
+  defp extract_codepoint_range([codepoint]) do
+    cp = codepoint_from(codepoint)
+    [cp, cp]
+  end
+
+  defp extract_codepoint_range([first, last]) do
+    [codepoint_from(first), codepoint_from(last)]
+  end
+
+  defp codepoint_from(codepoint) do
+    case String.split(codepoint, " ") do
+      [codepoint] ->
+        String.to_integer(codepoint, 16)
+      codepoints ->
+        Enum.map(codepoints, &String.to_integer(&1, 16))
     end
   end
 
@@ -147,19 +165,19 @@ defmodule Cldr.Unicode.Utils do
   end
 
   @doc false
-  def ranges_to_guard_clause([{first, last}]) do
+  def ranges_to_guard_clause([{first, last, _}]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last)
     end
   end
 
-  def ranges_to_guard_clause([{first, first} | rest]) do
+  def ranges_to_guard_clause([{first, first, _} | rest]) do
     quote do
       var!(codepoint) == unquote(first) or unquote(ranges_to_guard_clause(rest))
     end
   end
 
-  def ranges_to_guard_clause([{first, last} | rest]) do
+  def ranges_to_guard_clause([{first, last, _} | rest]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last) or unquote(ranges_to_guard_clause(rest))
     end

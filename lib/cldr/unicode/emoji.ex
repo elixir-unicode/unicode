@@ -31,17 +31,24 @@ defmodule Cldr.Unicode.Emoji do
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
-  def emoji(string) when is_binary(string) do
-    string
-    |> String.codepoints()
-    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
-    |> Enum.map(&emoji/1)
+  for {emoji_category, ranges} <- @emoji,
+      range <- ranges do
+    case range do
+      {first, first, _text} when is_integer(first) ->
+        def emoji(unquote(first)), do: unquote(emoji_category)
+      {first, last, _text} when is_integer(first) and is_integer(last) ->
+        def emoji(codepoint) when codepoint in unquote(first)..unquote(last),
+          do: unquote(emoji_category)
+      {first, first, _text} when is_list(first) ->
+        def emoji(unquote(first)), do: unquote(emoji_category)
+    end
   end
 
-  for {emoji_category, ranges} <- @emoji do
-    def emoji(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(emoji_category)
-    end
+  def emoji(string) when is_binary(string) do
+    string
+    |> String.graphemes()
+    |> Enum.map(&String.to_charlist/1)
+    |> Enum.map(&emoji/1)
   end
 
   def emoji(_codepoint) do
