@@ -97,14 +97,14 @@ defmodule Cldr.Unicode.Utils do
 
               [{first, last, text}] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish, [tail | text]}]
+                  [{first, finish, tail ++ text}]
                 else
                   [{start, finish, tail}, {first, last, text}]
                 end
 
               [{first, last, text} | rest] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish, [tail | text]} | rest]
+                  [{first, finish, tail ++ text} | rest]
                 else
                   [{start, finish, tail}, {first, last, text} | rest]
                 end
@@ -176,6 +176,12 @@ defmodule Cldr.Unicode.Utils do
   end
 
   @doc false
+  def ranges_to_guard_clause([{first, first}]) do
+    quote do
+      var!(codepoint) == unquote(first)
+    end
+  end
+
   def ranges_to_guard_clause([{first, last}]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last)
@@ -212,5 +218,31 @@ defmodule Cldr.Unicode.Utils do
       {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
     end)
     |> Map.new
+  end
+
+  @doc false
+  @reserved "<reserved"
+  def remove_reserved_codepoints(data) do
+    data
+    |> Enum.map(fn {k, v} ->
+      filtered_list =
+        Enum.reject(v, fn {_, _, notes} ->
+          Enum.any?(notes, fn note ->
+            String.contains?(note, @reserved)
+          end)
+        end)
+      {k, filtered_list}
+    end)
+    |> Map.new
+  end
+
+  @doc false
+  def ranges_to_codepoints(ranges) when is_list(ranges) do
+    Enum.reduce(ranges, [], fn
+      {first, first}, acc ->
+        [first | acc]
+      {first, last}, acc ->
+        Enum.map(last..first, &(&1)) ++ acc
+    end)
   end
 end

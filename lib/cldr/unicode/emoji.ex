@@ -16,6 +16,7 @@ defmodule Cldr.Unicode.Emoji do
   alias Cldr.Unicode.Utils
 
   @emoji Utils.emoji()
+  |> Utils.remove_reserved_codepoints
   |> Utils.remove_annotations
 
   def emoji do
