@@ -46,6 +46,8 @@ defmodule Cldr.Unicode.Property do
   of codepoint ranges that below to a property.
   """
   @properties Utils.properties()
+  |> Utils.remove_annotations
+
   def properties do
     @properties
   end

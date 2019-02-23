@@ -16,6 +16,8 @@ defmodule Cldr.Unicode.Emoji do
   alias Cldr.Unicode.Utils
 
   @emoji Utils.emoji()
+  |> Utils.remove_annotations
+
   def emoji do
     @emoji
   end
@@ -34,12 +36,12 @@ defmodule Cldr.Unicode.Emoji do
   for {emoji_category, ranges} <- @emoji,
       range <- ranges do
     case range do
-      {first, first, _text} when is_integer(first) ->
+      {first, first} when is_integer(first) ->
         def emoji(unquote(first)), do: unquote(emoji_category)
-      {first, last, _text} when is_integer(first) and is_integer(last) ->
+      {first, last} when is_integer(first) and is_integer(last) ->
         def emoji(codepoint) when codepoint in unquote(first)..unquote(last),
           do: unquote(emoji_category)
-      {first, first, _text} when is_list(first) ->
+      {first, first} when is_list(first) ->
         def emoji(unquote(first)), do: unquote(emoji_category)
     end
   end

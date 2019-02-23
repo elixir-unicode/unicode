@@ -17,6 +17,10 @@ defmodule Cldr.Unicode.Guards do
   alias Cldr.Unicode
 
   categories = Unicode.Utils.categories
+  |> Enum.map(fn {k, v} ->
+    {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
+  end)
+  |> Map.new
 
   is_upper =
     categories

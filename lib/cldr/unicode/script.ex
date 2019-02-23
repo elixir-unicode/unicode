@@ -2,6 +2,8 @@ defmodule Cldr.Unicode.Script do
   alias Cldr.Unicode.Utils
 
   @scripts Utils.scripts()
+  |> Utils.remove_annotations
+
   def scripts do
     @scripts
   end

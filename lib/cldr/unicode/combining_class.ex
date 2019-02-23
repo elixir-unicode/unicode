@@ -2,6 +2,8 @@ defmodule Cldr.Unicode.CombiningClass do
   alias Cldr.Unicode.Utils
 
   @combining_classes Utils.combining_classes()
+  |> Utils.remove_annotations
+
   def combining_classes do
     @combining_classes
   end

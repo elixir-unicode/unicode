@@ -46,6 +46,8 @@ defmodule Cldr.Unicode.Category do
   alias Cldr.Unicode.Utils
 
   @categories Utils.categories()
+  |> Utils.remove_annotations
+
   def categories do
     @categories
   end

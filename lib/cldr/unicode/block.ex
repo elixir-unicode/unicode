@@ -2,6 +2,8 @@ defmodule Cldr.Unicode.Block do
   alias Cldr.Unicode.Utils
 
   @blocks Utils.blocks()
+  |> Utils.remove_annotations
+
   def blocks do
     @blocks
   end

@@ -41,6 +41,13 @@ defmodule Cldr.Unicode.Utils do
     |> atomize_keys
   end
 
+  @test_path Path.join(Cldr.Unicode.data_dir(), "test.txt")
+  def test do
+    parse_file(@test_path)
+    |> Enum.map(fn {k, v} -> {titlecase(k), v} end)
+    |> atomize_keys
+  end
+
   @doc """
   Returns a map of the Unicode with the emoji type name
   as the key and a list of codepoint ranges as the values.
@@ -72,8 +79,12 @@ defmodule Cldr.Unicode.Utils do
         <<"\n", _rest::bitstring>> ->
           map
 
-        range ->
-          [range, script | tail] = String.split(range, ~r/[;#]/) |> Enum.map(&String.trim/1)
+        data ->
+          [range, script | tail] =
+            data
+            |> String.split(~r/[;#]/)
+            |> Enum.map(&String.trim/1)
+
           [start, finish] =
             range
             |> String.split("..")
@@ -86,16 +97,16 @@ defmodule Cldr.Unicode.Utils do
 
               [{first, last, text}] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish, text}]
+                  [{first, finish, [tail | text]}]
                 else
-                  [{start, finish, text}, {first, last, tail}]
+                  [{start, finish, tail}, {first, last, text}]
                 end
 
               [{first, last, text} | rest] when is_integer(first) and is_integer(last) ->
                 if start == last + 1 do
-                  [{first, finish, text} | rest]
+                  [{first, finish, [tail | text]} | rest]
                 else
-                  [{start, finish, text}, {first, last, tail} | rest]
+                  [{start, finish, tail}, {first, last, text} | rest]
                 end
 
               [{first, last, text} | rest] when is_list(first) and is_list(last) ->
@@ -112,13 +123,13 @@ defmodule Cldr.Unicode.Utils do
   end
 
   # Range
+  defp extract_codepoint_range([first, last]) do
+    [codepoint_from(first), codepoint_from(last)]
+  end
+
   defp extract_codepoint_range([codepoint]) do
     cp = codepoint_from(codepoint)
     [cp, cp]
-  end
-
-  defp extract_codepoint_range([first, last]) do
-    [codepoint_from(first), codepoint_from(last)]
   end
 
   defp codepoint_from(codepoint) do
@@ -165,19 +176,19 @@ defmodule Cldr.Unicode.Utils do
   end
 
   @doc false
-  def ranges_to_guard_clause([{first, last, _}]) do
+  def ranges_to_guard_clause([{first, last}]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last)
     end
   end
 
-  def ranges_to_guard_clause([{first, first, _} | rest]) do
+  def ranges_to_guard_clause([{first, first} | rest]) do
     quote do
       var!(codepoint) == unquote(first) or unquote(ranges_to_guard_clause(rest))
     end
   end
 
-  def ranges_to_guard_clause([{first, last, _} | rest]) do
+  def ranges_to_guard_clause([{first, last} | rest]) do
     quote do
       var!(codepoint) in unquote(first)..unquote(last) or unquote(ranges_to_guard_clause(rest))
     end
@@ -192,5 +203,14 @@ defmodule Cldr.Unicode.Utils do
   def atomize_keys(map) do
     Enum.map(map, fn {k, v} -> {String.to_atom(k), v} end)
     |> Enum.into(%{})
+  end
+
+  @doc false
+  def remove_annotations(data) do
+    data
+    |> Enum.map(fn {k, v} ->
+      {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
+    end)
+    |> Map.new
   end
 end
