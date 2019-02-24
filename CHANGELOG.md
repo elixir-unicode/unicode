@@ -4,9 +4,11 @@ This is the changelog for Cldr v0.2.0 released on February 24th, 2019.  For olde
 
 ### Enhancements
 
-* Moves the public API to the `Cldr.Unicode` module
+* Moves the public API to the `Cldr.Unicode` module.
 
-* Updates and adds documentation to all public functions
+* Updates and adds documentation to all public functions.
+
+* Removes the text annotations from the compiled functions which materially reduces the size of the beam files.
 
 # Changelog for Cldr Unicode v0.1.0
 
