@@ -1,6 +1,16 @@
+# Changelog for Cldr Unicode v0.2.0
+
+This is the changelog for Cldr v0.2.0 released on February 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
+
+### Enhancements
+
+* Moves the public API to the `Cldr.Unicode` module
+
+* Updates and adds documentation to all public functions
+
 # Changelog for Cldr Unicode v0.1.0
 
-This is the changelog for Cldr v2.2.5 released on February 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
+This is the changelog for Cldr v0.1.0 released on February 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
 
 ### Enhancements
 
