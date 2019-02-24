@@ -15,7 +15,7 @@ end
 defmodule CldrUnicodeTest do
   use ExUnit.Case
 
-  doctest Cldr.Unicode.Property
+  doctest Cldr.Unicode
 
   test "that our guarded function returns the correct values" do
     assert TestModule.test_fun(?A) === true

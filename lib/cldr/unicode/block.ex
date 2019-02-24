@@ -1,4 +1,5 @@
 defmodule Cldr.Unicode.Block do
+  @moduledoc false
   alias Cldr.Unicode.Utils
 
   @blocks Utils.blocks()

@@ -1,4 +1,6 @@
 defmodule Cldr.Unicode.CombiningClass do
+  @moduledoc false
+
   alias Cldr.Unicode.Utils
 
   @combining_classes Utils.combining_classes()

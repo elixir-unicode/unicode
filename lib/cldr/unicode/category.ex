@@ -1,48 +1,6 @@
 defmodule Cldr.Unicode.Category do
-  @moduledoc """
-  | Property	| Matches	                |
-  | --------- | ----------------------- |
-  | :C	      | Other	                  |
-  | :Cc	      | Control	                |
-  | :Cf	      | Format	                |
-  | :Cn	      | Unassigned	            |
-  | :Co	      | Private use	            |
-  | :Cs	      | Surrogate	              |
-  | :L	      | Letter	                |
-  | :Ll	      | Lower case letter	      |
-  | :Lm	      | Modifier letter	        |
-  | :Lo	      | Other letter	          |
-  | :Lt	      | Title case letter	      |
-  | :Lu	      | Upper case letter	      |
-  | :M	      | Mark	                  |
-  | :Mc	      | Spacing mark	          |
-  | :Me	      | Enclosing mark	        |
-  | :Mn	      | Non-spacing mark	      |
-  | :N	      | Number	                |
-  | :Nd	      | Decimal number	        |
-  | :Nl	      | Letter number	          |
-  | :No	      | Other number	          |
-  | :P	      | Punctuation	            |
-  | :Pc	      | Connector punctuation	  |
-  | :Pd	      | Dash punctuation	      |
-  | :Pe	      | Close punctuation	      |
-  | :Pf	      | Final punctuation	      |
-  | :Pi	      | Initial punctuation	    |
-  | :Po	      | Other punctuation	      |
-  | :Ps	      | Open punctuation	      |
-  | :S	      | Symbol	                |
-  | :Sc	      | Currency symbol	        |
-  | :Sk	      | Modifier symbol	        |
-  | :Sm	      | Mathematical symbol	    |
-  | :So	      | Other symbol	          |
-  | :Z	      | Separator	              |
-  | :Zl	      | Line separator	        |
-  | :Zp	      | Paragraph separator	    |
-  | :Zs	      | Space separator	        |
+  @moduledoc false
 
-  Note: `:L` includes the following categories: `:Ll`, `:Lm`, `:Lo`, `:Lt` and `:Lu`.
-
-  """
   alias Cldr.Unicode.Utils
 
   @categories Utils.categories()
@@ -79,4 +37,5 @@ defmodule Cldr.Unicode.Category do
   def category(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     :Cn
   end
+
 end

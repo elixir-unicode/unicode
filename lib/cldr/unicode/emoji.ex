@@ -1,18 +1,6 @@
 defmodule Cldr.Unicode.Emoji do
-  @moduledoc """
-  Functions for identifying emoji which
-  fall into the following categories:
+  @moduledoc false
 
-  | Category	            |
-  | ----------------------|
-  | :emoji	              |
-  | :emoji_component      |
-  | :emoji_modifier	      |
-  | :emoji_modifier_base	|
-  | :emoji_presentation   |
-  | :extended_pictograph	|
-
-  """
   alias Cldr.Unicode.Utils
 
   @emoji Utils.emoji()

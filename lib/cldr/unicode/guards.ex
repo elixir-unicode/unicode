@@ -45,24 +45,39 @@ defmodule Cldr.Unicode.Guards do
   @doc """
   Guards whether a UTF8 codepoint is an upper case
   character.
+
+  The match is for any UTF8 character that is defined
+  in Unicode to be an upper case character in any
+  script.
+
   """
   defguard is_upper(codepoint) when is_integer(codepoint) and unquote(is_upper)
 
   @doc """
   Guards whether a UTF8 codepoint is a lower case
   character.
+
+  The match is for any UTF8 character that is defined
+  in Unicode to be an lower case character in any
+  script.
+
   """
   defguard is_lower(codepoint) when is_integer(codepoint) and unquote(is_lower)
 
   @doc """
   Guards whether a UTF8 codepoint is a digit
   character.
+
+  This guard will match any digit character from any
+  Unicode script, not only the ASCII decimal digits.
+
   """
   defguard is_digit(codepoint) when is_integer(codepoint) and unquote(is_digit)
 
   @doc """
   Guards whether a UTF8 codepoint is a currency symbol
   character.
+
   """
   defguard is_currency_symbol(codepoint) when is_integer(codepoint) and unquote(is_currency_symbol)
 

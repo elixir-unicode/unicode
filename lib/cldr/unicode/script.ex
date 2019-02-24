@@ -1,4 +1,6 @@
 defmodule Cldr.Unicode.Script do
+  @moduledoc false
+
   alias Cldr.Unicode.Utils
 
   @scripts Utils.scripts()
