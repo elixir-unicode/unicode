@@ -17,6 +17,16 @@ defmodule Cldr.Unicode.Utils do
   @blocks_path Path.join(Cldr.Unicode.data_dir(), "blocks.txt")
   def blocks do
     parse_file(@blocks_path)
+    |> Enum.map(fn {k, v} ->
+      new_key =
+        k
+        |> String.replace(" ", "_")
+        |> String.replace("-", "_")
+        |> String.to_atom
+
+      {new_key, v}
+    end)
+    |> Map.new
   end
 
   @doc """

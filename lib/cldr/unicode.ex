@@ -180,26 +180,26 @@ defmodule Cldr.Unicode do
 
   ## Returns
 
-  * in the case of a single codepoint, a string
+  * in the case of a single codepoint, an atom
     block name
 
-  * in the case of a string, a list of string
+  * in the case of a string, a list of atom
     block names for each codepoint in the
-  ` codepoint_or_string`
+   `codepoint_or_string`
 
   ## Exmaples
 
       iex> Cldr.Unicode.block ?ä
-      "latin-1 supplement"
+      :latin_1_supplement
 
       iex> Cldr.Unicode.block ?A
-      "basic latin"
+      :basic_latin
 
       iex> Cldr.Unicode.block "äA"
-      ["latin-1 supplement", "basic latin"]
+      [:latin_1_supplement, :basic_latin]
 
   """
-  @spec block(codepoint_or_string) :: String.t | [String.t, ...]
+  @spec block(codepoint_or_string) :: atom | [atom, ...]
   defdelegate block(codepoint_or_string), to: Unicode.Block
 
   @doc """
@@ -588,5 +588,51 @@ defmodule Cldr.Unicode do
   """
   @spec uppercase?(codepoint_or_string) :: boolean
   defdelegate uppercase?(codepoint_or_string), to: Unicode.Property
+
+
+  @doc """
+  Removes accents (diacritical marks) from
+  a string.
+
+  ## Arguments
+
+  * `string` is any `String.t`
+
+  ## Returns
+
+  * A string with all diacritical marks
+    removed
+
+  ## Notes
+
+  The string is first normalised to `:nfd` form
+  and then all characters in the block
+  `:comnbining_diacritical_marks` is removed
+  from the string
+
+  ## Example
+
+      iex> Cldr.Unicode.unaccent("Et Ça sera sa moitié.")
+      "Et Ca sera sa moitie."
+
+  """
+  def unaccent(string) do
+    string
+    |> String.normalize(:nfd)
+    |> String.to_charlist
+    |> remove_diacritical_marks([:combining_diacritical_marks])
+    |> List.to_string
+  end
+
+  defp remove_diacritical_marks(charlist, blocks) do
+    Enum.reduce(charlist, [], fn char, acc ->
+      if Cldr.Unicode.Block.block(char) in blocks do
+        acc
+      else
+        [char | acc]
+      end
+    end)
+    |> Enum.reverse
+  end
 
 end

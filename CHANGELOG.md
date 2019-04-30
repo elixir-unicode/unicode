@@ -1,3 +1,15 @@
+# Changelog for Cldr Unicode v0.3.0
+
+This is the changelog for Cldr v0.3.0 released on April 30th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
+
+### Enhancements
+
+* Adds `Cldr.Unicode.unaccent/1`
+
+### Breaking Changes
+
+* Block names are now atoms instead of keys
+
 # Changelog for Cldr Unicode v0.2.0
 
 This is the changelog for Cldr v0.2.0 released on February 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)

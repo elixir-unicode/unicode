@@ -12,7 +12,7 @@ defmodule TestModule do
 
 end
 
-defmodule CldrUnicodeTest do
+defmodule Cldr.Unicode.Test do
   use ExUnit.Case
 
   doctest Cldr.Unicode
