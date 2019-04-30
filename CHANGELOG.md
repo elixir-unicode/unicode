@@ -8,7 +8,7 @@ This is the changelog for Cldr v0.4.0 released on April 30th, 2019.  For older c
 
 ### Breaking Changes
 
-* Block names are now atoms instead of keys
+* Block names are now atoms instead of strings
 
 # Changelog for Cldr Unicode v0.3.0
 
