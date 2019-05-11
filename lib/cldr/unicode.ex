@@ -21,7 +21,7 @@ defmodule Cldr.Unicode do
 
   """
   def version do
-    {12, 0, 0}
+    {12, 1, 0}
   end
 
   @doc """
