@@ -31,6 +31,7 @@ defmodule Cldr.Unicode.MixProject do
     [
       maintainers: ["Kip Cole"],
       licenses: ["Apache 2.0"],
+      logo: "logo.png",
       links: links(),
       files: [
         "lib",
