@@ -1,3 +1,11 @@
+# Changelog for Cldr Unicode v0.6.0
+
+This is the changelog for Cldr v0.6.0 released on October 22nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
+
+### Enhancements
+
+* Update to Emoji 12.1
+
 # Changelog for Cldr Unicode v0.5.0
 
 This is the changelog for Cldr v0.5.0 released on May 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr/tags)
