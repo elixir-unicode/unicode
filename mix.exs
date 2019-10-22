@@ -13,7 +13,7 @@ defmodule Cldr.Unicode.MixProject do
       deps: deps(),
       docs: docs(),
       name: "Cldr Unicode",
-      source_url: "https://github.com/kipcole9/cldr_unicode",
+      source_url: "https://github.com/elixir-cldr/cldr_unicode",
       description: description(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env())
@@ -61,9 +61,9 @@ defmodule Cldr.Unicode.MixProject do
 
   def links do
     %{
-      "GitHub" => "https://github.com/kipcole9/cldr_unicode",
-      "Readme" => "https://github.com/kipcole9/cldr_unicode/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/kipcole9/cldr_unicode/blob/v#{@version}/CHANGELOG.md",
+      "GitHub" => "https://github.com/elixir-cldr/cldr_unicode",
+      "Readme" => "https://github.com/elixir-cldr/cldr_unicode/blob/v#{@version}/README.md",
+      "Changelog" => "https://github.com/elixir-cldr/cldr_unicode/blob/v#{@version}/CHANGELOG.md",
     }
   end
 
