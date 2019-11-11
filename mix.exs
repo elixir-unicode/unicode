@@ -8,6 +8,7 @@ defmodule Cldr.Unicode.MixProject do
       app: :ex_cldr_unicode,
       version: @version,
       elixir: "~> 1.5",
+      licenses: ["Apache-2.0"],
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),
