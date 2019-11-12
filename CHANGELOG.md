@@ -1,3 +1,11 @@
+# Changelog for Cldr Unicode v0.7.0
+
+This is the changelog for Cldr v0.7.0 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+
+### Enhancements
+
+* Add `is_whitespace/1` guard generator
+
 # Changelog for Cldr Unicode v0.6.0
 
 This is the changelog for Cldr v0.6.0 released on October 22nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)

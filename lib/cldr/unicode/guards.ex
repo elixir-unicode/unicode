@@ -42,6 +42,11 @@ defmodule Cldr.Unicode.Guards do
     |> Map.get(:Nd)
     |> Unicode.Utils.ranges_to_guard_clause
 
+  is_whitespace =
+    categories
+    |> Map.get(:Zs)
+    |> Unicode.Utils.ranges_to_guard_clause
+
   @doc """
   Guards whether a UTF8 codepoint is an upper case
   character.
@@ -80,5 +85,12 @@ defmodule Cldr.Unicode.Guards do
 
   """
   defguard is_currency_symbol(codepoint) when is_integer(codepoint) and unquote(is_currency_symbol)
+
+  @doc """
+  Guards whether a UTF8 codepoint is a whitespace symbol
+  character.
+
+  """
+  defguard is_whitespace(codepoint) when is_integer(codepoint) and unquote(is_whitespace)
 
 end
