@@ -1,3 +1,13 @@
+# Changelog for Cldr Unicode v0.7.1
+
+This is the changelog for Cldr v0.7.1 released on _____, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+
+### Bug Fixes
+
+* Fixes `count/1` for blocks, scripts and categories
+
+* Replace deprecated `String.normalize/2` with `:unicode.characters_to_nfd_binary/` for OTP release 20 and later.
+
 # Changelog for Cldr Unicode v0.7.0
 
 This is the changelog for Cldr v0.7.0 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)

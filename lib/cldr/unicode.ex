@@ -618,7 +618,7 @@ defmodule Cldr.Unicode do
   """
   def unaccent(string) do
     string
-    |> :unicode.characters_to_nfd_binary
+    |> normalize_nfd
     |> String.to_charlist
     |> remove_diacritical_marks([:combining_diacritical_marks])
     |> List.to_string
@@ -635,4 +635,18 @@ defmodule Cldr.Unicode do
     |> Enum.reverse
   end
 
+  # OTP 20 introduced the `:unicode: module
+  # but we also want to support earlier
+  # versions
+
+  @doc false
+  if Code.ensure_loaded?(:unicode) do
+    def normalize_nfd(string) do
+      :unicode.characters_to_nfd_binary(string)
+    end
+  else
+    def normalize_nfd(string) do
+      String.normalize(string, :nfd)
+    end
+  end
 end
