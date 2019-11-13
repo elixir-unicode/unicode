@@ -32,7 +32,7 @@ defmodule Cldr.Unicode.Property do
   def count(property) do
     properties()
     |> Map.get(property)
-    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
   @spec properties(string_or_binary) :: [atom, ...] | [[atom, ...], ...]

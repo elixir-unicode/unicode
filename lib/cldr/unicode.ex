@@ -618,7 +618,7 @@ defmodule Cldr.Unicode do
   """
   def unaccent(string) do
     string
-    |> String.normalize(:nfd)
+    |> :unicode.characters_to_nfd_binary
     |> String.to_charlist
     |> remove_diacritical_marks([:combining_diacritical_marks])
     |> List.to_string

@@ -15,6 +15,16 @@ defmodule Cldr.Unicode.Script do
     @known_scripts
   end
 
+  @doc """
+  Returns the count of the number of characters
+  for a given script.
+
+  ## Example
+
+      iex> Cldr.Unicode.Script.count("mongolian")
+      167
+
+  """
   def count(script) do
     scripts()
     |> Map.get(script)

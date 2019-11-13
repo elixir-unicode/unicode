@@ -14,10 +14,20 @@ defmodule Cldr.Unicode.Block do
     @known_blocks
   end
 
+  @doc """
+  Returns the count of the number of characters
+  for a given block.
+
+  ## Example
+
+      iex> Cldr.Unicode.Block.count(:old_north_arabian)
+      32
+
+  """
   def count(block) do
     blocks()
     |> Map.get(block)
-    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
   def block(string) when is_binary(string) do

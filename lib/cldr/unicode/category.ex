@@ -15,10 +15,23 @@ defmodule Cldr.Unicode.Category do
     @known_categories
   end
 
+  @doc """
+  Return the count of characters in a given
+  category.
+
+  ## Example
+
+      iex> Cldr.Unicode.Category.count(:Ll)
+      2151
+
+      iex> Cldr.Unicode.Category.count(:Nd)
+      630
+
+  """
   def count(category) do
     categories()
     |> Map.get(category)
-    |> Enum.reduce(0, fn {from, to, _}, acc -> acc + to - from + 1 end)
+    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
   def category(string) when is_binary(string) do
