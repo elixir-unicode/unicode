@@ -540,6 +540,7 @@ defmodule Cldr.Unicode do
   """
   @spec lowercase?(codepoint_or_string) :: boolean
   defdelegate lowercase?(codepoint_or_string), to: Unicode.Property
+  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :lowercase?
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
@@ -588,7 +589,7 @@ defmodule Cldr.Unicode do
   """
   @spec uppercase?(codepoint_or_string) :: boolean
   defdelegate uppercase?(codepoint_or_string), to: Unicode.Property
-
+  defdelegate upcase?(codepoint_or_string), to: Unicode.Property, as: :upcase?
 
   @doc """
   Removes accents (diacritical marks) from
@@ -607,7 +608,7 @@ defmodule Cldr.Unicode do
 
   The string is first normalised to `:nfd` form
   and then all characters in the block
-  `:comnbining_diacritical_marks` is removed
+  `:comnbining_diacritical_marks` are removed
   from the string
 
   ## Example
@@ -635,7 +636,7 @@ defmodule Cldr.Unicode do
     |> Enum.reverse
   end
 
-  # OTP 20 introduced the `:unicode: module
+  # OTP 20 introduced the `:unicode` module
   # but we also want to support earlier
   # versions
 
