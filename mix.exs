@@ -1,7 +1,7 @@
 defmodule Cldr.Unicode.MixProject do
   use Mix.Project
 
-  @version "0.7.1"
+  @version "0.8.0"
 
   def project do
     [
@@ -22,7 +22,7 @@ defmodule Cldr.Unicode.MixProject do
 
   defp description do
     """
-    DEPRECATED. Replaced by `ex_unicode`, please use that package. Functions to introspect the Unicode character database and
+    DEPRECATED. Package replaced by `ex_unicode`, please use that package. Functions to introspect the Unicode character database and
     to provide fast codepoint lookups and guards.
     """
   end
