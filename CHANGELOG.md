@@ -1,6 +1,14 @@
+# Changelog for Unicode v1.0.0
+
+This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Breaking Changes
+
+* Rename the module prefix to `Unicode` since this package is not linked in any way to the `Cldr` family. The hex package is renamed to `ex_unicode`.
+
 # Changelog for Cldr Unicode v0.7.1
 
-This is the changelog for Cldr v0.7.1 released on _____, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.7.1 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Bug Fixes
 
@@ -10,7 +18,7 @@ This is the changelog for Cldr v0.7.1 released on _____, 2019.  For older change
 
 # Changelog for Cldr Unicode v0.7.0
 
-This is the changelog for Cldr v0.7.0 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.7.0 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -18,7 +26,7 @@ This is the changelog for Cldr v0.7.0 released on November 12th, 2019.  For olde
 
 # Changelog for Cldr Unicode v0.6.0
 
-This is the changelog for Cldr v0.6.0 released on October 22nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.6.0 released on October 22nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -26,7 +34,7 @@ This is the changelog for Cldr v0.6.0 released on October 22nd, 2019.  For older
 
 # Changelog for Cldr Unicode v0.5.0
 
-This is the changelog for Cldr v0.5.0 released on May 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.5.0 released on May 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -34,7 +42,7 @@ This is the changelog for Cldr v0.5.0 released on May 12th, 2019.  For older cha
 
 # Changelog for Cldr Unicode v0.4.0
 
-This is the changelog for Cldr v0.4.0 released on April 30th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.4.0 released on April 30th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -46,7 +54,7 @@ This is the changelog for Cldr v0.4.0 released on April 30th, 2019.  For older c
 
 # Changelog for Cldr Unicode v0.3.0
 
-This is the changelog for Cldr v0.3.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.3.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -54,7 +62,7 @@ This is the changelog for Cldr v0.3.0 released on March 28th, 2019.  For older c
 
 # Changelog for Cldr Unicode v0.2.0
 
-This is the changelog for Cldr v0.2.0 released on February 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.2.0 released on February 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
@@ -66,7 +74,7 @@ This is the changelog for Cldr v0.2.0 released on February 24th, 2019.  For olde
 
 # Changelog for Cldr Unicode v0.1.0
 
-This is the changelog for Cldr v0.1.0 released on February 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
+This is the changelog for Unicode v0.1.0 released on February 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
 ### Enhancements
 
