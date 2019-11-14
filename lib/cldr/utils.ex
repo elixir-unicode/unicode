@@ -1,11 +1,11 @@
-defmodule Cldr.Unicode.Utils do
+defmodule Unicode.Utils do
   @moduledoc false
 
   @doc """
   Returns a map of the Unicode with the `script` name
   as the key and a list of codepoint ranges as the values.
   """
-  @scripts_path Path.join(Cldr.Unicode.data_dir(), "scripts.txt")
+  @scripts_path Path.join(Unicode.data_dir(), "scripts.txt")
   def scripts do
     parse_file(@scripts_path)
   end
@@ -14,7 +14,7 @@ defmodule Cldr.Unicode.Utils do
   Returns a map of the Unicode with the `block` name
   as the key and a list of codepoint ranges as the values.
   """
-  @blocks_path Path.join(Cldr.Unicode.data_dir(), "blocks.txt")
+  @blocks_path Path.join(Unicode.data_dir(), "blocks.txt")
   def blocks do
     parse_file(@blocks_path)
     |> Enum.map(fn {k, v} ->
@@ -33,7 +33,7 @@ defmodule Cldr.Unicode.Utils do
   Returns a map of the Unicode with the `combining_class` number
   as the key and a list of codepoint ranges as the values.
   """
-  @combining_class_path Path.join(Cldr.Unicode.data_dir(), "combining_class.txt")
+  @combining_class_path Path.join(Unicode.data_dir(), "combining_class.txt")
   def combining_classes do
     parse_file(@combining_class_path)
     |> Enum.map(fn {k, v} -> {String.to_integer(k), v} end)
@@ -44,14 +44,14 @@ defmodule Cldr.Unicode.Utils do
   Returns a map of the Unicode with the `category` name
   as the key and a list of codepoint ranges as the values.
   """
-  @categories_path Path.join(Cldr.Unicode.data_dir(), "categories.txt")
+  @categories_path Path.join(Unicode.data_dir(), "categories.txt")
   def categories do
     parse_file(@categories_path)
     |> Enum.map(fn {k, v} -> {titlecase(k), v} end)
     |> atomize_keys
   end
 
-  @test_path Path.join(Cldr.Unicode.data_dir(), "test.txt")
+  @test_path Path.join(Unicode.data_dir(), "test.txt")
   def test do
     parse_file(@test_path)
     |> Enum.map(fn {k, v} -> {titlecase(k), v} end)
@@ -62,7 +62,7 @@ defmodule Cldr.Unicode.Utils do
   Returns a map of the Unicode with the emoji type name
   as the key and a list of codepoint ranges as the values.
   """
-  @emoji_path Path.join(Cldr.Unicode.data_dir(), "emoji.txt")
+  @emoji_path Path.join(Unicode.data_dir(), "emoji.txt")
   def emoji do
     parse_file(@emoji_path)
     |> Enum.map(fn {k, v} -> {String.downcase(k), v} end)
@@ -73,7 +73,7 @@ defmodule Cldr.Unicode.Utils do
   Returns a map of the Unicode with the `property` name
   as the key and a list of codepoint ranges as the values.
   """
-  @properties_path Path.join(Cldr.Unicode.data_dir(), "properties.txt")
+  @properties_path Path.join(Unicode.data_dir(), "properties.txt")
   def properties do
     parse_file(@properties_path)
     |> atomize_keys

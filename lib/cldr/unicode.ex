@@ -1,10 +1,8 @@
-defmodule Cldr.Unicode do
+defmodule Unicode do
   @moduledoc """
   Functions to introspect the Unicode character database and
   to provide fast codepoint lookups.
   """
-
-  alias Cldr.Unicode
 
   @type codepoint :: non_neg_integer
   @type codepoint_or_string :: codepoint | String.t
@@ -94,22 +92,22 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.category ?ä
+      iex> Unicode.category ?ä
       :Ll
 
-      iex> Cldr.Unicode.category ?A
+      iex> Unicode.category ?A
       :Lu
 
-      iex> Cldr.Unicode.category ?🧐
+      iex> Unicode.category ?🧐
       :So
 
-      iex> Cldr.Unicode.category ?+
+      iex> Unicode.category ?+
       :Sm
 
-      iex> Cldr.Unicode.category ?1
+      iex> Unicode.category ?1
       :Nd
 
-      iex> Cldr.Unicode.category "äA"
+      iex> Unicode.category "äA"
       [:Ll, :Lu]
 
   """
@@ -140,28 +138,28 @@ defmodule Cldr.Unicode do
 
   ## Exmaples
 
-      iex> Cldr.Unicode.script ?ä
+      iex> Unicode.script ?ä
       "latin"
 
-      iex> Cldr.Unicode.script ?خ
+      iex> Unicode.script ?خ
       "arabic"
 
-      iex> Cldr.Unicode.script ?अ
+      iex> Unicode.script ?अ
       "devanagari"
 
-      iex> Cldr.Unicode.script ?א
+      iex> Unicode.script ?א
       "hebrew"
 
-      iex> Cldr.Unicode.script ?Ж
+      iex> Unicode.script ?Ж
       "cyrillic"
 
-      iex> Cldr.Unicode.script ?δ
+      iex> Unicode.script ?δ
       "greek"
 
-      iex> Cldr.Unicode.script ?ก
+      iex> Unicode.script ?ก
       "thai"
 
-      iex> Cldr.Unicode.script ?ယ
+      iex> Unicode.script ?ယ
       "myanmar"
 
   """
@@ -189,13 +187,13 @@ defmodule Cldr.Unicode do
 
   ## Exmaples
 
-      iex> Cldr.Unicode.block ?ä
+      iex> Unicode.block ?ä
       :latin_1_supplement
 
-      iex> Cldr.Unicode.block ?A
+      iex> Unicode.block ?A
       :basic_latin
 
-      iex> Cldr.Unicode.block "äA"
+      iex> Unicode.block "äA"
       [:latin_1_supplement, :basic_latin]
 
   """
@@ -223,16 +221,16 @@ defmodule Cldr.Unicode do
 
   ## Exmaples
 
-      iex> Cldr.Unicode.properties 0x1bf0
+      iex> Unicode.properties 0x1bf0
       [:alphabetic, :case_ignorable]
 
-      iex> Cldr.Unicode.properties ?A
+      iex> Unicode.properties ?A
       [:alphabetic, :uppercase, :cased]
 
-      iex> Cldr.Unicode.properties ?+
+      iex> Unicode.properties ?+
       [:math]
 
-      iex> Cldr.Unicode.properties "a1+"
+      iex> Unicode.properties "a1+"
       [[:alphabetic, :lowercase, :cased], [:numeric, :emoji], [:math]]
 
   """
@@ -261,31 +259,31 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.alphabetic?(?a)
+      iex> Unicode.alphabetic?(?a)
       true
 
-      iex> Cldr.Unicode.alphabetic?("A")
+      iex> Unicode.alphabetic?("A")
       true
 
-      iex> Cldr.Unicode.alphabetic?("Elixir")
+      iex> Unicode.alphabetic?("Elixir")
       true
 
-      iex> Cldr.Unicode.alphabetic?("الإكسير")
+      iex> Unicode.alphabetic?("الإكسير")
       true
 
-      iex> Cldr.Unicode.alphabetic?("foo, bar") # comma and whitespace
+      iex> Unicode.alphabetic?("foo, bar") # comma and whitespace
       false
 
-      iex> Cldr.Unicode.alphabetic?("42")
+      iex> Unicode.alphabetic?("42")
       false
 
-      iex> Cldr.Unicode.alphabetic?("龍王")
+      iex> Unicode.alphabetic?("龍王")
       true
 
-      iex> Cldr.Unicode.alphabetic?("∑") # Summation, \u2211
+      iex> Unicode.alphabetic?("∑") # Summation, \u2211
       false
 
-      iex> Cldr.Unicode.alphabetic?("Σ") # Greek capital letter sigma, \u03a3
+      iex> Unicode.alphabetic?("Σ") # Greek capital letter sigma, \u03a3
       true
 
   """
@@ -311,16 +309,16 @@ defmodule Cldr.Unicode do
 
   ### Examples
 
-      iex> Cldr.Unicode.alphanumeric? "1234"
+      iex> Unicode.alphanumeric? "1234"
       true
 
-      iex> Cldr.Unicode.alphanumeric? "KeyserSöze1995"
+      iex> Unicode.alphanumeric? "KeyserSöze1995"
       true
 
-      iex> Cldr.Unicode.alphanumeric? "3段"
+      iex> Unicode.alphanumeric? "3段"
       true
 
-      iex> Cldr.Unicode.alphanumeric? "dragon@example.com"
+      iex> Unicode.alphanumeric? "dragon@example.com"
       false
 
   """
@@ -378,13 +376,13 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.numeric?("65535")
+      iex> Unicode.numeric?("65535")
       true
 
-      iex> Cldr.Unicode.numeric?("42")
+      iex> Unicode.numeric?("42")
       true
 
-      iex> Cldr.Unicode.numeric?("lapis philosophorum")
+      iex> Unicode.numeric?("lapis philosophorum")
       false
 
   """
@@ -409,7 +407,7 @@ defmodule Cldr.Unicode do
 
   ### Examples
 
-      iex> Cldr.Unicode.emoji? "🧐🤓🤩🤩️🤯"
+      iex> Unicode.emoji? "🧐🤓🤩🤩️🤯"
       true
 
   """
@@ -438,22 +436,22 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.math?(?=)
+      iex> Unicode.math?(?=)
       true
 
-      iex> Cldr.Unicode.math?("=")
+      iex> Unicode.math?("=")
       true
 
-      iex> Cldr.Unicode.math?("1+1=2") # Digits do not have the `:math` property.
+      iex> Unicode.math?("1+1=2") # Digits do not have the `:math` property.
       false
 
-      iex> Cldr.Unicode.math?("परिस")
+      iex> Unicode.math?("परिस")
       false
 
-      iex> Cldr.Unicode.math?("∑") # Summation, \\u2211
+      iex> Unicode.math?("∑") # Summation, \\u2211
       true
 
-      iex> Cldr.Unicode.math?("Σ") # Greek capital letter sigma, \\u03a3
+      iex> Unicode.math?("Σ") # Greek capital letter sigma, \\u03a3
       false
 
   """
@@ -482,10 +480,10 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.cased? ?ယ
+      iex> Unicode.cased? ?ယ
       false
 
-      iex> Cldr.Unicode.cased? ?A
+      iex> Unicode.cased? ?A
       true
 
   """
@@ -513,28 +511,28 @@ defmodule Cldr.Unicode do
 
   ## Examples
 
-      iex> Cldr.Unicode.lowercase?(?a)
+      iex> Unicode.lowercase?(?a)
       true
 
-      iex> Cldr.Unicode.lowercase?("A")
+      iex> Unicode.lowercase?("A")
       false
 
-      iex> Cldr.Unicode.lowercase?("Elixir")
+      iex> Unicode.lowercase?("Elixir")
       false
 
-      iex> Cldr.Unicode.lowercase?("léon")
+      iex> Unicode.lowercase?("léon")
       true
 
-      iex> Cldr.Unicode.lowercase?("foo, bar")
+      iex> Unicode.lowercase?("foo, bar")
       false
 
-      iex> Cldr.Unicode.lowercase?("42")
+      iex> Unicode.lowercase?("42")
       false
 
-      iex> Cldr.Unicode.lowercase?("Σ")
+      iex> Unicode.lowercase?("Σ")
       false
 
-      iex> Cldr.Unicode.lowercase?("σ")
+      iex> Unicode.lowercase?("σ")
       true
 
   """
@@ -561,28 +559,28 @@ defmodule Cldr.Unicode do
   codepoints in the string adhere to the property.
   ## Examples
 
-      iex> Cldr.Unicode.uppercase?(?a)
+      iex> Unicode.uppercase?(?a)
       false
 
-      iex> Cldr.Unicode.uppercase?("A")
+      iex> Unicode.uppercase?("A")
       true
 
-      iex> Cldr.Unicode.uppercase?("Elixir")
+      iex> Unicode.uppercase?("Elixir")
       false
 
-      iex> Cldr.Unicode.uppercase?("CAMEMBERT")
+      iex> Unicode.uppercase?("CAMEMBERT")
       true
 
-      iex> Cldr.Unicode.uppercase?("foo, bar")
+      iex> Unicode.uppercase?("foo, bar")
       false
 
-      iex> Cldr.Unicode.uppercase?("42")
+      iex> Unicode.uppercase?("42")
       false
 
-      iex> Cldr.Unicode.uppercase?("Σ")
+      iex> Unicode.uppercase?("Σ")
       true
 
-      iex> Cldr.Unicode.uppercase?("σ")
+      iex> Unicode.uppercase?("σ")
       false
 
   """
@@ -612,7 +610,7 @@ defmodule Cldr.Unicode do
 
   ## Example
 
-      iex> Cldr.Unicode.unaccent("Et Ça sera sa moitié.")
+      iex> Unicode.unaccent("Et Ça sera sa moitié.")
       "Et Ca sera sa moitie."
 
   """
@@ -626,7 +624,7 @@ defmodule Cldr.Unicode do
 
   defp remove_diacritical_marks(charlist, blocks) do
     Enum.reduce(charlist, [], fn char, acc ->
-      if Cldr.Unicode.Block.block(char) in blocks do
+      if Unicode.Block.block(char) in blocks do
         acc
       else
         [char | acc]

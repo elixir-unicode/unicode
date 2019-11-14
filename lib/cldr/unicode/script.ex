@@ -1,7 +1,7 @@
-defmodule Cldr.Unicode.Script do
+defmodule Unicode.Script do
   @moduledoc false
 
-  alias Cldr.Unicode.Utils
+  alias Unicode.Utils
 
   @scripts Utils.scripts()
   |> Utils.remove_annotations
@@ -21,7 +21,7 @@ defmodule Cldr.Unicode.Script do
 
   ## Example
 
-      iex> Cldr.Unicode.Script.count("mongolian")
+      iex> Unicode.Script.count("mongolian")
       167
 
   """

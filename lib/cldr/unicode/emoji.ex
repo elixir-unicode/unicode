@@ -1,7 +1,7 @@
-defmodule Cldr.Unicode.Emoji do
+defmodule Unicode.Emoji do
   @moduledoc false
 
-  alias Cldr.Unicode.Utils
+  alias Unicode.Utils
 
   @emoji Utils.emoji()
   |> Utils.remove_reserved_codepoints

@@ -1,9 +1,9 @@
-defmodule Cldr.Unicode.Property do
+defmodule Unicode.Property do
   @moduledoc false
 
-  alias Cldr.Unicode.Utils
-  alias Cldr.Unicode.Category
-  alias Cldr.Unicode.Emoji
+  alias Unicode.Utils
+  alias Unicode.Emoji
+  alias Unicode.Category
 
   @type string_or_binary :: String.t() | non_neg_integer
 

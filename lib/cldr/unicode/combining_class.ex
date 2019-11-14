@@ -1,7 +1,7 @@
-defmodule Cldr.Unicode.CombiningClass do
+defmodule Unicode.CombiningClass do
   @moduledoc false
 
-  alias Cldr.Unicode.Utils
+  alias Unicode.Utils
 
   @combining_classes Utils.combining_classes()
   |> Utils.remove_annotations

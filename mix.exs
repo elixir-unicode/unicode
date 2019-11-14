@@ -1,11 +1,11 @@
 defmodule Cldr.Unicode.MixProject do
   use Mix.Project
 
-  @version "0.7.1"
+  @version "0.8.0"
 
   def project do
     [
-      app: :ex_cldr_unicode,
+      app: :ex_unicode,
       version: @version,
       elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,

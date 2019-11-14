@@ -1,7 +1,7 @@
-defmodule Cldr.Unicode.Category do
+defmodule Unicode.Category do
   @moduledoc false
 
-  alias Cldr.Unicode.Utils
+  alias Unicode.Utils
 
   @categories Utils.categories()
   |> Utils.remove_annotations
@@ -21,10 +21,10 @@ defmodule Cldr.Unicode.Category do
 
   ## Example
 
-      iex> Cldr.Unicode.Category.count(:Ll)
+      iex> Unicode.Category.count(:Ll)
       2151
 
-      iex> Cldr.Unicode.Category.count(:Nd)
+      iex> Unicode.Category.count(:Nd)
       630
 
   """

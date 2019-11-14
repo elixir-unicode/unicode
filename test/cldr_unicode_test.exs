@@ -1,6 +1,6 @@
 defmodule TestModule do
-  require Cldr.Unicode.Guards
-  import Cldr.Unicode.Guards
+  require Unicode.Guards
+  import Unicode.Guards
 
   def test_fun(x) when is_upper(x) do
     true
@@ -12,10 +12,10 @@ defmodule TestModule do
 
 end
 
-defmodule Cldr.Unicode.Test do
+defmodule Unicode.Test do
   use ExUnit.Case
 
-  doctest Cldr.Unicode
+  doctest Unicode
 
   test "that our guarded function returns the correct values" do
     assert TestModule.test_fun(?A) === true

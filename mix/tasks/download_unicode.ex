@@ -1,5 +1,5 @@
-if File.exists?(Cldr.Unicode.data_dir()) do
-  defmodule Mix.Tasks.Cldr.Unicode.Download do
+if File.exists?(Unicode.data_dir()) do
+  defmodule Mix.Tasks.Unicode.Download do
     @moduledoc """
     Downloads the required Unicode files to support Cldr.Unicode
     """
@@ -62,7 +62,7 @@ if File.exists?(Cldr.Unicode.data_dir()) do
     end
 
     defp data_path(filename) do
-      Path.join(Cldr.Unicode.data_dir(), filename)
+      Path.join(Unicode.data_dir(), filename)
     end
   end
 end

@@ -1,6 +1,7 @@
-defmodule Cldr.Unicode.Block do
+defmodule Unicode.Block do
   @moduledoc false
-  alias Cldr.Unicode.Utils
+
+  alias Unicode.Utils
 
   @blocks Utils.blocks()
   |> Utils.remove_annotations
@@ -20,7 +21,7 @@ defmodule Cldr.Unicode.Block do
 
   ## Example
 
-      iex> Cldr.Unicode.Block.count(:old_north_arabian)
+      iex> Unicode.Block.count(:old_north_arabian)
       32
 
   """

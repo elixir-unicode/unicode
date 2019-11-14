@@ -1,4 +1,4 @@
-defmodule Cldr.Unicode.Guards do
+defmodule Unicode.Guards do
   @moduledoc """
   Defines a set of guards that can be used with
   Elixir functions.
@@ -14,7 +14,6 @@ defmodule Cldr.Unicode.Guards do
   the basic ASCII definitions.
 
   """
-  alias Cldr.Unicode
 
   categories = Unicode.Utils.categories
   |> Enum.map(fn {k, v} ->
