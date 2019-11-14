@@ -538,6 +538,7 @@ defmodule Unicode do
   """
   @spec lowercase?(codepoint_or_string) :: boolean
   defdelegate lowercase?(codepoint_or_string), to: Unicode.Property
+  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :downcase
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
@@ -586,6 +587,7 @@ defmodule Unicode do
   """
   @spec uppercase?(codepoint_or_string) :: boolean
   defdelegate uppercase?(codepoint_or_string), to: Unicode.Property
+  defdelegate upcase?(codepoint_or_string), to: Unicode.Property, as: :uppercase?
 
 
   @doc """

@@ -2,7 +2,7 @@ defmodule Unicode.Utils do
   @moduledoc false
 
   @doc """
-  Returns a map of the Unicode with the `script` name
+  Returns a map of the Unicode codepoints with the `script` name
   as the key and a list of codepoint ranges as the values.
   """
   @scripts_path Path.join(Unicode.data_dir(), "scripts.txt")
@@ -11,7 +11,7 @@ defmodule Unicode.Utils do
   end
 
   @doc """
-  Returns a map of the Unicode with the `block` name
+  Returns a map of the Unicode codepoints with the `block` name
   as the key and a list of codepoint ranges as the values.
   """
   @blocks_path Path.join(Unicode.data_dir(), "blocks.txt")
@@ -30,7 +30,7 @@ defmodule Unicode.Utils do
   end
 
   @doc """
-  Returns a map of the Unicode with the `combining_class` number
+  Returns a map of the Unicode codepoints with the `combining_class` number
   as the key and a list of codepoint ranges as the values.
   """
   @combining_class_path Path.join(Unicode.data_dir(), "combining_class.txt")
@@ -41,7 +41,7 @@ defmodule Unicode.Utils do
   end
 
   @doc """
-  Returns a map of the Unicode with the `category` name
+  Returns a map of the Unicode codepoints with the `category` name
   as the key and a list of codepoint ranges as the values.
   """
   @categories_path Path.join(Unicode.data_dir(), "categories.txt")
@@ -59,7 +59,7 @@ defmodule Unicode.Utils do
   end
 
   @doc """
-  Returns a map of the Unicode with the emoji type name
+  Returns a map of the Unicode codepoints with the emoji type name
   as the key and a list of codepoint ranges as the values.
   """
   @emoji_path Path.join(Unicode.data_dir(), "emoji.txt")
@@ -70,7 +70,7 @@ defmodule Unicode.Utils do
   end
 
   @doc """
-  Returns a map of the Unicode with the `property` name
+  Returns a map of the Unicode codepoints with the `property` name
   as the key and a list of codepoint ranges as the values.
   """
   @properties_path Path.join(Unicode.data_dir(), "properties.txt")
