@@ -22,7 +22,7 @@ defmodule Cldr.Unicode.MixProject do
 
   defp description do
     """
-    Functions to introspect the Unicode character database and
+    DEPRECATED. Replaced by `ex_unicode`, please use that package. Functions to introspect the Unicode character database and
     to provide fast codepoint lookups and guards.
     """
   end
