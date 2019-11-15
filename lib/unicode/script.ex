@@ -4,7 +4,7 @@ defmodule Unicode.Script do
   alias Unicode.Utils
 
   @scripts Utils.scripts()
-  |> Utils.remove_annotations
+           |> Utils.remove_annotations()
 
   def scripts do
     @scripts

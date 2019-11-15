@@ -1,3 +1,9 @@
+# Changelog for Unicode v1.1.0
+
+This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+* `Unicode.Category.categories/0` now returns the super categories as well as the subcategories. These super categories are computed at compile time by consolidating the relevant subcategories. `Unicode.Category.category/1` will only return one category, and it will be the subcategory as it is today.
+
 # Changelog for Unicode v1.0.0
 
 This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

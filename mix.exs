@@ -1,18 +1,18 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.1.0-dev"
 
   def project do
     [
       app: :ex_unicode,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
-      name: "Cldr Unicode",
+      name: "Unicode",
       source_url: "https://github.com/elixir-cldr/unicode",
       description: description(),
       package: package(),
@@ -54,8 +54,8 @@ defmodule Unicode.MixProject do
 
   defp deps do
     [
-      {:benchee, "~> 0.14", only: :dev},
-      {:ex_doc, "~> 0.18", only: [:release, :dev]}
+      {:benchee, "~> 1.0", only: :dev},
+      {:ex_doc, "~> 0.19", only: [:release, :dev]}
     ]
   end
 
@@ -63,7 +63,7 @@ defmodule Unicode.MixProject do
     %{
       "GitHub" => "https://github.com/elixir-cldr/unicode",
       "Readme" => "https://github.com/elixir-cldr/unicode/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/elixir-cldr/unicode/blob/v#{@version}/CHANGELOG.md",
+      "Changelog" => "https://github.com/elixir-cldr/unicode/blob/v#{@version}/CHANGELOG.md"
     }
   end
 

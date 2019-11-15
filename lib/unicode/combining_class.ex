@@ -4,7 +4,7 @@ defmodule Unicode.CombiningClass do
   alias Unicode.Utils
 
   @combining_classes Utils.combining_classes()
-  |> Utils.remove_annotations
+                     |> Utils.remove_annotations()
 
   def combining_classes do
     @combining_classes

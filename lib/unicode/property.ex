@@ -18,7 +18,7 @@ defmodule Unicode.Property do
   ]
 
   @properties Utils.properties()
-  |> Utils.remove_annotations
+              |> Utils.remove_annotations()
 
   def properties do
     @properties
@@ -110,7 +110,7 @@ defmodule Unicode.Property do
 
   def emoji?(codepoint) when is_integer(codepoint) do
     ignorable?(codepoint) ||
-    Emoji.emoji(codepoint) in Emoji.known_emoji_categories()
+      Emoji.emoji(codepoint) in Emoji.known_emoji_categories()
   end
 
   def emoji?(string) when is_binary(string) do

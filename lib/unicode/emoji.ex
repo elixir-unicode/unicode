@@ -4,8 +4,8 @@ defmodule Unicode.Emoji do
   alias Unicode.Utils
 
   @emoji Utils.emoji()
-  |> Utils.remove_reserved_codepoints
-  |> Utils.remove_annotations
+         |> Utils.remove_reserved_codepoints()
+         |> Utils.remove_annotations()
 
   def emoji do
     @emoji
@@ -27,9 +27,11 @@ defmodule Unicode.Emoji do
     case range do
       {first, first} when is_integer(first) ->
         def emoji(unquote(first)), do: unquote(emoji_category)
+
       {first, last} when is_integer(first) and is_integer(last) ->
         def emoji(codepoint) when codepoint in unquote(first)..unquote(last),
           do: unquote(emoji_category)
+
       {first, first} when is_list(first) ->
         def emoji(unquote(first)), do: unquote(emoji_category)
     end

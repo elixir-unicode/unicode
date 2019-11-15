@@ -22,11 +22,11 @@ defmodule Unicode.Utils do
         k
         |> String.replace(" ", "_")
         |> String.replace("-", "_")
-        |> String.to_atom
+        |> String.to_atom()
 
       {new_key, v}
     end)
-    |> Map.new
+    |> Map.new()
   end
 
   @doc """
@@ -146,6 +146,7 @@ defmodule Unicode.Utils do
     case String.split(codepoint, " ") do
       [codepoint] ->
         String.to_integer(codepoint, 16)
+
       codepoints ->
         Enum.map(codepoints, &String.to_integer(&1, 16))
     end
@@ -227,7 +228,7 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {k, v} ->
       {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
     end)
-    |> Map.new
+    |> Map.new()
   end
 
   @doc false
@@ -241,9 +242,10 @@ defmodule Unicode.Utils do
             String.contains?(note, @reserved)
           end)
         end)
+
       {k, filtered_list}
     end)
-    |> Map.new
+    |> Map.new()
   end
 
   @doc false
@@ -251,8 +253,9 @@ defmodule Unicode.Utils do
     Enum.reduce(ranges, [], fn
       {first, first}, acc ->
         [first | acc]
+
       {first, last}, acc ->
-        Enum.map(last..first, &(&1)) ++ acc
+        Enum.map(last..first, & &1) ++ acc
     end)
   end
 end

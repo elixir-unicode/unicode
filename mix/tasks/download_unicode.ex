@@ -20,16 +20,14 @@ if File.exists?(Unicode.data_dir()) do
     defp required_files do
       [
         {"https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
-          data_path("categories.txt")},
+         data_path("categories.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt", data_path("blocks.txt")},
-        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt",
-          data_path("scripts.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt", data_path("scripts.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt",
-           data_path("properties.txt")},
+         data_path("properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
          data_path("combining_class.txt")},
-        {"https://unicode.org/Public/emoji/12.1/emoji-data.txt",
-          data_path("emoji.txt")}
+        {"https://unicode.org/Public/emoji/12.1/emoji-data.txt", data_path("emoji.txt")}
       ]
     end
 

@@ -5,7 +5,7 @@ defmodule Unicode do
   """
 
   @type codepoint :: non_neg_integer
-  @type codepoint_or_string :: codepoint | String.t
+  @type codepoint_or_string :: codepoint | String.t()
 
   @doc false
   @data_dir Path.join(__DIR__, "/../data") |> Path.expand()
@@ -163,7 +163,7 @@ defmodule Unicode do
       "myanmar"
 
   """
-  @spec script(codepoint_or_string) :: String.t | [String.t, ...]
+  @spec script(codepoint_or_string) :: String.t() | [String.t(), ...]
   defdelegate script(codepoint_or_string), to: Unicode.Script
 
   @doc """
@@ -589,7 +589,6 @@ defmodule Unicode do
   defdelegate uppercase?(codepoint_or_string), to: Unicode.Property
   defdelegate upcase?(codepoint_or_string), to: Unicode.Property, as: :uppercase?
 
-
   @doc """
   Removes accents (diacritical marks) from
   a string.
@@ -619,9 +618,9 @@ defmodule Unicode do
   def unaccent(string) do
     string
     |> normalize_nfd
-    |> String.to_charlist
+    |> String.to_charlist()
     |> remove_diacritical_marks([:combining_diacritical_marks])
-    |> List.to_string
+    |> List.to_string()
   end
 
   defp remove_diacritical_marks(charlist, blocks) do
@@ -632,7 +631,7 @@ defmodule Unicode do
         [char | acc]
       end
     end)
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   # OTP 20 introduced the `:unicode: module

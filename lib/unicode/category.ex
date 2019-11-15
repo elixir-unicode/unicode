@@ -4,13 +4,25 @@ defmodule Unicode.Category do
   alias Unicode.Utils
 
   @categories Utils.categories()
-  |> Utils.remove_annotations
+              |> Utils.remove_annotations()
+
+  @super_categories @categories
+                    |> Map.keys()
+                    |> Enum.map(&to_string/1)
+                    |> Enum.group_by(&String.slice(&1, 0, 1))
+                    |> Enum.map(fn {k, v} ->
+                      {String.to_atom(k),
+                       Enum.flat_map(v, &Map.get(@categories, String.to_atom(&1)))}
+                    end)
+                    |> Map.new()
+
+  @all_categories Map.merge(@categories, @super_categories)
 
   def categories do
-    @categories
+    @all_categories
   end
 
-  @known_categories Map.keys(@categories)
+  @known_categories Map.keys(@all_categories)
   def known_categories do
     @known_categories
   end
@@ -50,5 +62,4 @@ defmodule Unicode.Category do
   def category(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     :Cn
   end
-
 end

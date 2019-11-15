@@ -4,7 +4,7 @@ defmodule Unicode.Block do
   alias Unicode.Utils
 
   @blocks Utils.blocks()
-  |> Utils.remove_annotations
+          |> Utils.remove_annotations()
 
   def blocks do
     @blocks

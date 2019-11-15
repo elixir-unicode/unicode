@@ -9,7 +9,6 @@ defmodule TestModule do
   def test_fun(_x) do
     false
   end
-
 end
 
 defmodule Unicode.Test do

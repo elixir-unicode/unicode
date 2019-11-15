@@ -15,36 +15,37 @@ defmodule Unicode.Guards do
 
   """
 
-  categories = Unicode.Utils.categories
-  |> Enum.map(fn {k, v} ->
-    {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
-  end)
-  |> Map.new
+  categories =
+    Unicode.Utils.categories()
+    |> Enum.map(fn {k, v} ->
+      {k, Enum.map(v, fn {s, f, _} -> {s, f} end)}
+    end)
+    |> Map.new()
 
   is_upper =
     categories
     |> Map.get(:Lu)
-    |> Unicode.Utils.ranges_to_guard_clause
+    |> Unicode.Utils.ranges_to_guard_clause()
 
   is_lower =
     categories
     |> Map.get(:Ll)
-    |> Unicode.Utils.ranges_to_guard_clause
+    |> Unicode.Utils.ranges_to_guard_clause()
 
   is_currency_symbol =
     categories
     |> Map.get(:Sc)
-    |> Unicode.Utils.ranges_to_guard_clause
+    |> Unicode.Utils.ranges_to_guard_clause()
 
   is_digit =
     categories
     |> Map.get(:Nd)
-    |> Unicode.Utils.ranges_to_guard_clause
+    |> Unicode.Utils.ranges_to_guard_clause()
 
   is_whitespace =
     categories
     |> Map.get(:Zs)
-    |> Unicode.Utils.ranges_to_guard_clause
+    |> Unicode.Utils.ranges_to_guard_clause()
 
   @doc """
   Guards whether a UTF8 codepoint is an upper case
@@ -83,7 +84,8 @@ defmodule Unicode.Guards do
   character.
 
   """
-  defguard is_currency_symbol(codepoint) when is_integer(codepoint) and unquote(is_currency_symbol)
+  defguard is_currency_symbol(codepoint)
+           when is_integer(codepoint) and unquote(is_currency_symbol)
 
   @doc """
   Guards whether a UTF8 codepoint is a whitespace symbol
@@ -91,5 +93,4 @@ defmodule Unicode.Guards do
 
   """
   defguard is_whitespace(codepoint) when is_integer(codepoint) and unquote(is_whitespace)
-
 end
