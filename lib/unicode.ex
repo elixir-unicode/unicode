@@ -8,7 +8,7 @@ defmodule Unicode do
   @type codepoint_or_string :: codepoint | String.t
 
   @doc false
-  @data_dir Path.join(__DIR__, "/../../data") |> Path.expand()
+  @data_dir Path.join(__DIR__, "/../data") |> Path.expand()
   def data_dir do
     @data_dir
   end
@@ -538,7 +538,7 @@ defmodule Unicode do
   """
   @spec lowercase?(codepoint_or_string) :: boolean
   defdelegate lowercase?(codepoint_or_string), to: Unicode.Property
-  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :downcase
+  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :lowercase?
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
