@@ -27,7 +27,9 @@ if File.exists?(Unicode.data_dir()) do
          data_path("properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
          data_path("combining_class.txt")},
-        {"https://unicode.org/Public/emoji/12.1/emoji-data.txt", data_path("emoji.txt")}
+        {"https://unicode.org/Public/emoji/12.1/emoji-data.txt", data_path("emoji.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt",
+         data_path("property_value_alias.txt")}
       ]
     end
 

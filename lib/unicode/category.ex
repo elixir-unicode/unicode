@@ -12,7 +12,7 @@ defmodule Unicode.Category do
                     |> Enum.group_by(&String.slice(&1, 0, 1))
                     |> Enum.map(fn {k, v} ->
                       {String.to_atom(k),
-                       Enum.flat_map(v, &Map.get(@categories, String.to_atom(&1))) |> Enum.sort}
+                       Enum.flat_map(v, &Map.get(@categories, String.to_atom(&1))) |> Enum.sort()}
                     end)
                     |> Map.new()
 
@@ -23,8 +23,38 @@ defmodule Unicode.Category do
   end
 
   @known_categories Map.keys(@all_categories)
+
   def known_categories do
     @known_categories
+  end
+
+  @category_alias Utils.property_value_alias()
+  |> Map.get("gc")
+  |> Enum.flat_map(fn
+    [code, alias1] ->
+      [{String.downcase(alias1), String.to_atom(code)},
+      {String.downcase(code), String.to_atom(code)}]
+    [code, alias1, alias2] ->
+      [{String.downcase(alias1), String.to_atom(code)},
+      {String.downcase(alias2), String.to_atom(code)},
+      {String.downcase(code), String.to_atom(code)}]
+  end)
+  |> Map.new
+
+  def aliases do
+    @category_alias
+  end
+
+  def fetch(category) do
+    category = Map.get(aliases(), category, category)
+    Map.fetch(categories(), category)
+  end
+
+  def get(category) do
+    case fetch(category) do
+      {:ok, category} -> category
+      _ -> nil
+    end
   end
 
   @doc """
@@ -41,14 +71,14 @@ defmodule Unicode.Category do
 
   """
   def count(category) do
-    categories()
-    |> Map.get(category)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+    with {:ok, category} <- fetch(category) do
+      Enum.reduce(category, 0, fn {from, to}, acc -> acc + to - from + 1 end)
+    end
   end
 
   def category(string) when is_binary(string) do
     string
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.map(&category/1)
     |> Enum.uniq()
   end

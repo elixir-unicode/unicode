@@ -38,7 +38,7 @@ defmodule Unicode.Property do
   @spec properties(string_or_binary) :: [atom, ...] | [[atom, ...], ...]
   def properties(string) when is_binary(string) do
     string
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.map(&properties/1)
     |> Enum.uniq()
   end

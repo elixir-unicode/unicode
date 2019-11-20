@@ -11,23 +11,45 @@ defmodule Unicode.CombiningClass do
   end
 
   @known_combining_classes Map.keys(@combining_classes)
+
   def known_combining_classes do
     @known_combining_classes
   end
 
-  def count(class) when is_integer(class) and class in @known_combining_classes do
-    combining_classes()
-    |> Map.get(class)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+  @combining_class_alias Utils.property_value_alias()
+  |> Map.get("ccc")
+  |> Enum.flat_map(fn [code, alias1, alias2] ->
+      [{String.downcase(alias1), String.to_integer(code)},
+      {String.downcase(alias2), String.to_integer(code)},
+      {String.downcase(code), String.to_integer(code)}]
+  end)
+  |> Map.new
+
+  def aliases do
+    @combining_class_alias
   end
 
-  def count(class) when is_integer(class) do
-    0
+  def fetch(combining_class) do
+    combining_class = Map.get(aliases(), combining_class, combining_class)
+    Map.fetch(combining_classes(), combining_class)
+  end
+
+  def get(combining_class) do
+    case fetch(combining_class) do
+      {:ok, combining_class} -> combining_class
+      _ -> nil
+    end
+  end
+
+  def count(class) do
+    with {:ok, class} <- fetch(class) do
+      Enum.reduce(class, 0, fn {from, to}, acc -> acc + to - from + 1 end)
+    end
   end
 
   def combining_class(string) when is_binary(string) do
     string
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.map(&combining_class/1)
     |> Enum.uniq()
   end

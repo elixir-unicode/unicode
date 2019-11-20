@@ -70,6 +70,29 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the property value aliases.
+  """
+  @property_value_alias_path Path.join(Unicode.data_dir(), "property_value_alias.txt")
+  def property_value_alias do
+    Enum.reduce(File.stream!(@property_value_alias_path), [], fn line, acc ->
+      case line do
+        <<"#", _rest::bitstring>> ->
+          acc
+
+        <<"\n", _rest::bitstring>> ->
+          acc
+
+      data ->
+        [data
+        |> String.replace(~r/ *#.*/, "")
+        |> String.split(";")
+        |> Enum.map(&String.trim/1) | acc]
+      end
+    end)
+    |> Enum.group_by(&hd/1, &tl/1)
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `property` name
   as the key and a list of codepoint ranges as the values.
   """

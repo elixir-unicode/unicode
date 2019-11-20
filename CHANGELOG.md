@@ -2,9 +2,13 @@
 
 This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
 
-* `Unicode.Category.categories/0` now returns the super categories as well as the subcategories. These super categories are computed at compile time by consolidating the relevant subcategories. `Unicode.Category.category/1` will only return one category, and it will be the subcategory as it is today.
+* `Unicode.Category.categories/0` now returns the super categories as well as the subcategories. These super categories are computed at compile time by consolidating the relevant subcategories. `Unicode.Category.category/1` will only return one category, and it will be the subcategory as it consistent with earlier releases.
 
 * Add `Unicode.ranges/0` that returns all Unicode codepoints as a list of 2-tuples representing the disjoint ranges of valid codepoints. The list is in sorted order.
+
+* Add `aliases/0` for `Unicode.Category`, `Unicode.Script`, `Unicode.Block`, and `Unicode.CombiningClass` which returns the alias map for the relevant module.
+
+* Add `fetch/1` and `get/1` for `Unicode.Category`, `Unicode.Script`, `Unicode.Block`, and `Unicode.CombiningClass`. These functions leverage Unicode property value aliases for retrieving codepoints.
 
 # Changelog for Unicode v1.0.0
 

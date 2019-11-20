@@ -15,6 +15,35 @@ defmodule Unicode.Block do
     @known_blocks
   end
 
+  @block_alias Utils.property_value_alias()
+  |> Map.get("blk")
+  |> Enum.flat_map(fn
+    [code, alias1] ->
+      [{String.downcase(alias1), String.to_atom(code)},
+      {String.downcase(code), String.to_atom(code)}]
+    [code, alias1, alias2] ->
+      [{String.downcase(alias1), String.to_atom(code)},
+      {String.downcase(alias2), String.to_atom(code)},
+      {String.downcase(code), String.to_atom(code)}]
+  end)
+  |> Map.new
+
+  def aliases do
+    @block_alias
+  end
+
+  def fetch(block) do
+    block = Map.get(aliases(), block, block)
+    Map.fetch(blocks(), block)
+  end
+
+  def get(block) do
+    case fetch(block) do
+      {:ok, block} -> block
+      _ -> nil
+    end
+  end
+
   @doc """
   Returns the count of the number of characters
   for a given block.
@@ -26,9 +55,9 @@ defmodule Unicode.Block do
 
   """
   def count(block) do
-    blocks()
-    |> Map.get(block)
-    |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
+    with {:ok, block} <- fetch(block) do
+      Enum.reduce(block, 0, fn {from, to}, acc -> acc + to - from + 1 end)
+    end
   end
 
   def block(string) when is_binary(string) do
@@ -58,9 +87,9 @@ defmodule Unicode.Block do
 
   """
   @ranges @blocks
-  |> Map.values
-  |> Enum.map(&hd/1)
-  |> Enum.sort
+          |> Map.values()
+          |> Enum.map(&hd/1)
+          |> Enum.sort()
 
   def ranges do
     @ranges
