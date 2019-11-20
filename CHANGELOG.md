@@ -4,6 +4,8 @@ This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older ch
 
 * `Unicode.Category.categories/0` now returns the super categories as well as the subcategories. These super categories are computed at compile time by consolidating the relevant subcategories. `Unicode.Category.category/1` will only return one category, and it will be the subcategory as it is today.
 
+* Add `Unicode.ranges/0` that returns all Unicode codepoints as a list of 2-tuples representing the disjoint ranges of valid codepoints. The list is in sorted order.
+
 # Changelog for Unicode v1.0.0
 
 This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

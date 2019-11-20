@@ -12,7 +12,7 @@ defmodule Unicode.Category do
                     |> Enum.group_by(&String.slice(&1, 0, 1))
                     |> Enum.map(fn {k, v} ->
                       {String.to_atom(k),
-                       Enum.flat_map(v, &Map.get(@categories, String.to_atom(&1)))}
+                       Enum.flat_map(v, &Map.get(@categories, String.to_atom(&1))) |> Enum.sort}
                     end)
                     |> Map.new()
 
@@ -48,9 +48,9 @@ defmodule Unicode.Category do
 
   def category(string) when is_binary(string) do
     string
-    |> String.codepoints()
-    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
+    |> String.to_charlist
     |> Enum.map(&category/1)
+    |> Enum.uniq()
   end
 
   for {category, ranges} <- @categories do

@@ -590,6 +590,17 @@ defmodule Unicode do
   defdelegate upcase?(codepoint_or_string), to: Unicode.Property, as: :uppercase?
 
   @doc """
+  Returns a list of tuples representing the
+  valid ranges of Unicode code points.
+
+  This information is derived from the block
+  ranges as defined by `Unicode.Block.blocks/0`.
+
+  """
+  @spec ranges :: [{pos_integer, pos_integer}]
+  defdelegate ranges, to: Unicode.Block
+
+  @doc """
   Removes accents (diacritical marks) from
   a string.
 

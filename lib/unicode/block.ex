@@ -48,4 +48,21 @@ defmodule Unicode.Block do
   def block(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     nil
   end
+
+  @doc """
+  Returns a list of tuples representing the
+  valid ranges of Unicode code points.
+
+  This information is derived from the block
+  ranges as defined by `Unicode.Block.blocks/0`.
+
+  """
+  @ranges @blocks
+  |> Map.values
+  |> Enum.map(&hd/1)
+  |> Enum.sort
+
+  def ranges do
+    @ranges
+  end
 end

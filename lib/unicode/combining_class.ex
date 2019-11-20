@@ -27,9 +27,9 @@ defmodule Unicode.CombiningClass do
 
   def combining_class(string) when is_binary(string) do
     string
-    |> String.codepoints()
-    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
+    |> String.to_charlist
     |> Enum.map(&combining_class/1)
+    |> Enum.uniq()
   end
 
   for {combining_class, ranges} <- @combining_classes do
