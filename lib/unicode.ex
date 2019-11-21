@@ -22,6 +22,35 @@ defmodule Unicode do
     {12, 1, 0}
   end
 
+  @property_aliases %{
+    "canonical_combining_class" => Unicode.CombiningClass,
+    "ccc" => Unicode.CombiningClass,
+    "general_category" => Unicode.Category,
+    "gc" => Unicode.Category,
+    "block" => Unicode.Block,
+    "blk" => Unicode.Block,
+    "script" => Unicode.Script,
+    "sc" => Unicode.Script
+  }
+
+  @doc """
+  Returns a map of aliases mapping
+  property names to a module that
+  serves that property
+
+  """
+  def property_aliases do
+    @property_aliases
+  end
+
+  def fetch_property(property) when is_binary(property) do
+    Map.fetch(property_aliases(), String.downcase(property))
+  end
+
+  def get_property(property) when is_binary(property) do
+    Map.get(property_aliases(), String.downcase(property))
+  end
+
   @doc """
   Returns the Unicode category for a codepoint or a list of
   categories for a string.
@@ -42,8 +71,8 @@ defmodule Unicode do
   ## Notes
 
   THese categories match the names of the Unicode character
-  classes used in various regular expression engine.  The
-  full list of categories is:
+  classes used in various regular expression engines and in
+  Unicode Sets.  The full list of categories is:
 
   | Category	| Matches	                |
   | --------- | ----------------------- |

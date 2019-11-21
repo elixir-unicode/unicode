@@ -10,6 +10,8 @@ This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older ch
 
 * Add `fetch/1` and `get/1` for `Unicode.Category`, `Unicode.Script`, `Unicode.Block`, and `Unicode.CombiningClass`. These functions leverage Unicode property value aliases for retrieving codepoints.
 
+* Add `Unicode.fetch_property/1` and `Unicode.get_property/1` that return the module responsible for handling a given Unicode property.
+
 # Changelog for Unicode v1.0.0
 
 This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
