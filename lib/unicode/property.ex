@@ -1,5 +1,10 @@
 defmodule Unicode.Property do
-  @moduledoc false
+  @moduledoc """
+  Functions to introspect Unicode
+  properties for binaries
+  (Strings) and codepoints.
+
+  """
 
   alias Unicode.Utils
   alias Unicode.Emoji

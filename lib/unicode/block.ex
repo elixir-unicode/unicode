@@ -1,15 +1,37 @@
 defmodule Unicode.Block do
-  @moduledoc false
+  @moduledoc """
+  Functions to introspect Unicode
+  blocks for binaries
+  (Strings) and codepoints.
+
+  """
 
   alias Unicode.Utils
 
   @blocks Utils.blocks()
           |> Utils.remove_annotations()
 
+  @doc """
+  Returns the map of Unicode
+  blocks.
+
+  The block name is the map
+  key and a list of codepoint
+  ranges as tuples as the value.
+
+  """
   def blocks do
     @blocks
   end
 
+  @doc """
+  Returns a list of known Unicode
+  block names.
+
+  This function does not return the
+  names of any block aliases.
+
+  """
   @known_blocks Map.keys(@blocks)
   def known_blocks do
     @known_blocks
@@ -28,15 +50,47 @@ defmodule Unicode.Block do
   end)
   |> Map.new
 
+  @doc """
+  Returns a map of aliases for
+  Unicode blocks.
+
+  An alias is an alternative name
+  for referring to a block. Aliases
+  are resolved by the `fetch/1` and
+  `get/1` functions.
+
+  """
   def aliases do
     @block_alias
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given block as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `{:ok, range_list}` or
+  `:error`.
+
+  """
   def fetch(block) do
     block = Map.get(aliases(), block, block)
     Map.fetch(blocks(), block)
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given block as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `range_list` or
+  `nil`.
+
+  """
   def get(block) do
     case fetch(block) do
       {:ok, block} -> block
@@ -47,6 +101,8 @@ defmodule Unicode.Block do
   @doc """
   Returns the count of the number of characters
   for a given block.
+
+  Aliases are resolved by this function.
 
   ## Example
 
@@ -60,10 +116,21 @@ defmodule Unicode.Block do
     end
   end
 
+  @doc """
+  Returns the block name(s) for the
+  given binary or codepoint.
+
+  In the case of a codepoint, a single
+  block name is returned.
+
+  For a binary a list of distinct block
+  names represented by the graphemes in
+  the binary is returned.
+
+  """
   def block(string) when is_binary(string) do
     string
-    |> String.codepoints()
-    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
+    |> String.to_charlist
     |> Enum.map(&block/1)
     |> Enum.uniq()
   end
@@ -75,15 +142,12 @@ defmodule Unicode.Block do
   end
 
   def block(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    nil
+    :no_block
   end
 
   @doc """
   Returns a list of tuples representing the
   valid ranges of Unicode code points.
-
-  This information is derived from the block
-  ranges as defined by `Unicode.Block.blocks/0`.
 
   """
   @ranges @blocks

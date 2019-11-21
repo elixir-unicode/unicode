@@ -1,17 +1,39 @@
 defmodule Unicode.Script do
-  @moduledoc false
+  @moduledoc """
+  Functions to introspect Unicode
+  scripts for binaries
+  (Strings) and codepoints.
+
+  """
 
   alias Unicode.Utils
 
   @scripts Utils.scripts()
            |> Utils.remove_annotations()
 
+   @doc """
+   Returns the map of Unicode
+   scripts.
+
+   The script name is the map
+   key and a list of codepoint
+   ranges as tuples as the value.
+
+   """
+
   def scripts do
     @scripts
   end
 
-  @known_scripts Map.keys(@scripts)
+  @doc """
+  Returns a list of known Unicode
+  script names.
 
+  This function does not return the
+  names of any script aliases.
+
+  """
+  @known_scripts Map.keys(@scripts)
   def known_scripts do
     @known_scripts
   end
@@ -27,15 +49,47 @@ defmodule Unicode.Script do
   end)
   |> Map.new
 
+  @doc """
+  Returns a map of aliases for
+  Unicode scripts.
+
+  An alias is an alternative name
+  for referring to a script. Aliases
+  are resolved by the `fetch/1` and
+  `get/1` functions.
+
+  """
   def aliases do
     @script_alias
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given script as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `{:ok, range_list}` or
+  `:error`.
+
+  """
   def fetch(script) do
     script = Map.get(aliases(), script, script)
     Map.fetch(scripts(), script)
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given script as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `range_list` or
+  `nil`.
+
+  """
   def get(script) do
     case fetch(script) do
       {:ok, script} -> script
@@ -59,6 +113,18 @@ defmodule Unicode.Script do
     end
   end
 
+  @doc """
+  Returns the script name(s) for the
+  given binary or codepoint.
+
+  In the case of a codepoint, a single
+  script name is returned.
+
+  For a binary a list of distinct script
+  names represented by the graphemes in
+  the binary is returned.
+
+  """
   def script(string) when is_binary(string) do
     string
     |> String.codepoints()
@@ -73,6 +139,6 @@ defmodule Unicode.Script do
   end
 
   def script(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    nil
+    :unknown
   end
 end

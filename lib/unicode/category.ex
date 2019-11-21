@@ -1,5 +1,10 @@
 defmodule Unicode.Category do
-  @moduledoc false
+  @moduledoc """
+  Functions to introspect Unicode
+  general categories for binaries
+  (Strings) and codepoints.
+
+  """
 
   alias Unicode.Utils
 
@@ -18,12 +23,28 @@ defmodule Unicode.Category do
 
   @all_categories Map.merge(@categories, @super_categories)
 
+  @doc """
+  Returns the map of Unicode
+  character categories.
+
+  The category name is the map
+  key and a list of codepoint
+  ranges as tuples as the value.
+
+  """
   def categories do
     @all_categories
   end
 
-  @known_categories Map.keys(@all_categories)
+  @doc """
+  Returns a list of known Unicode
+  category names.
 
+  This function does not return the
+  names of any category aliases.
+
+  """
+  @known_categories Map.keys(@all_categories)
   def known_categories do
     @known_categories
   end
@@ -41,15 +62,47 @@ defmodule Unicode.Category do
   end)
   |> Map.new
 
+  @doc """
+  Returns a map of aliases for
+  Unicode categories.
+
+  An alias is an alternative name
+  for referring to a category. Aliases
+  are resolved by the `fetch/1` and
+  `get/1` functions.
+
+  """
   def aliases do
     @category_alias
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given category as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `{:ok, range_list}` or
+  `:error`.
+
+  """
   def fetch(category) do
     category = Map.get(aliases(), category, category)
     Map.fetch(categories(), category)
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given category as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `range_list` or
+  `nil`.
+
+  """
   def get(category) do
     case fetch(category) do
       {:ok, category} -> category
@@ -76,6 +129,18 @@ defmodule Unicode.Category do
     end
   end
 
+  @doc """
+  Returns the category name(s) for the
+  given binary or codepoint.
+
+  In the case of a codepoint, a single
+  category name is returned.
+
+  For a binary a list of distinct category
+  names represented by the graphemes in
+  the binary is returned.
+
+  """
   def category(string) when is_binary(string) do
     string
     |> String.to_charlist()

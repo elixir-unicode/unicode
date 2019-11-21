@@ -1,17 +1,39 @@
 defmodule Unicode.CombiningClass do
-  @moduledoc false
+  @moduledoc """
+  Functions to introspect Unicode
+  canonical combining classes for binaries
+  (Strings) and codepoints.
+
+  """
 
   alias Unicode.Utils
 
   @combining_classes Utils.combining_classes()
                      |> Utils.remove_annotations()
 
+   @doc """
+   Returns the map of Unicode
+   canonical combining classes..
+
+   The class name is the map
+   key and a list of codepoint
+   ranges as tuples as the value.
+
+   """
+
   def combining_classes do
     @combining_classes
   end
 
-  @known_combining_classes Map.keys(@combining_classes)
+  @doc """
+  Returns a list of known Unicode
+  canonical combining class names.
 
+  This function does not return the
+  names of any class aliases.
+
+  """
+  @known_combining_classes Map.keys(@combining_classes)
   def known_combining_classes do
     @known_combining_classes
   end
@@ -25,15 +47,47 @@ defmodule Unicode.CombiningClass do
   end)
   |> Map.new
 
+  @doc """
+  Returns a map of aliases for
+  Unicode canonical combining classes..
+
+  An alias is an alternative name
+  for referring to a class. Aliases
+  are resolved by the `fetch/1` and
+  `get/1` functions.
+
+  """
   def aliases do
     @combining_class_alias
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given canonical combining class
+   as a list of ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `{:ok, range_list}` or
+  `:error`.
+
+  """
   def fetch(combining_class) do
     combining_class = Map.get(aliases(), combining_class, combining_class)
     Map.fetch(combining_classes(), combining_class)
   end
 
+  @doc """
+  Returns the Unicode ranges for
+  a given canonical combining class
+   as a list of ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `range_list` or
+  `nil`.
+
+  """
   def get(combining_class) do
     case fetch(combining_class) do
       {:ok, combining_class} -> combining_class
@@ -41,12 +95,34 @@ defmodule Unicode.CombiningClass do
     end
   end
 
+  @doc """
+  Returns the count of the number of characters
+  for a given canonical combining class.
+
+  ## Example
+
+      iex> Unicode.CombiningClass.count(230)
+      167
+
+  """
   def count(class) do
     with {:ok, class} <- fetch(class) do
       Enum.reduce(class, 0, fn {from, to}, acc -> acc + to - from + 1 end)
     end
   end
 
+  @doc """
+  Returns the canonical combining class
+   name(s) for the given binary or codepoint.
+
+  In the case of a codepoint, a single
+  class name is returned.
+
+  For a binary a list of distinct class
+  names represented by the graphemes in
+  the binary is returned.
+
+  """
   def combining_class(string) when is_binary(string) do
     string
     |> String.to_charlist()
