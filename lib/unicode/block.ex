@@ -154,6 +154,7 @@ defmodule Unicode.Block do
           |> Map.values()
           |> Enum.map(&hd/1)
           |> Enum.sort()
+          |> Unicode.compact_ranges
 
   def ranges do
     @ranges
