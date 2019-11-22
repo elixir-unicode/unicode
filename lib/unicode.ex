@@ -684,14 +684,7 @@ defmodule Unicode do
     |> Enum.reverse()
   end
 
-  @doc """
-  Compact overlapping or adjancent ranges
-
-  Assumes that the ranges are sorted and that each
-  range tuple has the smaller codepoint before
-  the larger codepoint
-
-  """
+  @doc false
   def compact_ranges([{as, ae}, {bs, be} | rest]) when ae >= bs - 1 and as <= be do
     compact_ranges([{as, be} | rest])
   end

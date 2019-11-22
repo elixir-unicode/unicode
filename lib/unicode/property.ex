@@ -1,16 +1,14 @@
 defmodule Unicode.Property do
   @moduledoc """
-  Functions to introspect Unicode
-  properties for binaries
+  Functions to introspect Unicode properties for binaries
   (Strings) and codepoints.
 
   """
+  @type string_or_codepoint :: String.t() | non_neg_integer
 
   alias Unicode.Utils
   alias Unicode.Emoji
   alias Unicode.Category
-
-  @type string_or_binary :: String.t() | non_neg_integer
 
   @selected_properties [
     :math,
@@ -25,22 +23,49 @@ defmodule Unicode.Property do
   @properties Utils.properties()
               |> Utils.remove_annotations()
 
+  @doc """
+  Returns the map of Unicode
+  properties.
+
+  The property name is the map
+  key and a list of codepoint
+  ranges as tuples as the value.
+
+  """
   def properties do
     @properties
   end
 
+  @doc """
+  Returns a list of known Unicode
+  property names.
+
+  This function does not return the
+  names of any property aliases.
+
+  """
   @known_properties Map.keys(@properties) ++ Emoji.known_emoji_categories()
   def known_properties do
     @known_properties
   end
 
+  @doc """
+  Returns the count of the number of characters
+  for a given property.
+
+  ## Example
+
+      iex> Unicode.Property.count(:lowercase)
+      2340
+
+  """
   def count(property) do
     properties()
     |> Map.get(property)
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
-  @spec properties(string_or_binary) :: [atom, ...] | [[atom, ...], ...]
+  @spec properties(string_or_codepoint) :: [atom, ...] | [[atom, ...], ...]
   def properties(string) when is_binary(string) do
     string
     |> String.to_charlist()
@@ -55,25 +80,102 @@ defmodule Unicode.Property do
                      end
                    end)
 
+  @doc """
+  Returns the property name(s) for the
+  given binary or codepoint.
+
+  In the case of a codepoint, a single
+  list of properties for that codepoint name is returned.
+
+  For a binary a list of list for each
+  codepoint in the binary is returned.
+
+  """
   def properties(codepoint) when is_integer(codepoint) do
     [numeric(codepoint), Emoji.emoji(codepoint) | unquote(@properties_code)]
     |> Enum.reject(&is_nil/1)
   end
 
+  @doc """
+  Returns `:numeric` or `nil` based upon
+  whether the given codepoint or binary
+  is all numeric characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.numeric "123"
+      :numeric
+      iex> Unicode.Property.numeric "123a"
+      nil
+
+  """
   def numeric(codepoint_or_binary) do
     if numeric?(codepoint_or_binary), do: :numeric, else: nil
   end
 
+  @doc """
+  Returns `:alphanumeric` or `nil` based upon
+  whether the given codepoint or binary
+  is all alphanumeric characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.alphanumeric "123abc"
+      :alphanumeric
+      iex> Unicode.Property.alphanumeric "???"
+      nil
+
+  """
   def alphanumeric(codepoint_or_binary) do
     if alphanumeric?(codepoint_or_binary), do: :alphanumeric, else: nil
   end
 
+  @doc """
+  Returns `:extended_numeric` or `nil` based upon
+  whether the given codepoint or binary
+  is all alphanumeric characters.
+
+  Extended numberic includes fractions, superscripts,
+  subscripts and other characters in the category `No`.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.extended_numeric "123"
+      :extended_numeric
+      iex> Unicode.Property.extended_numeric "⅔"
+      :extended_numeric
+      iex> Unicode.Property.extended_numeric "-123"
+      nil
+
+  """
   def extended_numeric(codepoint_or_binary) do
     if extended_numeric?(codepoint_or_binary), do: :extended_numeric, else: nil
   end
 
   @numeric_ranges Category.categories()[:Nd]
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all numeric characters.
+
+  ## Example
+
+      iex> Unicode.Property.numeric? "123"
+      true
+      iex> Unicode.Property.numeric? "123a"
+      false
+
+  """
   def numeric?(codepoint)
       when unquote(Utils.ranges_to_guard_clause(@numeric_ranges)),
       do: true
@@ -87,6 +189,19 @@ defmodule Unicode.Property do
   @extended_numeric_ranges @numeric_ranges ++
                              Category.categories()[:Nl] ++ Category.categories()[:No]
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all numberic characters.
+
+  ## Example
+
+     iex> Unicode.Property.extended_numeric? "123"
+     true
+     iex> Unicode.Property.extended_numeric? "⅔"
+     true
+
+  """
   def extended_numeric?(codepoint_or_binary)
 
   def extended_numeric?(codepoint)
@@ -99,6 +214,19 @@ defmodule Unicode.Property do
 
   def extended_numeric?(_), do: false
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all alphanumeric characters.
+
+  ## Example
+
+      iex> Unicode.Property.alphanumeric? "123abc"
+      true
+      iex> Unicode.Property.alphanumeric? "⅔"
+      false
+
+  """
   def alphanumeric?(codepoint_or_binary)
 
   def alphanumeric?(codepoint) when is_integer(codepoint) do
@@ -111,6 +239,27 @@ defmodule Unicode.Property do
 
   def alphanumeric?(_), do: false
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all emoji characters.
+
+  Note that some characters are unexpectedly
+  emoji because they are part of a multicodepoint
+  combination. For example, the numbers `0` through
+  `9` are emoji because they form part of the `keycap`
+  emoji codepoints.
+
+  ## Example
+
+      iex> Unicode.Property.emoji? "🔥"
+      true
+      iex> Unicode.Property.emoji? "1"
+      true
+      iex> Unicode.Property.emoji? "abc"
+      false
+
+  """
   def emoji?(codepoint_or_binary)
 
   def emoji?(codepoint) when is_integer(codepoint) do
@@ -124,23 +273,207 @@ defmodule Unicode.Property do
 
   def emoji?(_), do: false
 
-  def ignorable?(codepoint) do
+  defp ignorable?(codepoint) do
     properties = properties(codepoint)
     :case_ignorable in properties || :default_ignorable_code_point in properties
   end
 
+  @doc """
+  Returns `:math` or `nil` based upon
+  whether the given codepoint or binary
+  is all math characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.math "+<>=^"
+      :math
+      iex> Unicode.Property.math "*/"
+      nil
+
+  """
   def math(codepoint_or_binary)
+
+  @doc """
+  Returns `:alphabetic` or `nil` based upon
+  whether the given codepoint or binary
+  is all alphabetic characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.alphabetic "abc"
+      :alphabetic
+      iex> Unicode.Property.alphabetic "123"
+      nil
+
+  """
   def alphabetic(codepoint_or_binary)
+
+  @doc """
+  Returns `:lowercase` or `nil` based upon
+  whether the given codepoint or binary
+  is all lowercase characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.lowercase "abc"
+      :lowercase
+      iex> Unicode.Property.lowercase "ABC"
+      nil
+
+  """
   def lowercase(codepoint_or_binary)
+
+  @doc """
+  Returns `:uppercase` or `nil` based upon
+  whether the given codepoint or binary
+  is all uppercase characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.uppercase "ABC"
+      :uppercase
+      iex> Unicode.Property.uppercase "abc"
+      nil
+
+  """
   def uppercase(codepoint_or_binary)
+
+  @doc """
+  Returns `:case_ignorable` or `nil` based upon
+  whether the given codepoint or binary
+  is all case ignorable characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.case_ignorable ".:^"
+      :case_ignorable
+      iex> Unicode.Property.case_ignorable "123abc"
+      nil
+
+  """
   def case_ignorable(codepoint_or_binary)
+
+  @doc """
+  Returns `:cased` or `nil` based upon
+  whether the given codepoint or binary
+  is all cased characters.
+
+  This is useful when the desired result is
+  `truthy` or `falsy`
+
+  ## Example
+
+      iex> Unicode.Property.cased "abc"
+      :cased
+      iex> Unicode.Property.cased "123"
+      nil
+
+  """
   def cased(codepoint_or_binary)
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all math characters.
+
+  ## Example
+
+      iex> Unicode.Property.math? "+<>^"
+      true
+      iex> Unicode.Property.math? "abc"
+      false
+
+  """
   def math?(codepoint_or_binary)
+
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all alphabetic characters.
+
+  ## Example
+
+      iex> Unicode.Property.alphabetic? "abc"
+      true
+      iex> Unicode.Property.alphabetic? "123"
+      false
+
+  """
   def alphabetic?(codepoint_or_binary)
+
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all lowercase characters.
+
+  ## Example
+
+      iex> Unicode.Property.lowercase? "abc"
+      true
+      iex> Unicode.Property.lowercase? "ABC"
+      false
+
+  """
   def lowercase?(codepoint_or_binary)
+
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all uppercase characters.
+
+  ## Example
+
+      iex> Unicode.Property.uppercase? "ABC"
+      true
+      iex> Unicode.Property.uppercase? "abc"
+      false
+
+  """
   def uppercase?(codepoint_or_binary)
+
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all case ignorable characters.
+
+  ## Example
+
+      iex> Unicode.Property.case_ignorable? ".:^"
+      true
+      iex> Unicode.Property.case_ignorable? "123abc"
+      false
+
+  """
   def case_ignorable?(codepoint_or_binary)
+
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all cased characters.
+
+  ## Example
+
+      iex> Unicode.Property.cased? "abc"
+      true
+      iex> Unicode.Property.cased? "123"
+      false
+
+  """
   def cased?(codepoint_or_binary)
 
   for {property, ranges} <- @properties,

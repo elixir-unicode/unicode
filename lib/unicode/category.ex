@@ -6,6 +6,8 @@ defmodule Unicode.Category do
 
   """
 
+  @behaviour Unicode.Property.Behaviour
+
   alias Unicode.Utils
 
   @categories Utils.categories()
@@ -72,6 +74,7 @@ defmodule Unicode.Category do
   `get/1` functions.
 
   """
+  @impl Unicode.Property.Behaviour
   def aliases do
     @category_alias
   end
@@ -87,6 +90,7 @@ defmodule Unicode.Category do
   `:error`.
 
   """
+  @impl Unicode.Property.Behaviour
   def fetch(category) do
     category = Map.get(aliases(), category, category)
     Map.fetch(categories(), category)
@@ -103,6 +107,7 @@ defmodule Unicode.Category do
   `nil`.
 
   """
+  @impl Unicode.Property.Behaviour
   def get(category) do
     case fetch(category) do
       {:ok, category} -> category
@@ -123,6 +128,7 @@ defmodule Unicode.Category do
       630
 
   """
+  @impl Unicode.Property.Behaviour
   def count(category) do
     with {:ok, category} <- fetch(category) do
       Enum.reduce(category, 0, fn {from, to}, acc -> acc + to - from + 1 end)

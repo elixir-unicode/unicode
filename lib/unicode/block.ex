@@ -6,6 +6,8 @@ defmodule Unicode.Block do
 
   """
 
+  @behaviour Unicode.Property.Behaviour
+
   alias Unicode.Utils
 
   @blocks Utils.blocks()
@@ -60,6 +62,7 @@ defmodule Unicode.Block do
   `get/1` functions.
 
   """
+  @impl Unicode.Property.Behaviour
   def aliases do
     @block_alias
   end
@@ -75,6 +78,7 @@ defmodule Unicode.Block do
   `:error`.
 
   """
+  @impl Unicode.Property.Behaviour
   def fetch(block) do
     block = Map.get(aliases(), block, block)
     Map.fetch(blocks(), block)
@@ -91,6 +95,7 @@ defmodule Unicode.Block do
   `nil`.
 
   """
+  @impl Unicode.Property.Behaviour
   def get(block) do
     case fetch(block) do
       {:ok, block} -> block
@@ -110,6 +115,7 @@ defmodule Unicode.Block do
       32
 
   """
+  @impl Unicode.Property.Behaviour
   def count(block) do
     with {:ok, block} <- fetch(block) do
       Enum.reduce(block, 0, fn {from, to}, acc -> acc + to - from + 1 end)

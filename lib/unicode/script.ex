@@ -6,6 +6,8 @@ defmodule Unicode.Script do
 
   """
 
+  @behaviour Unicode.Property.Behaviour
+
   alias Unicode.Utils
 
   @scripts Utils.scripts()
@@ -59,6 +61,7 @@ defmodule Unicode.Script do
   `get/1` functions.
 
   """
+  @impl Unicode.Property.Behaviour
   def aliases do
     @script_alias
   end
@@ -74,6 +77,7 @@ defmodule Unicode.Script do
   `:error`.
 
   """
+  @impl Unicode.Property.Behaviour
   def fetch(script) do
     script = Map.get(aliases(), script, script)
     Map.fetch(scripts(), script)
@@ -90,6 +94,7 @@ defmodule Unicode.Script do
   `nil`.
 
   """
+  @impl Unicode.Property.Behaviour
   def get(script) do
     case fetch(script) do
       {:ok, script} -> script
@@ -107,6 +112,7 @@ defmodule Unicode.Script do
       167
 
   """
+  @impl Unicode.Property.Behaviour
   def count(script) do
     with {:ok, script} <- fetch(script) do
       Enum.reduce(script, 0, fn {from, to}, acc -> acc + to - from + 1 end)

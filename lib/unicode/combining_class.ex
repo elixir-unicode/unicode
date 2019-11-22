@@ -6,6 +6,8 @@ defmodule Unicode.CombiningClass do
 
   """
 
+  @behaviour Unicode.Property.Behaviour
+
   alias Unicode.Utils
 
   @combining_classes Utils.combining_classes()
@@ -57,6 +59,7 @@ defmodule Unicode.CombiningClass do
   `get/1` functions.
 
   """
+  @impl Unicode.Property.Behaviour
   def aliases do
     @combining_class_alias
   end
@@ -72,6 +75,7 @@ defmodule Unicode.CombiningClass do
   `:error`.
 
   """
+  @impl Unicode.Property.Behaviour
   def fetch(combining_class) do
     combining_class = Map.get(aliases(), combining_class, combining_class)
     Map.fetch(combining_classes(), combining_class)
@@ -88,6 +92,7 @@ defmodule Unicode.CombiningClass do
   `nil`.
 
   """
+  @impl Unicode.Property.Behaviour
   def get(combining_class) do
     case fetch(combining_class) do
       {:ok, combining_class} -> combining_class
@@ -102,9 +107,10 @@ defmodule Unicode.CombiningClass do
   ## Example
 
       iex> Unicode.CombiningClass.count(230)
-      167
+      482
 
   """
+  @impl Unicode.Property.Behaviour
   def count(class) do
     with {:ok, class} <- fetch(class) do
       Enum.reduce(class, 0, fn {from, to}, acc -> acc + to - from + 1 end)

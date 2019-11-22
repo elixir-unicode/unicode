@@ -20,6 +20,8 @@ This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older ch
 
 * Add `Unicode.compact_ranges/1` that given a list of 2-tuple ranges will compact them into as small a list of contiguous blocks as possible
 
+* Documented all public functions
+
 # Changelog for Unicode v1.0.0
 
 This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
