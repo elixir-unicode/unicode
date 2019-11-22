@@ -2,6 +2,12 @@
 
 This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
 
+### Breaking Changes
+
+* Removed `Unicode.Guards` from this library and moved them to the [unicode_set](https://hex.pm/packages/unicode_set) package.
+
+### Enhancements
+
 * `Unicode.Category.categories/0` now returns the super categories as well as the subcategories. These super categories are computed at compile time by consolidating the relevant subcategories. `Unicode.Category.category/1` will only return one category, and it will be the subcategory as it consistent with earlier releases.
 
 * Add `Unicode.ranges/0` that returns all Unicode codepoints as a list of 2-tuples representing the disjoint ranges of valid codepoints. The list is in sorted order.

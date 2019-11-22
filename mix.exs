@@ -13,7 +13,7 @@ defmodule Unicode.MixProject do
       deps: deps(),
       docs: docs(),
       name: "Unicode",
-      source_url: "https://github.com/elixir-cldr/unicode",
+      source_url: "https://github.com/elixir-unicode/unicode",
       description: description(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env())
@@ -61,9 +61,9 @@ defmodule Unicode.MixProject do
 
   def links do
     %{
-      "GitHub" => "https://github.com/elixir-cldr/unicode",
-      "Readme" => "https://github.com/elixir-cldr/unicode/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/elixir-cldr/unicode/blob/v#{@version}/CHANGELOG.md"
+      "GitHub" => "https://github.com/elixir-unicode/unicode",
+      "Readme" => "https://github.com/elixir-unicode/unicode/blob/v#{@version}/README.md",
+      "Changelog" => "https://github.com/elixir-unicode/unicode/blob/v#{@version}/CHANGELOG.md"
     }
   end
 
