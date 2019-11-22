@@ -1,10 +1,10 @@
 # Changelog for Unicode v1.1.0
 
-This is the changelog for Unicode v1.1.0 released on ______, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
 
 ### Breaking Changes
 
-* Removed `Unicode.Guards` from this library and moved them to the [unicode_set](https://hex.pm/packages/unicode_set) package.
+* Removed `Unicode.Guards` from this library and moved them to the [unicode_set](https://hex.pm/packages/unicode_guards) package.
 
 ### Enhancements
 
