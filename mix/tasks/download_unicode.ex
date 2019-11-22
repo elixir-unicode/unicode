@@ -1,7 +1,7 @@
 if File.exists?(Unicode.data_dir()) do
   defmodule Mix.Tasks.Unicode.Download do
     @moduledoc """
-    Downloads the required Unicode files to support Cldr.Unicode
+    Downloads the required Unicode files to support Unicode
     """
 
     use Mix.Task

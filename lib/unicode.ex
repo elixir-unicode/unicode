@@ -1,7 +1,9 @@
 defmodule Unicode do
   @moduledoc """
   Functions to introspect the Unicode character database and
-  to provide fast codepoint lookups.
+  to provide fast codepoint lookups for scripts, blocks,
+  categories and properties.
+
   """
 
   @type codepoint :: non_neg_integer
@@ -14,12 +16,20 @@ defmodule Unicode do
   end
 
   @doc """
-  Returns the version of Unicode in
-  `Cldr.Unicode`.
+  Returns the version of Unicode in use.
 
   """
+  @version File.read!("data/blocks.txt")
+    |> String.split("\n")
+    |> Enum.at(0)
+    |> String.replace("# Blocks-", "")
+    |> String.replace(".txt", "")
+    |> String.split(".")
+    |> Enum.map(&String.to_integer/1)
+    |> List.to_tuple
+
   def version do
-    {12, 1, 0}
+    @version
   end
 
   @property_aliases %{

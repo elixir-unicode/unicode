@@ -1,4 +1,4 @@
-# Cldr Unicode
+# Unicode
 
 Functions to return information about Unicode codepoints.
 
