@@ -13,15 +13,15 @@ defmodule Unicode.Script do
   @scripts Utils.scripts()
            |> Utils.remove_annotations()
 
-   @doc """
-   Returns the map of Unicode
-   scripts.
+  @doc """
+  Returns the map of Unicode
+  scripts.
 
-   The script name is the map
-   key and a list of codepoint
-   ranges as tuples as the value.
+  The script name is the map
+  key and a list of codepoint
+  ranges as tuples as the value.
 
-   """
+  """
 
   def scripts do
     @scripts
@@ -41,15 +41,11 @@ defmodule Unicode.Script do
   end
 
   @script_alias Utils.property_value_alias()
-  |> Map.get("sc")
-  |> Enum.flat_map(fn
-      [alias1, code] ->
-        [{String.downcase(alias1), String.downcase(code)}]
-      [alias1, code, alias2] ->
-        [{String.downcase(alias1), String.downcase(code)},
-         {String.downcase(alias2), String.downcase(code)}]
-  end)
-  |> Map.new
+                |> Map.get("sc")
+                |> Utils.reverse_map()
+                |> Utils.atomize_values()
+                |> Utils.downcase_keys_and_remove_whitespace()
+                |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -78,7 +74,12 @@ defmodule Unicode.Script do
 
   """
   @impl Unicode.Property.Behaviour
+  def fetch(script) when is_atom(script) do
+    Map.fetch(scripts(), script)
+  end
+
   def fetch(script) do
+    script = Utils.downcase_and_remove_whitespace(script)
     script = Map.get(aliases(), script, script)
     Map.fetch(scripts(), script)
   end

@@ -20,13 +20,13 @@ defmodule Unicode do
 
   """
   @version File.read!("data/blocks.txt")
-    |> String.split("\n")
-    |> Enum.at(0)
-    |> String.replace("# Blocks-", "")
-    |> String.replace(".txt", "")
-    |> String.split(".")
-    |> Enum.map(&String.to_integer/1)
-    |> List.to_tuple
+           |> String.split("\n")
+           |> Enum.at(0)
+           |> String.replace("# Blocks-", "")
+           |> String.replace(".txt", "")
+           |> String.split(".")
+           |> Enum.map(&String.to_integer/1)
+           |> List.to_tuple()
 
   def version do
     @version
@@ -178,28 +178,28 @@ defmodule Unicode do
   ## Exmaples
 
       iex> Unicode.script ?ä
-      "latin"
+      :latin
 
       iex> Unicode.script ?خ
-      "arabic"
+      :arabic
 
       iex> Unicode.script ?अ
-      "devanagari"
+      :devanagari
 
       iex> Unicode.script ?א
-      "hebrew"
+      :hebrew
 
       iex> Unicode.script ?Ж
-      "cyrillic"
+      :cyrillic
 
       iex> Unicode.script ?δ
-      "greek"
+      :greek
 
       iex> Unicode.script ?ก
-      "thai"
+      :thai
 
       iex> Unicode.script ?ယ
-      "myanmar"
+      :myanmar
 
   """
   @spec script(codepoint_or_string) :: String.t() | [String.t(), ...]
@@ -261,16 +261,62 @@ defmodule Unicode do
   ## Exmaples
 
       iex> Unicode.properties 0x1bf0
-      [:alphabetic, :case_ignorable]
+      [
+        :alphabetic,
+        :case_ignorable,
+        :grapheme_extend,
+        :id_continue,
+        :other_alphabetic,
+        :xid_continue
+      ]
 
       iex> Unicode.properties ?A
-      [:alphabetic, :uppercase, :cased]
+      [
+        :alphabetic,
+        :ascii_hex_digit,
+        :cased,
+        :changes_when_casefolded,
+        :changes_when_casemapped,
+        :changes_when_lowercased,
+        :grapheme_base,
+        :hex_digit,
+        :id_continue,
+        :id_start,
+        :uppercase,
+        :xid_continue,
+        :xid_start
+      ]
 
       iex> Unicode.properties ?+
-      [:math]
+      [:grapheme_base, :math, :pattern_syntax]
 
       iex> Unicode.properties "a1+"
-      [[:alphabetic, :lowercase, :cased], [:numeric, :emoji], [:math]]
+      [
+        [
+          :alphabetic,
+          :ascii_hex_digit,
+          :cased,
+          :changes_when_casemapped,
+          :changes_when_titlecased,
+          :changes_when_uppercased,
+          :grapheme_base,
+          :hex_digit,
+          :id_continue,
+          :id_start,
+          :lowercase,
+          :xid_continue,
+          :xid_start
+        ],
+        [
+          :ascii_hex_digit,
+          :emoji,
+          :grapheme_base,
+          :hex_digit,
+          :id_continue,
+          :xid_continue
+        ],
+        [:grapheme_base, :math, :pattern_syntax]
+      ]
 
   """
   @spec properties(codepoint_or_string) :: [atom, ...] | [[atom, ...], ...]
@@ -282,7 +328,7 @@ defmodule Unicode do
   otherwise returns `false`.
 
   These are all characters that are usually used as representations
-  of letters/syllabes/ in words/sentences.
+  of letters/syllabes in words/sentences.
 
   ## Arguments
 
@@ -310,7 +356,8 @@ defmodule Unicode do
       iex> Unicode.alphabetic?("الإكسير")
       true
 
-      iex> Unicode.alphabetic?("foo, bar") # comma and whitespace
+      # comma and whitespace
+      iex> Unicode.alphabetic?("foo, bar")
       false
 
       iex> Unicode.alphabetic?("42")
@@ -319,10 +366,12 @@ defmodule Unicode do
       iex> Unicode.alphabetic?("龍王")
       true
 
-      iex> Unicode.alphabetic?("∑") # Summation, \u2211
+      # Summation, \u2211
+      iex> Unicode.alphabetic?("∑")
       false
 
-      iex> Unicode.alphabetic?("Σ") # Greek capital letter sigma, \u03a3
+      # Greek capital letter sigma, \u03a3
+      iex> Unicode.alphabetic?("Σ")
       true
 
   """
@@ -451,7 +500,7 @@ defmodule Unicode do
 
   """
   @spec emoji?(codepoint_or_string) :: boolean
-  defdelegate emoji?(codepoint_or_string), to: Unicode.Property
+  defdelegate emoji?(codepoint_or_string), to: Unicode.Emoji
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters

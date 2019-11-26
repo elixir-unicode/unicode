@@ -4,24 +4,19 @@ defmodule Unicode.Property do
   (Strings) and codepoints.
 
   """
+  @behaviour Unicode.Property.Behaviour
+
   @type string_or_codepoint :: String.t() | non_neg_integer
 
-  alias Unicode.Utils
-  alias Unicode.Emoji
-  alias Unicode.Category
+  alias Unicode.{Utils, Category, Emoji}
 
-  @selected_properties [
-    :math,
-    :alphabetic,
-    :lowercase,
-    :uppercase,
-    :case_ignorable,
-    :cased,
-    :default_ignorable_code_point
-  ]
+  @derived_properties Utils.derived_properties()
+                      |> Utils.remove_annotations()
 
   @properties Utils.properties()
               |> Utils.remove_annotations()
+
+  @all_properties Map.merge(@derived_properties, @properties)
 
   @doc """
   Returns the map of Unicode
@@ -33,7 +28,7 @@ defmodule Unicode.Property do
 
   """
   def properties do
-    @properties
+    @all_properties
   end
 
   @doc """
@@ -44,9 +39,71 @@ defmodule Unicode.Property do
   names of any property aliases.
 
   """
-  @known_properties Map.keys(@properties) ++ Emoji.known_emoji_categories()
+  @known_properties Map.keys(@all_properties) ++
+                      Emoji.known_emoji_categories()
+
   def known_properties do
     @known_properties
+  end
+
+  @doc """
+  Returns a map of aliases for
+  Unicode blocks.
+
+  An alias is an alternative name
+  for referring to a block. Aliases
+  are resolved by the `fetch/1` and
+  `get/1` functions.
+
+  """
+  @property_alias Utils.property_alias()
+  |> Utils.atomize_values
+  |> Utils.add_canonical_alias()
+
+  @impl Unicode.Property.Behaviour
+  def aliases do
+    @property_alias
+  end
+
+  @doc """
+  Returns the Unicode ranges for
+  a given block as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `{:ok, range_list}` or
+  `:error`.
+
+  """
+  @impl Unicode.Property.Behaviour
+  def fetch(property) when is_atom(property) do
+    Map.fetch(properties(), property)
+  end
+
+  def fetch(property) do
+    property = Utils.downcase_and_remove_whitespace(property)
+    property = Map.get(aliases(), property, property)
+    Map.fetch(properties(), property)
+  end
+
+  @doc """
+  Returns the Unicode ranges for
+  a given block as a list of
+  ranges as 2-tuples.
+
+  Aliases are resolved by this function.
+
+  Returns either `range_list` or
+  `nil`.
+
+  """
+  @impl Unicode.Property.Behaviour
+  def get(property) do
+    case fetch(property) do
+      {:ok, property} -> property
+      _ -> nil
+    end
   end
 
   @doc """
@@ -59,41 +116,11 @@ defmodule Unicode.Property do
       2340
 
   """
+  @impl Unicode.Property.Behaviour
   def count(property) do
     properties()
     |> Map.get(property)
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
-  end
-
-  @spec properties(string_or_codepoint) :: [atom, ...] | [[atom, ...], ...]
-  def properties(string) when is_binary(string) do
-    string
-    |> String.to_charlist()
-    |> Enum.map(&properties/1)
-    |> Enum.uniq()
-  end
-
-  @properties_code @selected_properties
-                   |> Enum.map(fn fun ->
-                     quote do
-                       unquote(fun)(var!(codepoint))
-                     end
-                   end)
-
-  @doc """
-  Returns the property name(s) for the
-  given binary or codepoint.
-
-  In the case of a codepoint, a single
-  list of properties for that codepoint name is returned.
-
-  For a binary a list of list for each
-  codepoint in the binary is returned.
-
-  """
-  def properties(codepoint) when is_integer(codepoint) do
-    [numeric(codepoint), Emoji.emoji(codepoint) | unquote(@properties_code)]
-    |> Enum.reject(&is_nil/1)
   end
 
   @doc """
@@ -161,7 +188,7 @@ defmodule Unicode.Property do
     if extended_numeric?(codepoint_or_binary), do: :extended_numeric, else: nil
   end
 
-  @numeric_ranges Category.categories()[:Nd]
+  @numeric_ranges Category.get(:Nd)
 
   @doc """
   Returns a boolean based upon
@@ -186,8 +213,7 @@ defmodule Unicode.Property do
 
   def numeric?(_), do: false
 
-  @extended_numeric_ranges @numeric_ranges ++
-                             Category.categories()[:Nl] ++ Category.categories()[:No]
+  @extended_numeric_ranges @numeric_ranges ++ Category.get(:Nl) ++ Category.get(:No)
 
   @doc """
   Returns a boolean based upon
@@ -239,247 +265,29 @@ defmodule Unicode.Property do
 
   def alphanumeric?(_), do: false
 
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all emoji characters.
+  @property_names Map.keys(@all_properties)
 
-  Note that some characters are unexpectedly
-  emoji because they are part of a multicodepoint
-  combination. For example, the numbers `0` through
-  `9` are emoji because they form part of the `keycap`
-  emoji codepoints.
+  @properties_code @property_names
+                   |> Enum.map(fn fun ->
+                     quote do
+                       unquote(fun)(var!(codepoint))
+                     end
+                   end)
 
-  ## Example
-
-      iex> Unicode.Property.emoji? "🔥"
-      true
-      iex> Unicode.Property.emoji? "1"
-      true
-      iex> Unicode.Property.emoji? "abc"
-      false
-
-  """
-  def emoji?(codepoint_or_binary)
-
-  def emoji?(codepoint) when is_integer(codepoint) do
-    ignorable?(codepoint) ||
-      Emoji.emoji(codepoint) in Emoji.known_emoji_categories()
-  end
-
-  def emoji?(string) when is_binary(string) do
-    string_has_property?(string, &emoji?/1)
-  end
-
-  def emoji?(_), do: false
-
-  defp ignorable?(codepoint) do
-    properties = properties(codepoint)
-    :case_ignorable in properties || :default_ignorable_code_point in properties
-  end
-
-  @doc """
-  Returns `:math` or `nil` based upon
-  whether the given codepoint or binary
-  is all math characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.math "+<>=^"
-      :math
-      iex> Unicode.Property.math "*/"
-      nil
-
-  """
-  def math(codepoint_or_binary)
-
-  @doc """
-  Returns `:alphabetic` or `nil` based upon
-  whether the given codepoint or binary
-  is all alphabetic characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.alphabetic "abc"
-      :alphabetic
-      iex> Unicode.Property.alphabetic "123"
-      nil
-
-  """
-  def alphabetic(codepoint_or_binary)
-
-  @doc """
-  Returns `:lowercase` or `nil` based upon
-  whether the given codepoint or binary
-  is all lowercase characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.lowercase "abc"
-      :lowercase
-      iex> Unicode.Property.lowercase "ABC"
-      nil
-
-  """
-  def lowercase(codepoint_or_binary)
-
-  @doc """
-  Returns `:uppercase` or `nil` based upon
-  whether the given codepoint or binary
-  is all uppercase characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.uppercase "ABC"
-      :uppercase
-      iex> Unicode.Property.uppercase "abc"
-      nil
-
-  """
-  def uppercase(codepoint_or_binary)
-
-  @doc """
-  Returns `:case_ignorable` or `nil` based upon
-  whether the given codepoint or binary
-  is all case ignorable characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.case_ignorable ".:^"
-      :case_ignorable
-      iex> Unicode.Property.case_ignorable "123abc"
-      nil
-
-  """
-  def case_ignorable(codepoint_or_binary)
-
-  @doc """
-  Returns `:cased` or `nil` based upon
-  whether the given codepoint or binary
-  is all cased characters.
-
-  This is useful when the desired result is
-  `truthy` or `falsy`
-
-  ## Example
-
-      iex> Unicode.Property.cased "abc"
-      :cased
-      iex> Unicode.Property.cased "123"
-      nil
-
-  """
-  def cased(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all math characters.
-
-  ## Example
-
-      iex> Unicode.Property.math? "+<>^"
-      true
-      iex> Unicode.Property.math? "abc"
-      false
-
-  """
-  def math?(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all alphabetic characters.
-
-  ## Example
-
-      iex> Unicode.Property.alphabetic? "abc"
-      true
-      iex> Unicode.Property.alphabetic? "123"
-      false
-
-  """
-  def alphabetic?(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all lowercase characters.
-
-  ## Example
-
-      iex> Unicode.Property.lowercase? "abc"
-      true
-      iex> Unicode.Property.lowercase? "ABC"
-      false
-
-  """
-  def lowercase?(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all uppercase characters.
-
-  ## Example
-
-      iex> Unicode.Property.uppercase? "ABC"
-      true
-      iex> Unicode.Property.uppercase? "abc"
-      false
-
-  """
-  def uppercase?(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all case ignorable characters.
-
-  ## Example
-
-      iex> Unicode.Property.case_ignorable? ".:^"
-      true
-      iex> Unicode.Property.case_ignorable? "123abc"
-      false
-
-  """
-  def case_ignorable?(codepoint_or_binary)
-
-  @doc """
-  Returns a boolean based upon
-  whether the given codepoint or binary
-  is all cased characters.
-
-  ## Example
-
-      iex> Unicode.Property.cased? "abc"
-      true
-      iex> Unicode.Property.cased? "123"
-      false
-
-  """
-  def cased?(codepoint_or_binary)
-
-  for {property, ranges} <- @properties,
-      property in @selected_properties do
+  for {property, ranges} <- @all_properties,
+      property in @property_names do
     boolean_function = String.to_atom("#{property}?")
 
+    @doc """
+    Returns a boolean indicating if the
+    codepoint or string has the property
+    `#{inspect property}`.
+
+    For string parameters, all codepoints in
+    the string must have the `#{inspect property}`
+    property in order for the result to be `true`.
+
+    """
     def unquote(boolean_function)(codepoint)
         when is_integer(codepoint) and unquote(Utils.ranges_to_guard_clause(ranges)) do
       true
@@ -494,9 +302,44 @@ defmodule Unicode.Property do
       string_has_property?(string, &unquote(boolean_function)(&1))
     end
 
+    @doc """
+    Returns `#{inspect property}` or `nil` indicating
+    if the codepoint or string has the property
+    `#{inspect property}`.
+
+    For string parameters, all codepoints in
+    the string must have the `#{inspect property}`
+    property in order for the result to `#{inspect property}`.
+
+    """
     def unquote(property)(codepoint) do
       if unquote(boolean_function)(codepoint), do: unquote(property), else: nil
     end
+  end
+
+  @doc """
+  Returns the property name(s) for the
+  given binary or codepoint.
+
+  In the case of a codepoint, a single
+  list of properties for that codepoint name is returned.
+
+  For a binary a list of list for each
+  codepoint in the binary is returned.
+
+  """
+  def properties(codepoint) when is_integer(codepoint) do
+    [Emoji.emoji(codepoint) | unquote(@properties_code)]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.sort
+  end
+
+  @spec properties(string_or_codepoint) :: [atom, ...] | [[atom, ...], ...]
+  def properties(string) when is_binary(string) do
+    string
+    |> String.to_charlist()
+    |> Enum.map(&properties/1)
+    |> Enum.uniq()
   end
 
   @doc false

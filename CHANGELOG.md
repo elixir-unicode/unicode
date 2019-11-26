@@ -1,3 +1,17 @@
+# Changelog for Unicode v1.2.0
+
+This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Breaking Changes
+
+* Script names are now atoms instead of string to be consistent with other properties
+
+### Enhancements
+
+* Add `aliases/0`, `fetch/1` and `get/1` to `Unicode.Property`
+
+* Added additional properties to `Unicode.Property`. The set now includes those from the UCD file `DerivedCoreProperties.txt` and `PropList.txt`.
+
 # Changelog for Unicode v1.1.0
 
 This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

@@ -1,7 +1,7 @@
 defmodule Unicode.Emoji do
   @moduledoc false
 
-  alias Unicode.Utils
+  alias Unicode.{Utils, Property}
 
   @emoji Utils.emoji()
          |> Utils.remove_reserved_codepoints()
@@ -37,6 +37,40 @@ defmodule Unicode.Emoji do
     end
   end
 
+  @doc """
+  Returns a boolean based upon
+  whether the given codepoint or binary
+  is all emoji characters.
+
+  Note that some characters are unexpectedly
+  emoji because they are part of a multicodepoint
+  combination. For example, the numbers `0` through
+  `9` are emoji because they form part of the `keycap`
+  emoji codepoints.
+
+  ## Example
+
+      iex> Unicode.Emoji.emoji? "🔥"
+      true
+      iex> Unicode.Emoji.emoji? "1"
+      true
+      iex> Unicode.Emoji.emoji? "abc"
+      false
+
+  """
+  def emoji?(codepoint_or_binary)
+
+  def emoji?(codepoint) when is_integer(codepoint) do
+    ignorable?(codepoint) ||
+      emoji(codepoint) in known_emoji_categories()
+  end
+
+  def emoji?(string) when is_binary(string) do
+    Property.string_has_property?(string, &emoji?/1)
+  end
+
+  def emoji?(_), do: false
+
   def emoji(string) when is_binary(string) do
     string
     |> String.graphemes()
@@ -46,5 +80,10 @@ defmodule Unicode.Emoji do
 
   def emoji(_codepoint) do
     nil
+  end
+
+  defp ignorable?(codepoint) do
+    properties = Property.properties(codepoint)
+    :case_ignorable in properties || :default_ignorable_codepoint in properties
   end
 end

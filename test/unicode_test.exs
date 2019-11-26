@@ -7,5 +7,4 @@ defmodule Unicode.Test do
   doctest Unicode.Script
   doctest Unicode.Block
   doctest Unicode.CombiningClass
-
 end

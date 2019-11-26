@@ -24,12 +24,16 @@ if File.exists?(Unicode.data_dir()) do
         {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt", data_path("blocks.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/Scripts.txt", data_path("scripts.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/DerivedCoreProperties.txt",
-         data_path("properties.txt")},
+         data_path("derived_properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
          data_path("combining_class.txt")},
         {"https://unicode.org/Public/emoji/12.1/emoji-data.txt", data_path("emoji.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt",
-         data_path("property_value_alias.txt")}
+         data_path("property_value_alias.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt",
+         data_path("properties.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/PropertyAliases.txt",
+         data_path("property_alias.txt")}
       ]
     end
 

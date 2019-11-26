@@ -40,17 +40,11 @@ defmodule Unicode.Block do
   end
 
   @block_alias Utils.property_value_alias()
-  |> Map.get("blk")
-  |> Enum.flat_map(fn
-    [code, alias1] ->
-      [{String.downcase(alias1), String.to_atom(code)},
-      {String.downcase(code), String.to_atom(code)}]
-    [code, alias1, alias2] ->
-      [{String.downcase(alias1), String.to_atom(code)},
-      {String.downcase(alias2), String.to_atom(code)},
-      {String.downcase(code), String.to_atom(code)}]
-  end)
-  |> Map.new
+               |> Map.get("blk")
+               |> Utils.reverse_map()
+               |> Utils.atomize_values()
+               |> Utils.downcase_keys_and_remove_whitespace()
+               |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -79,7 +73,12 @@ defmodule Unicode.Block do
 
   """
   @impl Unicode.Property.Behaviour
+  def fetch(block) when is_atom(block) do
+    Map.fetch(blocks(), block)
+  end
+
   def fetch(block) do
+    block = Utils.downcase_and_remove_whitespace(block)
     block = Map.get(aliases(), block, block)
     Map.fetch(blocks(), block)
   end
@@ -136,7 +135,7 @@ defmodule Unicode.Block do
   """
   def block(string) when is_binary(string) do
     string
-    |> String.to_charlist
+    |> String.to_charlist()
     |> Enum.map(&block/1)
     |> Enum.uniq()
   end
@@ -153,14 +152,14 @@ defmodule Unicode.Block do
 
   @doc """
   Returns a list of tuples representing the
-  valid ranges of Unicode code points.
+  valid ranges of all Unicode code points.
 
   """
   @ranges @blocks
           |> Map.values()
           |> Enum.map(&hd/1)
           |> Enum.sort()
-          |> Unicode.compact_ranges
+          |> Unicode.compact_ranges()
 
   def ranges do
     @ranges

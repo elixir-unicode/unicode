@@ -52,17 +52,11 @@ defmodule Unicode.Category do
   end
 
   @category_alias Utils.property_value_alias()
-  |> Map.get("gc")
-  |> Enum.flat_map(fn
-    [code, alias1] ->
-      [{String.downcase(alias1), String.to_atom(code)},
-      {String.downcase(code), String.to_atom(code)}]
-    [code, alias1, alias2] ->
-      [{String.downcase(alias1), String.to_atom(code)},
-      {String.downcase(alias2), String.to_atom(code)},
-      {String.downcase(code), String.to_atom(code)}]
-  end)
-  |> Map.new
+                  |> Map.get("gc")
+                  |> Utils.capitalize_values()
+                  |> Utils.atomize_values()
+                  |> Utils.downcase_keys_and_remove_whitespace()
+                  |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -91,7 +85,12 @@ defmodule Unicode.Category do
 
   """
   @impl Unicode.Property.Behaviour
+  def fetch(category) when is_atom(category) do
+    Map.fetch(categories(), category)
+  end
+
   def fetch(category) do
+    category = Utils.downcase_and_remove_whitespace(category)
     category = Map.get(aliases(), category, category)
     Map.fetch(categories(), category)
   end

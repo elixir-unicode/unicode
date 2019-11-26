@@ -13,15 +13,15 @@ defmodule Unicode.CombiningClass do
   @combining_classes Utils.combining_classes()
                      |> Utils.remove_annotations()
 
-   @doc """
-   Returns the map of Unicode
-   canonical combining classes..
+  @doc """
+  Returns the map of Unicode
+  canonical combining classes..
 
-   The class name is the map
-   key and a list of codepoint
-   ranges as tuples as the value.
+  The class name is the map
+  key and a list of codepoint
+  ranges as tuples as the value.
 
-   """
+  """
 
   def combining_classes do
     @combining_classes
@@ -41,13 +41,11 @@ defmodule Unicode.CombiningClass do
   end
 
   @combining_class_alias Utils.property_value_alias()
-  |> Map.get("ccc")
-  |> Enum.flat_map(fn [code, alias1, alias2] ->
-      [{String.downcase(alias1), String.to_integer(code)},
-      {String.downcase(alias2), String.to_integer(code)},
-      {String.downcase(code), String.to_integer(code)}]
-  end)
-  |> Map.new
+                         |> Map.get("ccc")
+                         |> Enum.map(fn {k, v} -> {k, String.to_integer(v)} end)
+                         |> Map.new()
+                         |> Utils.downcase_keys_and_remove_whitespace()
+                         |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -76,8 +74,17 @@ defmodule Unicode.CombiningClass do
 
   """
   @impl Unicode.Property.Behaviour
-  def fetch(combining_class) do
+  def fetch(combining_class) when is_atom(combining_class) do
+    Map.fetch(combining_classes(), combining_class)
+  end
+
+  def fetch(combining_class) when is_binary(combining_class) do
+    combining_class = Utils.downcase_and_remove_whitespace(combining_class)
     combining_class = Map.get(aliases(), combining_class, combining_class)
+    Map.fetch(combining_classes(), combining_class)
+  end
+
+  def fetch(combining_class) when is_integer(combining_class) do
     Map.fetch(combining_classes(), combining_class)
   end
 

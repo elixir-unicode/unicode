@@ -36,6 +36,7 @@ These functions return the codepoints as list of 2-tuples for the given property
 * `Unicode.Script.scripts/0`
 * `Unicode.Category.categories/0`
 * `Unicode.CombiningClass.combining_classes/0`
+* `Unicode.Property.properties/0`
 
 ### Basic introspection of codepoints and string
 
@@ -79,16 +80,62 @@ iex> Unicode.category ?🧐
 * `Unicode.properties/1`
 ```
 iex> Unicode.properties 0x1bf0
-[:alphabetic, :case_ignorable]
+[
+  :alphabetic,
+  :case_ignorable,
+  :grapheme_extend,
+  :id_continue,
+  :other_alphabetic,
+  :xid_continue
+]
 
 iex> Unicode.properties ?A
-[:alphabetic, :uppercase, :cased]
+[
+  :alphabetic,
+  :ascii_hex_digit,
+  :cased,
+  :changes_when_casefolded,
+  :changes_when_casemapped,
+  :changes_when_lowercased,
+  :grapheme_base,
+  :hex_digit,
+  :id_continue,
+  :id_start,
+  :uppercase,
+  :xid_continue,
+  :xid_start
+]
 
 iex> Unicode.properties ?+
-[:math]
+[:grapheme_base, :math, :pattern_syntax]
 
 iex> Unicode.properties "a1+"
-[[:alphabetic, :lowercase, :cased], [:numeric, :emoji], [:math]]
+[
+  [
+    :alphabetic,
+    :ascii_hex_digit,
+    :cased,
+    :changes_when_casemapped,
+    :changes_when_titlecased,
+    :changes_when_uppercased,
+    :grapheme_base,
+    :hex_digit,
+    :id_continue,
+    :id_start,
+    :lowercase,
+    :xid_continue,
+    :xid_start
+  ],
+  [
+    :ascii_hex_digit,
+    :emoji,
+    :grapheme_base,
+    :hex_digit,
+    :id_continue,
+    :xid_continue
+  ],
+  [:grapheme_base, :math, :pattern_syntax]
+]
 ```
 
 ### Character classes
@@ -103,8 +150,10 @@ These functions help filter codepoints and strings based upon their properties. 
 * Unicode.math?/1
 * Unicode.cased?/1
 * Unicode.lowercase?/1
-* Unicode.uppercase?/1'
-'
+* Unicode.uppercase?/1
+
+Any known property can be called as a function `Unicode.Property.<property_name>(codepoint_or_string)` or `Unicode.Property.<property_name>?(codepoint_or_string)` to return a boolean.
+
 ### Transformations
 
 The function `Unicode.unaccent/1` attempts to transform a Unicode string into a subset of the Latin-1 alphabet by removing diacritical marks from text. It is not a full transformation (which will be available in the upcoming `unicode_transform` library.)
