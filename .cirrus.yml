@@ -1,3 +1,10 @@
+env:
+  CIRRUS_CLONE_DEPTH: 1
+  ELIXIR_ASSERT_TIMEOUT: 2000
+  ELIXIRC_OPTS: "--warnings-as-errors"
+  ERLC_OPTS: "+warning_as_errors"
+  LANG: C.UTF-8
+
 test_task:
   container:
     image: elixir:latest
