@@ -4,7 +4,6 @@ env:
   ELIXIRC_OPTS: "--warnings-as-errors"
   ERLC_OPTS: "+warning_as_errors"
   LANG: C.UTF-8
-  MIX_ENV: test
 
 test_task:
   container:
@@ -15,5 +14,5 @@ test_task:
     populate_script:
       mix local.hex --force;
       mix deps.get
-  compile_script: mix compile
+  compile_script: MIX_ENV=test mix compile
   test_script: mix test
