@@ -10,7 +10,8 @@ defmodule Unicode do
   @type codepoint_or_string :: codepoint | String.t()
 
   @doc false
-  @data_dir Path.join(__DIR__, "/../data") |> Path.expand()
+  @data_dir Path.join(__DIR__, "data") |> Path.expand()
+  IO.inspect @data_dir, label: "Data dir is:"
   def data_dir do
     @data_dir
   end
