@@ -142,15 +142,15 @@ iex> Unicode.properties "a1+"
 
 These functions help filter codepoints and strings based upon their properties. They return a boolean result.
 
-* Unicode.alphabetic?/1
-* Unicode.alphanumeric?/1
-* Unicode.digits?/1
-* Unicode.numeric?/1
-* Unicode.emoji?/1
-* Unicode.math?/1
-* Unicode.cased?/1
-* Unicode.lowercase?/1
-* Unicode.uppercase?/1
+* `Unicode.alphabetic?/1`
+* `Unicode.alphanumeric?/1`
+* `Unicode.digits?/1`
+* `Unicode.numeric?/1`
+* `Unicode.emoji?/1`
+* `Unicode.math?/1`
+* `Unicode.cased?/1`
+* `Unicode.lowercase?/1`
+* `Unicode.uppercase?/1`
 
 Any known property can be called as a function `Unicode.Property.<property_name>(codepoint_or_string)` or `Unicode.Property.<property_name>?(codepoint_or_string)` to return a boolean.
 
