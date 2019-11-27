@@ -1,5 +1,10 @@
 # Unicode
 
+![Build Status](https://api.cirrus-ci.com/github/elixir-unicode/unicode.svg)
+[![Hex.pm](https://img.shields.io/hexpm/v/ex_unicode.svg)](https://hex.pm/packages/ex_unicode)
+[![Hex.pm](https://img.shields.io/hexpm/dw/ex_unicode.svg?)](https://hex.pm/packages/ex_unicode)
+[![Hex.pm](https://img.shields.io/hexpm/l/ex_unicode.svg)](https://hex.pm/packages/ex_unicode)
+
 Functions to return information about Unicode codepoints.
 
 Elixir string are UTF8-encoded [Unicode](https://unicode.org) binaries. This is a flexible and complete encoding scheme for the worlds many scripts, characters and emjois. However since its a variable lenght encoding (using between one and four bytes for UTF8) it is harder to use high-performance byte-oriented functions to decompose strings.
