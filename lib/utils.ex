@@ -258,40 +258,6 @@ defmodule Unicode.Utils do
     |> String.replace("-", "_")
   end
 
-  @doc """
-  For a given list of bytes (each in the range 0x00..0xff) return
-  the equivalent codepoint.
-  """
-  def bytes_to_codepoint(byte_list) when is_list(byte_list) do
-    <<byte_list
-      |> :binary.list_to_bin()
-      |> :binary.decode_unsigned()::utf8>>
-  end
-
-  @doc """
-  Append a codepoint to a list of codepoints
-  """
-  def append_codepoint(binary, codepoint) when is_integer(codepoint) do
-    <<binary::binary, codepoint::utf8>>
-  end
-
-  @doc """
-  For a given character in binary format, return the
-  integer codepoint.
-  """
-  def binary_to_codepoints(string) when is_binary(string) do
-    String.to_charlist(string)
-  end
-
-  @doc """
-  For a given character in binary format, return the
-  integer codepoint.
-  """
-  def integer_to_codepoint(integer) when is_integer(integer) and integer >= 0 do
-    <<codepoint::utf8>> = integer
-    codepoint
-  end
-
   @doc false
   def ranges_to_guard_clause([{first, first}]) do
     quote do
@@ -384,7 +350,7 @@ defmodule Unicode.Utils do
   end
 
   @doc false
-  def reverse_map(map) do
+  def invert_map(map) do
     Enum.map(map, fn {k, v} -> {v, k} end)
     |> Map.new()
   end

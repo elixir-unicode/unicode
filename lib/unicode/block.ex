@@ -41,7 +41,7 @@ defmodule Unicode.Block do
 
   @block_alias Utils.property_value_alias()
                |> Map.get("blk")
-               |> Utils.reverse_map()
+               |> Utils.invert_map()
                |> Utils.atomize_values()
                |> Utils.downcase_keys_and_remove_whitespace()
                |> Utils.add_canonical_alias()

@@ -42,7 +42,7 @@ defmodule Unicode.Script do
 
   @script_alias Utils.property_value_alias()
                 |> Map.get("sc")
-                |> Utils.reverse_map()
+                |> Utils.invert_map()
                 |> Utils.atomize_values()
                 |> Utils.downcase_keys_and_remove_whitespace()
                 |> Utils.add_canonical_alias()
@@ -134,9 +134,9 @@ defmodule Unicode.Script do
   """
   def script(string) when is_binary(string) do
     string
-    |> String.codepoints()
-    |> Enum.flat_map(&Utils.binary_to_codepoints/1)
+    |> String.to_charlist()
     |> Enum.map(&script/1)
+    |> Enum.uniq()
   end
 
   for {script, ranges} <- @scripts do
