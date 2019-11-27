@@ -11,8 +11,6 @@ defmodule Unicode do
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()
-  IO.inspect @data_dir, label: "Data dir is:"
-  IO.inspect File.ls(@data_dir), label: "Data files:"
   def data_dir do
     @data_dir
   end
