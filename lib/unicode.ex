@@ -153,9 +153,6 @@ defmodule Unicode do
   @spec category(codepoint_or_string) :: atom | [atom, ...]
   defdelegate category(codepoint_or_string), to: Unicode.Category
 
-  @spec category(codepoint_or_string) :: atom | [atom, ...]
-  defdelegate class(codepoint_or_string), to: Unicode.Category, as: :category
-
   @doc """
   Returns the script name of a codepoint
   or the list of block names for each codepoint

@@ -16,7 +16,11 @@ defmodule Unicode.MixProject do
       source_url: "https://github.com/elixir-unicode/unicode",
       description: description(),
       package: package(),
-      elixirc_paths: elixirc_paths(Mix.env())
+      elixirc_paths: elixirc_paths(Mix.env()),
+      dialyzer: [
+        plt_add_apps: ~w(mix inets)a,
+        ignore_warnings: ".dialyzer_ignore_warnings"
+      ]
     ]
   end
 
@@ -55,7 +59,8 @@ defmodule Unicode.MixProject do
   defp deps do
     [
       {:benchee, "~> 1.0", only: :dev},
-      {:ex_doc, "~> 0.19", only: [:release, :dev]}
+      {:ex_doc, "~> 0.19", only: [:release, :dev]},
+      {:dialyxir, "~> 1.0.0-rc", only: [:dev], runtime: false, optional: true}
     ]
   end
 
