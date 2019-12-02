@@ -44,11 +44,11 @@ defmodule Unicode do
   end
 
   def fetch_property(property) when is_binary(property) do
-    Map.fetch(property_servers(), Utils.downcase_keys_and_remove_whitespace(property))
+    Map.fetch(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
 
   def get_property(property) when is_binary(property) do
-    Map.get(property_servers(), Utils.downcase_keys_and_remove_whitespace(property))
+    Map.get(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
 
   @doc """

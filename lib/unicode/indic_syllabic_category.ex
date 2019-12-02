@@ -104,7 +104,7 @@ defmodule Unicode.IndicSyllabicCategory do
 
   @doc """
   Returns the count of the number of characters
-  for a given indic_syllabic_category.
+  for a given indic syllabic category.
 
   ## Example
 
@@ -124,7 +124,7 @@ defmodule Unicode.IndicSyllabicCategory do
   given binary or codepoint.
 
   In the case of a codepoint, a single
-  indic_syllabic_category name is returned.
+  indic syllabic category name is returned.
 
   For a binary a list of distinct indic syllabic category
   names represented by the lines in

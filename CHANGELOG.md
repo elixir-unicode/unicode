@@ -1,3 +1,21 @@
+# Changelog for Unicode v1.3.0
+
+This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Breaking Changes
+
+* Changed two module names: `Unicode.Category` becomes `Unicode.GeneralCategory` and `Unicode.CombiningClass` becomes `Unicode.CanonicalCombiningClass`. These names map directly to the Unicode standard names. It also means all property module names can be derived from the Unicode property name which is what the new `Unicode.servers/0` function does.
+
+### Enhancements
+
+* Add property modules for line break, sentence break, grapheme cluster break and indic syllabic category. These properties are used by the CLDR and Unicode segmentation rules.
+
+* Add `Unicode.servers/0` that maps property names and aliases to a module name that serves that property.
+
+### Bug fixes
+
+* Fixes `Unicode.aliases/0` to correctly use the aliases in `data/property_alias.txt`
+
 # Changelog for Unicode v1.2.0
 
 This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
