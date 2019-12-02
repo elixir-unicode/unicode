@@ -78,6 +78,50 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the `grapheme_break` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @grapheme_breaks_path Path.join(Unicode.data_dir(), "grapheme_break.txt")
+  def grapheme_breaks do
+    parse_file(@grapheme_breaks_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `line_break` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @line_breaks_path Path.join(Unicode.data_dir(), "line_break.txt")
+  def line_breaks do
+    parse_file(@line_breaks_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `sentence_break` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @sentence_breaks_path Path.join(Unicode.data_dir(), "sentence_break.txt")
+  def sentence_breaks do
+    parse_file(@sentence_breaks_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `sentence_break` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @indic_syllabic_category_path Path.join(Unicode.data_dir(), "indic_syllabic_category.txt")
+  def indic_syllabic_categories do
+    parse_file(@indic_syllabic_category_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
   Returns a map of the property value aliases.
   """
   @property_alias_path Path.join(Unicode.data_dir(), "property_alias.txt")
@@ -97,6 +141,23 @@ defmodule Unicode.Utils do
         []
     end)
     |> Map.new()
+  end
+
+  @doc """
+  Returns a mapping of property names and
+  aliases to the module that serves that
+  property
+
+  """
+  def property_servers do
+    property_alias()
+    |> atomize_values
+    |> add_canonical_alias()
+    |> Enum.map(fn {k, v} ->
+      {k, Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
+    end)
+    |> Enum.filter(fn {_k, v} -> Code.ensure_compiled?(v) end)
+    |> Map.new
   end
 
   @doc """

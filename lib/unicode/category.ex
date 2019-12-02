@@ -1,4 +1,4 @@
-defmodule Unicode.Category do
+defmodule Unicode.GeneralCategory do
   @moduledoc """
   Functions to introspect Unicode
   general categories for binaries
@@ -120,10 +120,10 @@ defmodule Unicode.Category do
 
   ## Example
 
-      iex> Unicode.Category.count(:Ll)
+      iex> Unicode.GeneralCategory.count(:Ll)
       2151
 
-      iex> Unicode.Category.count(:Nd)
+      iex> Unicode.GeneralCategory.count(:Nd)
       630
 
   """

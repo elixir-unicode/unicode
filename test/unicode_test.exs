@@ -3,8 +3,13 @@ defmodule Unicode.Test do
 
   doctest Unicode
   doctest Unicode.Property
-  doctest Unicode.Category
+  doctest Unicode.GeneralCategory
   doctest Unicode.Script
   doctest Unicode.Block
-  doctest Unicode.CombiningClass
+  doctest Unicode.CanonicalCombiningClass
+
+  doctest Unicode.GraphemeClusterBreak
+  doctest Unicode.LineBreak
+  doctest Unicode.SentenceBreak
+  doctest Unicode.IndicSyllabicCategory
 end

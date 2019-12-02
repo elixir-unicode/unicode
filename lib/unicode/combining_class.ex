@@ -1,4 +1,4 @@
-defmodule Unicode.CombiningClass do
+defmodule Unicode.CanonicalCombiningClass do
   @moduledoc """
   Functions to introspect Unicode
   canonical combining classes for binaries
@@ -113,7 +113,7 @@ defmodule Unicode.CombiningClass do
 
   ## Example
 
-      iex> Unicode.CombiningClass.count(230)
+      iex> Unicode.CanonicalCombiningClass.count(230)
       482
 
   """

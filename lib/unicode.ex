@@ -5,6 +5,7 @@ defmodule Unicode do
   categories and properties.
 
   """
+  alias Unicode.Utils
 
   @type codepoint :: non_neg_integer
   @type codepoint_or_string :: codepoint | String.t()
@@ -32,33 +33,22 @@ defmodule Unicode do
     @version
   end
 
-  @property_aliases %{
-    "canonical_combining_class" => Unicode.CombiningClass,
-    "ccc" => Unicode.CombiningClass,
-    "general_category" => Unicode.Category,
-    "gc" => Unicode.Category,
-    "block" => Unicode.Block,
-    "blk" => Unicode.Block,
-    "script" => Unicode.Script,
-    "sc" => Unicode.Script
-  }
-
   @doc """
   Returns a map of aliases mapping
   property names to a module that
   serves that property
 
   """
-  def property_aliases do
-    @property_aliases
+  def property_servers do
+    Unicode.Property.servers()
   end
 
   def fetch_property(property) when is_binary(property) do
-    Map.fetch(property_aliases(), String.downcase(property))
+    Map.fetch(property_servers(), Utils.downcase_keys_and_remove_whitespace(property))
   end
 
   def get_property(property) when is_binary(property) do
-    Map.get(property_aliases(), String.downcase(property))
+    Map.get(property_servers(), Utils.downcase_keys_and_remove_whitespace(property))
   end
 
   @doc """
@@ -151,7 +141,7 @@ defmodule Unicode do
 
   """
   @spec category(codepoint_or_string) :: atom | [atom, ...]
-  defdelegate category(codepoint_or_string), to: Unicode.Category
+  defdelegate category(codepoint_or_string), to: Unicode.GeneralCategory
 
   @doc """
   Returns the script name of a codepoint

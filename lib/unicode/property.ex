@@ -8,7 +8,7 @@ defmodule Unicode.Property do
 
   @type string_or_codepoint :: String.t() | non_neg_integer
 
-  alias Unicode.{Utils, Category, Emoji}
+  alias Unicode.{Utils, GeneralCategory, Emoji}
 
   @derived_properties Utils.derived_properties()
                       |> Utils.remove_annotations()
@@ -63,6 +63,16 @@ defmodule Unicode.Property do
   @impl Unicode.Property.Behaviour
   def aliases do
     @property_alias
+  end
+
+  @doc """
+  Returns a map of properties to the module
+  that serves that property.
+
+  """
+  @servers Utils.property_servers()
+  def servers do
+    @servers
   end
 
   @doc """
@@ -188,7 +198,7 @@ defmodule Unicode.Property do
     if extended_numeric?(codepoint_or_binary), do: :extended_numeric, else: nil
   end
 
-  @numeric_ranges Category.get(:Nd)
+  @numeric_ranges GeneralCategory.get(:Nd)
 
   @doc """
   Returns a boolean based upon
@@ -213,7 +223,7 @@ defmodule Unicode.Property do
 
   def numeric?(_), do: false
 
-  @extended_numeric_ranges @numeric_ranges ++ Category.get(:Nl) ++ Category.get(:No)
+  @extended_numeric_ranges @numeric_ranges ++ GeneralCategory.get(:Nl) ++ GeneralCategory.get(:No)
 
   @doc """
   Returns a boolean based upon
