@@ -33,7 +33,17 @@ if File.exists?(Unicode.data_dir()) do
         {"https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt",
          data_path("properties.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/PropertyAliases.txt",
-         data_path("property_alias.txt")}
+         data_path("property_alias.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt",
+         data_path("line_break.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/WordBreakProperty.txt",
+         data_path("word_break.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/GraphemeBreakProperty.txt",
+         data_path("grapheme_break.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/SentenceBreakProperty.txt",
+         data_path("sentence_break.txt")},
+        {"https://unicode.org/Public/UCD/latest/ucd/IndicSyllabicCategory.txt",
+         data_path("indic_syllabic_category.txt")}
       ]
     end
 
