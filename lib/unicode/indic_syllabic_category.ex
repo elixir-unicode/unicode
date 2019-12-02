@@ -108,8 +108,8 @@ defmodule Unicode.IndicSyllabicCategory do
 
   ## Example
 
-      iex> Unicode.LineBreak.count("mongolian")
-      167
+      iex> Unicode.IndicSyllabicCategory.count(:bindu)
+      86
 
   """
   @impl Unicode.Property.Behaviour

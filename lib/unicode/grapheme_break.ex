@@ -109,8 +109,8 @@ defmodule Unicode.GraphemeClusterBreak do
 
   ## Example
 
-      iex> Unicode.GraphemeClusterBreak.count("mongolian")
-      167
+      iex> Unicode.GraphemeClusterBreak.count(:prepend)
+      22
 
   """
   @impl Unicode.Property.Behaviour
