@@ -39,8 +39,12 @@ These functions return the codepoints as list of 2-tuples for the given property
 
 * `Unicode.Block.blocks/0`
 * `Unicode.Script.scripts/0`
-* `Unicode.Category.categories/0`
+* `Unicode.GeneralCategory.categories/0`
 * `Unicode.CombiningClass.combining_classes/0`
+* `Unicode.GraphemeBreak.grapheme_breaks/0`
+* `Unicode.LineBreak.line_breaks/0`
+* `Unicode.SentenceBreak.sentence_breaks/0`
+* `Unicode.IndicSyllabicCategory.indic_syllabic_categories/0`
 * `Unicode.Property.properties/0`
 
 ### Basic introspection of codepoints and string

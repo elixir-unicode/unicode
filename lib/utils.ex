@@ -31,7 +31,7 @@ defmodule Unicode.Utils do
   def combining_classes do
     parse_file(@combining_class_path)
     |> Enum.map(fn {k, v} -> {String.to_integer(k), v} end)
-    |> Map.new
+    |> Map.new()
   end
 
   @doc """
@@ -156,8 +156,8 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {k, v} ->
       {k, Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
     end)
-    |> Enum.filter(fn {_k, v} -> Code.ensure_compiled?(v) end)
-    |> Map.new
+    |> Enum.filter(fn {_k, v} -> ensure_compiled?(v) end)
+    |> Map.new()
   end
 
   @doc """
@@ -285,7 +285,7 @@ defmodule Unicode.Utils do
   def add_canonical_alias(map) do
     map
     |> Enum.map(fn {_k, v} -> {downcase_and_remove_whitespace(v), v} end)
-    |> Map.new
+    |> Map.new()
     |> Map.merge(map)
   end
 
@@ -414,5 +414,12 @@ defmodule Unicode.Utils do
   def invert_map(map) do
     Enum.map(map, fn {k, v} -> {v, k} end)
     |> Map.new()
+  end
+
+  defp ensure_compiled?(module) do
+    case Code.ensure_compiled(module) do
+      {:module, _} -> true
+      {:error, _} -> false
+    end
   end
 end

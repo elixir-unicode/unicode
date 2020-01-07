@@ -11,7 +11,7 @@ defmodule Unicode.SentenceBreak do
   alias Unicode.Utils
 
   @sentence_breaks Utils.sentence_breaks()
-           |> Utils.remove_annotations()
+                   |> Utils.remove_annotations()
 
   @doc """
   Returns the map of Unicode
@@ -41,11 +41,11 @@ defmodule Unicode.SentenceBreak do
   end
 
   @sentence_break_alias Utils.property_value_alias()
-                |> Map.get("gcb")
-                |> Utils.invert_map()
-                |> Utils.atomize_values()
-                |> Utils.downcase_keys_and_remove_whitespace()
-                |> Utils.add_canonical_alias()
+                        |> Map.get("gcb")
+                        |> Utils.invert_map()
+                        |> Utils.atomize_values()
+                        |> Utils.downcase_keys_and_remove_whitespace()
+                        |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for

@@ -11,7 +11,7 @@ defmodule Unicode.IndicSyllabicCategory do
   alias Unicode.Utils
 
   @indic_syllabic_categories Utils.indic_syllabic_categories()
-           |> Utils.remove_annotations()
+                             |> Utils.remove_annotations()
 
   @doc """
   Returns the map of Unicode
@@ -41,10 +41,10 @@ defmodule Unicode.IndicSyllabicCategory do
   end
 
   @indic_syllabic_category_alias Utils.property_value_alias()
-                |> Map.get("insc")
-                |> Utils.atomize_values()
-                |> Utils.downcase_keys_and_remove_whitespace()
-                |> Utils.add_canonical_alias()
+                                 |> Map.get("insc")
+                                 |> Utils.atomize_values()
+                                 |> Utils.downcase_keys_and_remove_whitespace()
+                                 |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -144,7 +144,8 @@ defmodule Unicode.IndicSyllabicCategory do
     end
   end
 
-  def indic_syllabic_category(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
+  def indic_syllabic_category(codepoint)
+      when is_integer(codepoint) and codepoint in 0..0x10FFFF do
     :other
   end
 end

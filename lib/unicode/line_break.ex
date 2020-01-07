@@ -11,7 +11,7 @@ defmodule Unicode.LineBreak do
   alias Unicode.Utils
 
   @line_breaks Utils.line_breaks()
-           |> Utils.remove_annotations()
+               |> Utils.remove_annotations()
 
   @doc """
   Returns the map of Unicode
@@ -41,10 +41,10 @@ defmodule Unicode.LineBreak do
   end
 
   @line_break_alias Utils.property_value_alias()
-                |> Map.get("lb")
-                |> Utils.atomize_values()
-                |> Utils.downcase_keys_and_remove_whitespace()
-                |> Utils.add_canonical_alias()
+                    |> Map.get("lb")
+                    |> Utils.atomize_values()
+                    |> Utils.downcase_keys_and_remove_whitespace()
+                    |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for

@@ -57,8 +57,8 @@ defmodule Unicode.Property do
 
   """
   @property_alias Utils.property_alias()
-  |> Utils.atomize_values
-  |> Utils.add_canonical_alias()
+                  |> Utils.atomize_values()
+                  |> Utils.add_canonical_alias()
 
   @impl Unicode.Property.Behaviour
   def aliases do
@@ -291,10 +291,10 @@ defmodule Unicode.Property do
     @doc """
     Returns a boolean indicating if the
     codepoint or string has the property
-    `#{inspect property}`.
+    `#{inspect(property)}`.
 
     For string parameters, all codepoints in
-    the string must have the `#{inspect property}`
+    the string must have the `#{inspect(property)}`
     property in order for the result to be `true`.
 
     """
@@ -313,13 +313,13 @@ defmodule Unicode.Property do
     end
 
     @doc """
-    Returns `#{inspect property}` or `nil` indicating
+    Returns `#{inspect(property)}` or `nil` indicating
     if the codepoint or string has the property
-    `#{inspect property}`.
+    `#{inspect(property)}`.
 
     For string parameters, all codepoints in
-    the string must have the `#{inspect property}`
-    property in order for the result to `#{inspect property}`.
+    the string must have the `#{inspect(property)}`
+    property in order for the result to `#{inspect(property)}`.
 
     """
     def unquote(property)(codepoint) do
@@ -341,7 +341,7 @@ defmodule Unicode.Property do
   def properties(codepoint) when is_integer(codepoint) do
     [Emoji.emoji(codepoint) | unquote(@properties_code)]
     |> Enum.reject(&is_nil/1)
-    |> Enum.sort
+    |> Enum.sort()
   end
 
   @spec properties(string_or_codepoint) :: [atom, ...] | [[atom, ...], ...]

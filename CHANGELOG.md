@@ -1,3 +1,13 @@
+# Changelog for Unicode v1.3.1
+
+This is the changelog for Unicode v1.3.1 released on January 8th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Bug Fixes
+
+* Remove call to `Code.ensure_compiled?/1` which is deprecated in Elixir 1.10.0.
+
+* Fix the ranges for the General Category `:assigned`.
+
 # Changelog for Unicode v1.3.0
 
 This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

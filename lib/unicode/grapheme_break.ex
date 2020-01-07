@@ -11,7 +11,7 @@ defmodule Unicode.GraphemeClusterBreak do
   alias Unicode.Utils
 
   @grapheme_breaks Utils.grapheme_breaks()
-           |> Utils.remove_annotations()
+                   |> Utils.remove_annotations()
 
   @doc """
   Returns the map of Unicode
@@ -41,11 +41,11 @@ defmodule Unicode.GraphemeClusterBreak do
   end
 
   @grapheme_break_alias Utils.property_value_alias()
-                |> Map.get("gcb")
-                |> Utils.invert_map()
-                |> Utils.atomize_values()
-                |> Utils.downcase_keys_and_remove_whitespace()
-                |> Utils.add_canonical_alias()
+                        |> Map.get("gcb")
+                        |> Utils.invert_map()
+                        |> Utils.atomize_values()
+                        |> Utils.downcase_keys_and_remove_whitespace()
+                        |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
