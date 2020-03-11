@@ -75,6 +75,10 @@ defmodule Unicode.Category.QuoteMarks do
   | \uFF63 | U+FF63 | HALFWIDTH right CORNER BRACKET | &amp;#65379; | Halfwidth and Fullwidth Forms, corresponds with U+300D
   """
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  typically used on the left (for LTR languages)
+  """
   def quote_marks_left do
     [
       0x00AB,
@@ -95,6 +99,10 @@ defmodule Unicode.Category.QuoteMarks do
     ]
   end
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  typically used on the right (for LTR languages)
+  """
   def quote_marks_right do
     [
       0x00BB,
@@ -114,14 +122,26 @@ defmodule Unicode.Category.QuoteMarks do
     ]
   end
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  typically used on the left or right (for LTR languages)
+  """
   def quote_marks_ambidextrous do
     [0x0022, 0x0027, 0x201F, 0x2E42, 0x301D, 0x301E, 0x301F, 0xFF02, 0xFF07, 0x1F678]
   end
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  typically used in Braille
+  """
   def quote_marks_braille do
     [0x2826, 0x2834]
   end
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  understood to be single marks
+  """
   def quote_marks_single do
     [
       0x0027,
@@ -147,6 +167,10 @@ defmodule Unicode.Category.QuoteMarks do
     ]
   end
 
+  @doc """
+  Return a list of codepoints representing quote marks
+  understood to be double marks
+  """
   def quote_marks_double do
     [
       0x0022,
@@ -171,6 +195,10 @@ defmodule Unicode.Category.QuoteMarks do
     ]
   end
 
+  @doc """
+  Return a list of codepoints representing all
+  quote marks.
+  """
   def all_quote_marks do
     [
       quote_marks_left(),
