@@ -344,6 +344,25 @@ defmodule Unicode.Utils do
     end
   end
 
+  @doc """
+  Takes a list of codepoints and collapses them into
+  a list of tuple ranges
+
+  """
+  def list_to_ranges(list) do
+    list
+    |> Enum.sort
+    |> Enum.reduce([], fn
+      codepoint, [] ->
+        [{codepoint, codepoint}]
+      codepoint, [{start, finish} | rest] when codepoint == finish + 1 ->
+        [{start, finish + 1} | rest]
+      codepoint, acc ->
+        [{codepoint, codepoint} | acc]
+    end)
+    |> Enum.reverse
+  end
+
   @doc false
   def capitalize_keys(map) do
     Enum.map(map, fn {k, v} -> {String.capitalize(k), v} end)

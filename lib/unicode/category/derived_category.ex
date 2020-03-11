@@ -21,7 +21,17 @@ defmodule Unicode.GeneralCategory.Derived do
   * `:ascii` which is the range for the US ASCII
     character set of `0x0..0x7f`
 
+  In addition there are derived categories
+  not part of the Unicode specification that
+  support additional use cases. Currently that
+  means several categories related to
+  recognising Quotation characters. See the
+  module `Unicode.Category.QuoteMarks`.
+
   """
+
+  alias Unicode.Category.QuoteMarks
+  alias Unicode.Utils
 
   @any_category [{0x0, 0x10FFFF}]
   @ascii_category [{0x0, 0x7F}]
@@ -702,13 +712,25 @@ defmodule Unicode.GeneralCategory.Derived do
   @derived_categories %{
     Ascii: @ascii_category,
     Assigned: @assigned_category,
-    Any: @any_category
+    Any: @any_category,
+    QuoteMark: QuoteMarks.all_quote_marks() |> Utils.list_to_ranges(),
+    QuoteMarkLeft: QuoteMarks.quote_marks_left() |> Utils.list_to_ranges(),
+    QuoteMarkRight: QuoteMarks.quote_marks_right() |> Utils.list_to_ranges(),
+    QuoteMarkAmbidextrous: QuoteMarks.quote_marks_ambidextrous() |> Utils.list_to_ranges(),
+    QuoteMarkSingle: QuoteMarks.quote_marks_single() |> Utils.list_to_ranges(),
+    QuoteMarkDouble: QuoteMarks.quote_marks_double() |> Utils.list_to_ranges(),
   }
 
   @derived_aliases %{
     "any" => :Any,
     "assigned" => :Assigned,
-    "ascii" => :Ascii
+    "ascii" => :Ascii,
+    "quotemark" => :QuoteMark,
+    "quotemarkleft" => :QuoteMarkLeft,
+    "quotemarkright" => :QuoteMarkRight,
+    "quotemarkambidextrous" => :QuoteMarkAmbidextrous,
+    "quotemarksingle" => :QuoteMarkSingle,
+    "quotemarkdouble" => :QuoteMarkDouble
   }
 
   @doc """
@@ -728,5 +750,4 @@ defmodule Unicode.GeneralCategory.Derived do
   def aliases do
     @derived_aliases
   end
-
 end

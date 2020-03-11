@@ -1,3 +1,29 @@
+# Changelog for Unicode v1.4.0
+
+This is the changelog for Unicode v1.4.0 released on March 11th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Enhancements
+
+Adds derived categories for various quotation marks.  Although the unicode character database has a flag to indicate if a given codepoint is a quotation mark, the list does not include CJK quotation marks, dingbats or alternative encodings. Some additional derived categories are therefore added that are taken from [Wikipedia](https://en.wikipedia.org/wiki/Quotation_mark). The added dervived categories are:
+
+  * QuoteMark - all quote marks
+  * QuoteMarkLeft - all quote marks used on the left
+  * QuoteMarkRight - quote marks used on the right
+  * QuoteMarkAmbidextrous - quote marks used either left or right
+  * QuoteMarkSingle - single quote marks
+  * QuoteMarkDouble - double quote marks
+
+These additional derived categories can be used in [Unicode Sets](https://hex.pm/packages/unicode_sets), for example:
+
+```
+iex> Unicode.Set.match? ?', "[[:quote_mark:]]"
+true
+iex> Unicode.Set.match? ?', "[[:quote_mark_left:]]"
+false
+iex> Unicode.Set.match? ?', "[[:quote_mark_ambidextrous:]]"
+true
+````
+
 # Changelog for Unicode v1.3.1
 
 This is the changelog for Unicode v1.3.1 released on January 8th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

@@ -25,7 +25,7 @@ defmodule Unicode.GeneralCategory do
                     |> Map.new()
 
   @all_categories Map.merge(@categories, @super_categories)
-                  |> Map.merge(Derived.categories)
+                  |> Map.merge(Derived.categories())
 
   @doc """
   Returns the map of Unicode
@@ -59,7 +59,7 @@ defmodule Unicode.GeneralCategory do
                   |> Utils.atomize_values()
                   |> Utils.downcase_keys_and_remove_whitespace()
                   |> Utils.add_canonical_alias()
-                  |> Map.merge(Derived.aliases)
+                  |> Map.merge(Derived.aliases())
 
   @doc """
   Returns a map of aliases for
@@ -147,6 +147,10 @@ defmodule Unicode.GeneralCategory do
   For a binary a list of distinct category
   names represented by the graphemes in
   the binary is returned.
+
+  Only concrete general categories are considered,
+  derived categories (:all, :ascii, :assigned etc)
+  are not considered.
 
   """
   def category(string) when is_binary(string) do
