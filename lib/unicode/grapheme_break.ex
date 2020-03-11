@@ -110,7 +110,7 @@ defmodule Unicode.GraphemeClusterBreak do
   ## Example
 
       iex> Unicode.GraphemeClusterBreak.count(:prepend)
-      22
+      24
 
   """
   @impl Unicode.Property.Behaviour

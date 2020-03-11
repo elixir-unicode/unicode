@@ -4,7 +4,13 @@ This is the changelog for Unicode v1.4.0 released on March 11th, 2019.  For olde
 
 ### Enhancements
 
-Adds derived categories for various quotation marks.  Although the unicode character database has a flag to indicate if a given codepoint is a quotation mark, the list does not include CJK quotation marks, dingbats or alternative encodings. Some additional derived categories are therefore added that are taken from [Wikipedia](https://en.wikipedia.org/wiki/Quotation_mark). The added dervived categories are:
+#### Updates Unicode to version 13.0.
+
+As of March 2020, Unicode has introduced [Unicode 13.0](http://blog.unicode.org/2020/03/announcing-unicode-standard-version-130.html) and this data now forms the basis of `ex_unicode` version 1.40. Version 13 of Unicode adds 5,390 characters, for a total of 143,859 characters. These additions include four new scripts, for a total of 154 scripts, as well as 55 new emoji characters.
+
+#### Adds derived categories for various quotation marks.
+
+Although the unicode character database has a flag to indicate if a given codepoint is a quotation mark, the list does not include CJK quotation marks, dingbats or alternative encodings. Some additional derived categories are therefore added that are taken from [Wikipedia](https://en.wikipedia.org/wiki/Quotation_mark). The added dervived categories are:
 
   * QuoteMark - all quote marks
   * QuoteMarkLeft - all quote marks used on the left
