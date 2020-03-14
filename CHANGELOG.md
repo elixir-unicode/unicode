@@ -1,3 +1,11 @@
+# Changelog for Unicode v1.5.0
+
+This is the changelog for Unicode v1.5.0 released on March 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+
+### Enhancements
+
+* Add derived categories `:printable:` and `:visible:`. `:printable:` implements the same semnantics `String.printable?/1`. `:visible:` combines the categories `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]`.
+
 # Changelog for Unicode v1.4.1
 
 This is the changelog for Unicode v1.4.1 released on March 11th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)

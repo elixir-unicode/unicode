@@ -363,6 +363,27 @@ defmodule Unicode.Utils do
     |> Enum.reverse
   end
 
+  @doc """
+  Takes a list of tuple ranges and compacts
+  adjacent ranges
+
+  """
+  def compact_ranges([]) do
+    []
+  end
+
+  def compact_ranges([{first, last}, {next, final} | rest]) when next >= first  and final <= last do
+    compact_ranges([{first, last} | rest])
+  end
+
+  def compact_ranges([{first, last}, {next, final} | rest]) when next == last + 1 do
+    compact_ranges([{first, final} | rest])
+  end
+
+  def compact_ranges([entry | rest]) do
+    [entry | compact_ranges(rest)]
+  end
+
   @doc false
   def capitalize_keys(map) do
     Enum.map(map, fn {k, v} -> {String.capitalize(k), v} end)
