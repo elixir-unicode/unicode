@@ -376,6 +376,10 @@ defmodule Unicode.Utils do
     compact_ranges([{first, last} | rest])
   end
 
+  def compact_ranges([{first, last}, {first, last} | rest]) do
+    compact_ranges([{first, last} | rest])
+  end
+
   def compact_ranges([{first, last}, {next, final} | rest])
       when next >= first and next <= last and final >= last do
     compact_ranges([{first, final} | rest])
