@@ -1,6 +1,6 @@
 # Changelog for Unicode v1.3.1
 
-This is the changelog for Unicode v1.3.1 released on January 8th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
 
 ### Bug Fixes
 
