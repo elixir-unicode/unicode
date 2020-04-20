@@ -344,6 +344,55 @@ defmodule Unicode.Utils do
     end
   end
 
+  @doc """
+  Takes a list of codepoints and collapses them into
+  a list of tuple ranges
+
+  """
+  def list_to_ranges(list) do
+    list
+    |> Enum.sort
+    |> Enum.reduce([], fn
+      codepoint, [] ->
+        [{codepoint, codepoint}]
+      codepoint, [{start, finish} | rest] when codepoint == finish + 1 ->
+        [{start, finish + 1} | rest]
+      codepoint, acc ->
+        [{codepoint, codepoint} | acc]
+    end)
+    |> Enum.reverse
+  end
+
+  @doc """
+  Takes a list of tuple ranges and compacts
+  adjacent ranges
+
+  """
+  def compact_ranges([]) do
+    []
+  end
+
+  def compact_ranges([{first, last}, {next, final} | rest]) when next >= first  and final <= last do
+    compact_ranges([{first, last} | rest])
+  end
+
+  def compact_ranges([{first, last}, {first, last} | rest]) do
+    compact_ranges([{first, last} | rest])
+  end
+
+  def compact_ranges([{first, last}, {next, final} | rest])
+      when next >= first and next <= last and final >= last do
+    compact_ranges([{first, final} | rest])
+  end
+
+  def compact_ranges([{first, last}, {next, final} | rest]) when next == last + 1 do
+    compact_ranges([{first, final} | rest])
+  end
+
+  def compact_ranges([entry | rest]) do
+    [entry | compact_ranges(rest)]
+  end
+
   @doc false
   def capitalize_keys(map) do
     Enum.map(map, fn {k, v} -> {String.capitalize(k), v} end)
