@@ -6,6 +6,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @scripts_path Path.join(Unicode.data_dir(), "scripts.txt")
+  @external_resource @scripts_path
   def scripts do
     parse_file(@scripts_path)
     |> downcase_keys()
@@ -17,6 +18,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @blocks_path Path.join(Unicode.data_dir(), "blocks.txt")
+  @external_resource @blocks_path
   def blocks do
     parse_file(@blocks_path)
     |> downcase_keys
@@ -28,6 +30,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @combining_class_path Path.join(Unicode.data_dir(), "combining_class.txt")
+  @external_resource @combining_class_path
   def combining_classes do
     parse_file(@combining_class_path)
     |> Enum.map(fn {k, v} -> {String.to_integer(k), v} end)
@@ -39,6 +42,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @categories_path Path.join(Unicode.data_dir(), "categories.txt")
+  @external_resource @categories_path
   def categories do
     parse_file(@categories_path)
     |> atomize_keys()
@@ -49,6 +53,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @derived_properties_path Path.join(Unicode.data_dir(), "derived_properties.txt")
+  @external_resource @derived_properties_path
   def derived_properties do
     parse_file(@derived_properties_path)
     |> downcase_keys
@@ -60,6 +65,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @properties_path Path.join(Unicode.data_dir(), "properties.txt")
+  @external_resource @properties_path
   def properties do
     parse_file(@properties_path)
     |> downcase_keys()
@@ -71,6 +77,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @emoji_path Path.join(Unicode.data_dir(), "emoji.txt")
+  @external_resource @emoji_path
   def emoji do
     parse_file(@emoji_path)
     |> downcase_keys
@@ -82,6 +89,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @grapheme_breaks_path Path.join(Unicode.data_dir(), "grapheme_break.txt")
+  @external_resource @grapheme_breaks_path
   def grapheme_breaks do
     parse_file(@grapheme_breaks_path)
     |> downcase_keys()
@@ -93,6 +101,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @line_breaks_path Path.join(Unicode.data_dir(), "line_break.txt")
+  @external_resource @line_breaks_path
   def line_breaks do
     parse_file(@line_breaks_path)
     |> downcase_keys()
@@ -100,10 +109,43 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints from SpecialCasing.txt
+  as the key and a list of codepoint ranges as the values.
+  """
+  @special_casing_path Path.join(Unicode.data_dir(), "special_casing.txt")
+  @external_resource @special_casing_path
+  def special_casing do
+    parse_alias_file(@special_casing_path)
+    |> Enum.map(fn row ->
+      Enum.map(row, &extract/1)
+      |> Enum.reverse
+      |> tl
+      |> Enum.reverse
+    end)
+    |> Enum.group_by(&hd/1)
+  end
+
+  defp extract(string) do
+    string
+    |> String.split(" ")
+    |> Enum.map(&to_integer/1)
+    |> return_list_or_integer
+  rescue ArgumentError ->
+    string
+  end
+
+  def return_list_or_integer([integer]), do: integer
+  def return_list_or_integer(list), do: list
+
+  def to_integer(""), do: nil
+  def to_integer(string), do: String.to_integer(string, 16)
+
+  @doc """
   Returns a map of the Unicode codepoints with the `sentence_break` name
   as the key and a list of codepoint ranges as the values.
   """
   @sentence_breaks_path Path.join(Unicode.data_dir(), "sentence_break.txt")
+  @external_resource @sentence_breaks_path
   def sentence_breaks do
     parse_file(@sentence_breaks_path)
     |> downcase_keys()
@@ -115,6 +157,7 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
   """
   @indic_syllabic_category_path Path.join(Unicode.data_dir(), "indic_syllabic_category.txt")
+  @external_resource @indic_syllabic_category_path
   def indic_syllabic_categories do
     parse_file(@indic_syllabic_category_path)
     |> downcase_keys()
@@ -125,6 +168,7 @@ defmodule Unicode.Utils do
   Returns a map of the property value aliases.
   """
   @property_alias_path Path.join(Unicode.data_dir(), "property_alias.txt")
+  @external_resource @property_alias_path
   def property_alias do
     parse_alias_file(@property_alias_path)
     |> Enum.flat_map(fn
@@ -164,6 +208,7 @@ defmodule Unicode.Utils do
   Returns a map of the property value aliases.
   """
   @property_value_alias_path Path.join(Unicode.data_dir(), "property_value_alias.txt")
+  @external_resource @property_value_alias_path
   def property_value_alias do
     parse_alias_file(@property_value_alias_path)
     |> Enum.group_by(&hd/1, &tl/1)
@@ -235,7 +280,7 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {key, ranges} ->
       {key, Enum.reverse(ranges)}
     end)
-    |> Enum.into(%{})
+    |> Map.new
   end
 
   # Range

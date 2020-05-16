@@ -19,6 +19,8 @@ if File.exists?(Unicode.data_dir()) do
 
     defp required_files do
       [
+        {"https://unicode.org/Public/UCD/latest/ucd/UnicodeData.txt",
+         data_path("unicode_data.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/extracted/DerivedGeneralCategory.txt",
          data_path("categories.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt", data_path("blocks.txt")},
@@ -27,7 +29,8 @@ if File.exists?(Unicode.data_dir()) do
          data_path("derived_properties.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/extracted/DerivedCombiningClass.txt",
          data_path("combining_class.txt")},
-        {"https://unicode.org/Public/emoji/13.0/emoji-sequences.txt", data_path("emoji.txt")},
+        # {"https://unicode.org/Public/emoji/13.0/emoji-sequences.txt", data_path("emoji.txt")},
+        {"https://www.unicode.org/Public/UCD/latest/ucd/emoji/emoji-data.txt", data_path("emoji.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt",
          data_path("property_value_alias.txt")},
         {"https://www.unicode.org/Public/UCD/latest/ucd/PropList.txt",
@@ -43,7 +46,11 @@ if File.exists?(Unicode.data_dir()) do
         {"https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/SentenceBreakProperty.txt",
          data_path("sentence_break.txt")},
         {"https://unicode.org/Public/UCD/latest/ucd/IndicSyllabicCategory.txt",
-         data_path("indic_syllabic_category.txt")}
+         data_path("indic_syllabic_category.txt")},
+        {"https://unicode.org/Public/UCD/latest/ucd/CaseFolding.txt",
+         data_path("case_folding.txt")},
+        {"https://unicode.org/Public/UCD/latest/ucd/SpecialCasing.txt",
+         data_path("special_casing.txt")}
       ]
     end
 
