@@ -1,6 +1,16 @@
+# Changelog for Unicode v1.6.0
+
+This is the changelog for Unicode v1.6.0 released on May 17th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Add `Unicode.Utils.case_folding/0`
+
+* Add `Unicode.Utils.special_casing/0`
+
 # Changelog for Unicode v1.5.0
 
-This is the changelog for Unicode v1.5.0 released on March 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.5.0 released on March 14th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Enhancements
 
@@ -8,7 +18,7 @@ This is the changelog for Unicode v1.5.0 released on March 14th, 2019.  For olde
 
 # Changelog for Unicode v1.4.1
 
-This is the changelog for Unicode v1.4.1 released on March 11th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.4.1 released on March 11th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Bug Fixes
 
@@ -16,7 +26,7 @@ This is the changelog for Unicode v1.4.1 released on March 11th, 2019.  For olde
 
 # Changelog for Unicode v1.4.0
 
-This is the changelog for Unicode v1.4.0 released on March 11th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.4.0 released on March 11th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Enhancements
 
@@ -48,7 +58,7 @@ true
 
 # Changelog for Unicode v1.3.1
 
-This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Bug Fixes
 
@@ -58,7 +68,7 @@ This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For old
 
 # Changelog for Unicode v1.3.0
 
-This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Breaking Changes
 
@@ -76,7 +86,7 @@ This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For ol
 
 # Changelog for Unicode v1.2.0
 
-This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Breaking Changes
 
@@ -90,7 +100,7 @@ This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For o
 
 # Changelog for Unicode v1.1.0
 
-This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Breaking Changes
 
@@ -114,7 +124,7 @@ This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For o
 
 # Changelog for Unicode v1.0.0
 
-This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/unicode/tags)
+This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Breaking Changes
 
