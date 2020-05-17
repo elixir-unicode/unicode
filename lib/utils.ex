@@ -112,6 +112,26 @@ defmodule Unicode.Utils do
   Returns a map of the Unicode codepoints from SpecialCasing.txt
   as the key and a list of codepoint ranges as the values.
   """
+  @case_folding_path Path.join(Unicode.data_dir(), "case_folding.txt")
+  @external_resource @case_folding_path
+  def case_folding do
+    parse_alias_file(@case_folding_path)
+    |> Enum.map(fn
+      [from, status, to, _] -> [encode(status), extract(from), extract(to)]
+    end)
+    |> Enum.sort_by(&hd/1)
+    |> Enum.reverse
+  end
+
+  defp encode("c"), do: :common
+  defp encode("t"), do: :turkic
+  defp encode("f"), do: :full
+  defp encode("s"), do: :simple
+
+  @doc """
+  Returns a map of the Unicode codepoints from SpecialCasing.txt
+  as the key and a list of codepoint ranges as the values.
+  """
   @special_casing_path Path.join(Unicode.data_dir(), "special_casing.txt")
   @external_resource @special_casing_path
   def special_casing do

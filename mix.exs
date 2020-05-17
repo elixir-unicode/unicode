@@ -60,7 +60,7 @@ defmodule Unicode.MixProject do
     [
       {:benchee, "~> 1.0", only: :dev},
       {:ex_doc, "~> 0.19", only: [:release, :dev]},
-      {:dialyxir, "~> 1.0.0-rc", only: [:dev], runtime: false, optional: true}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true}
     ]
   end
 
