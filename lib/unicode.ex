@@ -297,6 +297,7 @@ defmodule Unicode do
         [
           :ascii_hex_digit,
           :emoji,
+          :emoji_component,
           :grapheme_base,
           :hex_digit,
           :id_continue,

@@ -6,6 +6,7 @@ defmodule Unicode.Test do
   doctest Unicode.GeneralCategory
   doctest Unicode.Script
   doctest Unicode.Block
+  doctest Unicode.Emoji
   doctest Unicode.CanonicalCombiningClass
 
   doctest Unicode.GraphemeClusterBreak

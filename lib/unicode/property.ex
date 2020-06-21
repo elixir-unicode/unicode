@@ -16,7 +16,9 @@ defmodule Unicode.Property do
   @properties Utils.properties()
               |> Utils.remove_annotations()
 
-  @all_properties Map.merge(@derived_properties, @properties)
+  @all_properties @derived_properties
+  |> Map.merge(@properties)
+  |> Map.merge(Emoji.emoji())
 
   @doc """
   Returns the map of Unicode
@@ -39,8 +41,7 @@ defmodule Unicode.Property do
   names of any property aliases.
 
   """
-  @known_properties Map.keys(@all_properties) ++
-                      Emoji.known_emoji_categories()
+  @known_properties Map.keys(@all_properties)
 
   def known_properties do
     @known_properties
@@ -339,7 +340,7 @@ defmodule Unicode.Property do
 
   """
   def properties(codepoint) when is_integer(codepoint) do
-    [Emoji.emoji(codepoint) | unquote(@properties_code)]
+    unquote(@properties_code)
     |> Enum.reject(&is_nil/1)
     |> Enum.sort()
   end

@@ -2,7 +2,7 @@ defmodule Unicode.DerivedCategory.Visible do
   @moduledoc false
 
   # Generated from:
-  # iex> {:ok, list, _, _, _, _} = Unicode.Set.parse "[[:L:][:N:][:M:][:P:][:S:][:Zs:]]"
+  # iex> {:ok, list} = Unicode.Set.parse "[[:L:][:N:][:M:][:P:][:S:][:Zs:]]"
   # iex> Unicode.Set.Operation.expand list
 
   @visible [

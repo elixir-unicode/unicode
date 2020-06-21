@@ -1,3 +1,13 @@
+# Changelog for Unicode v1.7.0
+
+This is the changelog for Unicode v1.7.0 released on June 22nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Add the emoji properties to `Uniccode.Property.fetch/2` API
+
+* Add certificate verification to download process
+
 # Changelog for Unicode v1.6.0
 
 This is the changelog for Unicode v1.6.0 released on May 17th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
