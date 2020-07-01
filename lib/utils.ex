@@ -173,6 +173,18 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the `east_asian_width` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @east_asian_width_path Path.join(Unicode.data_dir(), "east_asian_width.txt")
+  @external_resource @east_asian_width_path
+  def east_asian_width do
+    parse_file(@east_asian_width_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `sentence_break` name
   as the key and a list of codepoint ranges as the values.
   """

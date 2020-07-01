@@ -1,3 +1,11 @@
+# Changelog for Unicode v1.8.0
+
+This is the changelog for Unicode v1.8.0 released on ______, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Add the east asian width properties to `Uniccode.Property.fetch/2` API
+
 # Changelog for Unicode v1.7.0
 
 This is the changelog for Unicode v1.7.0 released on June 22nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

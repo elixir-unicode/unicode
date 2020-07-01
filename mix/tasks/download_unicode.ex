@@ -37,7 +37,8 @@ if File.exists?(Unicode.data_dir()) do
         {Path.join(root_url(), "/auxiliary/SentenceBreakProperty.txt"), data_path("sentence_break.txt")},
         {Path.join(root_url(), "/IndicSyllabicCategory.txt"), data_path("indic_syllabic_category.txt")},
         {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
-        {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")}
+        {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
+        {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")}
       ]
     end
 
