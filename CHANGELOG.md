@@ -4,7 +4,9 @@ This is the changelog for Unicode v1.8.0 released on ______, 2020.  For older ch
 
 ### Enhancements
 
-* Add the east asian width properties to `Uniccode.Property.fetch/2` API
+* Add the east asian width property to `Unicode.Property.fetch/2` API
+
+* Add the word break property to `Unicode.Property.fetch/2` API
 
 # Changelog for Unicode v1.7.0
 
