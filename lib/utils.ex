@@ -109,6 +109,18 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the `word_break` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @word_breaks_path Path.join(Unicode.data_dir(), "word_break.txt")
+  @external_resource @word_breaks_path
+  def word_breaks do
+    parse_file(@word_breaks_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints from SpecialCasing.txt
   as the key and a list of codepoint ranges as the values.
   """
