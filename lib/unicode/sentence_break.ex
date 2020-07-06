@@ -41,8 +41,8 @@ defmodule Unicode.SentenceBreak do
   end
 
   @sentence_break_alias Utils.property_value_alias()
-                        |> Map.get("gcb")
-                        |> Utils.invert_map()
+                        |> Map.get("sb")
+                        |> Utils.invert_map
                         |> Utils.atomize_values()
                         |> Utils.downcase_keys_and_remove_whitespace()
                         |> Utils.add_canonical_alias()
