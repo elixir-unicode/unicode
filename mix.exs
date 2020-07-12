@@ -18,7 +18,7 @@ defmodule Unicode.MixProject do
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
       dialyzer: [
-        plt_add_apps: ~w(mix inets)a,
+        plt_add_apps: ~w(mix inets public_key)a,
         ignore_warnings: ".dialyzer_ignore_warnings"
       ]
     ]
