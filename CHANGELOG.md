@@ -1,3 +1,11 @@
+# Changelog for Unicode v1.9.0
+
+This is the changelog for Unicode v1.9.0 released on October 4th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Change the definition of the derived property `All` to be the disjoint set of unicode ranges, not the closed set.
+
 # Changelog for Unicode v1.8.0
 
 This is the changelog for Unicode v1.8.0 released on July 12th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

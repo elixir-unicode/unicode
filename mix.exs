@@ -1,7 +1,7 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "1.8.0"
+  @version "1.9.0"
 
   def project do
     [

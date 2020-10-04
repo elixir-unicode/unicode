@@ -40,7 +40,7 @@ defmodule Unicode.GeneralCategory.Derived do
   alias Unicode.Category.QuoteMarks
   alias Unicode.Utils
 
-  @any_category [{0x0, 0x10FFFF}]
+  @any_category Unicode.Block.ranges()
   @ascii_category [{0x0, 0x7F}]
 
   @derived_categories %{
