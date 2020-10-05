@@ -1,24 +1,24 @@
 defmodule Unicode.GeneralCategory.Derived do
   @moduledoc """
   For certain operations and transformations
-  (especially in [Unicode Sets](http://unicode.org/reports/tr35/#Unicode_Sets)) there is an
-  expectation that certain derived general
-  categories exists even though they are not
+  (especially in [Unicode Sets](http://unicode.org/reports/tr35/#Unicode_Sets))
+  there is an expectation that certain derived
+  general categories exists even though they are not
   defined in the unicode character database.
 
   These categories are:
 
-  * `:any` which is the full unicode character
+  * `:any:` which is the full unicode character
     range `0x0..0x10ffff`
 
-  * `:assigned` which is the set of codepoints
-    that are assigned and which is therefore
-    equivalent to `:any` - `:Cn`. In fact that is
-    exactly how it is calculated using `unicode_set`
-    and the results are statically copied here so
+  * `:assigned:` which is the set of codepoints
+    that are assigned and is therefore
+    equivalent to `[:any]-[:Cn]`. In fact that is
+    exactly how it is calculated using [unicode_set](https://hex.pm/packages/unicode_set)
+    and the results are copied here so
     that there is no mutual dependency.
 
-  * `:ascii` which is the range for the US ASCII
+  * `:ascii:` which is the range for the US ASCII
     character set of `0x0..0x7f`
 
   In addition there are derived categories
@@ -30,7 +30,8 @@ defmodule Unicode.GeneralCategory.Derived do
     module `Unicode.Category.QuoteMarks`.
 
   * `:printable:` which implements the same
-    semantics as `String.printable?/1`.
+    semantics as `String.printable?/1`. This is
+    a very broad definitio of printable characters.
 
   * `:graphic:` which includes characters from the
     `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]` set.
