@@ -671,14 +671,31 @@ defmodule Unicode do
 
   @doc """
   Returns a list of tuples representing the
-  valid ranges of Unicode code points.
+  assigned ranges of Unicode code points.
 
   This information is derived from the block
   ranges as defined by `Unicode.Block.blocks/0`.
 
   """
-  @spec ranges :: [{pos_integer, pos_integer}]
-  defdelegate ranges, to: Unicode.Block
+  @spec assigned :: [{pos_integer, pos_integer}]
+  defdelegate assigned, to: Unicode.Block, as: :assigned
+
+  @deprecated "Use Unicode.assigned/0"
+  def ranges do
+    assigned()
+  end
+
+  @doc """
+  Returns a list of tuples representing the
+  full range of Unicode code points.
+
+  """
+  @all [{0x0, 0x10FFFF}]
+
+  @spec all :: [{pos_integer, pos_integer}]
+  def all do
+    @all
+  end
 
   @doc """
   Removes accents (diacritical marks) from

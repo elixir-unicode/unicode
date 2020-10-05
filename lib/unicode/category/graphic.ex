@@ -1,11 +1,11 @@
-defmodule Unicode.DerivedCategory.Visible do
+defmodule Unicode.DerivedCategory.Graphic do
   @moduledoc false
 
   # Generated from:
   # iex> {:ok, list} = Unicode.Set.parse "[[:L:][:N:][:M:][:P:][:S:][:Zs:]]"
   # iex> Unicode.Set.Operation.expand list
 
-  @visible [
+  @graphic [
     {32, 126},
     {160, 172},
     {174, 887},
@@ -686,7 +686,7 @@ defmodule Unicode.DerivedCategory.Visible do
     {917760, 917999}
   ]
 
-  def visible do
-    @visible
+  def graphic do
+    @graphic
   end
 end

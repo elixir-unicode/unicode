@@ -152,16 +152,16 @@ defmodule Unicode.Block do
 
   @doc """
   Returns a list of tuples representing the
-  valid ranges of all Unicode code points.
+  assigned ranges of all Unicode code points.
 
   """
-  @ranges @blocks
+  @assigned @blocks
           |> Map.values()
           |> Enum.map(&hd/1)
           |> Enum.sort()
           |> Unicode.compact_ranges()
 
-  def ranges do
-    @ranges
+  def assigned do
+    @assigned
   end
 end

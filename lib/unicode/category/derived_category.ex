@@ -26,26 +26,25 @@ defmodule Unicode.GeneralCategory.Derived do
   support additional use cases. These include:
 
   * Categories related to
-  recognising quotation marks. See the
-  module `Unicode.Category.QuoteMarks`.
+    recognising quotation marks. See the
+    module `Unicode.Category.QuoteMarks`.
 
   * `:printable:` which implements the same
-  semantics as `String.printable?/1`
+    semantics as `String.printable?/1`.
 
-  * `:visible:` which includes characters from the
-  `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]` set
+  * `:graphic:` which includes characters from the
+    `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]` set.
 
   """
 
   alias Unicode.Category.QuoteMarks
   alias Unicode.Utils
 
-  @any_category Unicode.Block.ranges()
   @ascii_category [{0x0, 0x7F}]
 
   @derived_categories %{
     Ascii: @ascii_category,
-    Any: @any_category,
+    Any: Unicode.all(),
     Assigned: Unicode.DerivedCategory.Assigned.assigned(),
     QuoteMark: QuoteMarks.all_quote_marks() |> Utils.list_to_ranges(),
     QuoteMarkLeft: QuoteMarks.quote_marks_left() |> Utils.list_to_ranges(),
@@ -54,7 +53,8 @@ defmodule Unicode.GeneralCategory.Derived do
     QuoteMarkSingle: QuoteMarks.quote_marks_single() |> Utils.list_to_ranges(),
     QuoteMarkDouble: QuoteMarks.quote_marks_double() |> Utils.list_to_ranges(),
     Printable: Unicode.DerivedCategory.Printable.printable(),
-    Visible: Unicode.DerivedCategory.Visible.visible()
+    Graphic: Unicode.DerivedCategory.Graphic.graphic(),
+    Visible: Unicode.DerivedCategory.Graphic.graphic()
   }
 
   @derived_aliases %{
@@ -68,7 +68,8 @@ defmodule Unicode.GeneralCategory.Derived do
     "quotemarksingle" => :QuoteMarkSingle,
     "quotemarkdouble" => :QuoteMarkDouble,
     "printable" => :Printable,
-    "visible" => :Visible
+    "visible" => :Graphic,
+    "graphic" => :Graphic
   }
 
   @doc """

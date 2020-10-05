@@ -1,3 +1,21 @@
+# Changelog for Unicode v1.10.0
+
+This is the changelog for Unicode v1.10.0 released on October 5th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug fixes
+
+* Revert "Change the definition of the derived property `All` to be the disjoint set of unicode ranges, not the closed set." since `All` in the ICU means the full range of characters.
+
+* Add `:inets` and `:public_key` to `:extra_applicatons` to avoid warnings on Elixir 1.11.
+
+### Enhancements
+
+* Add `Unicode.assigned/0` to return the list of codepoint ranges that are assigned within Unicode
+
+* Rename `Unicode.ranges/0` to `Unicode.all/0` to better reflect the intent. `Unicode.ranges/0` is deprecated.
+
+### Enhancements
+
 # Changelog for Unicode v1.9.0
 
 This is the changelog for Unicode v1.9.0 released on October 4th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

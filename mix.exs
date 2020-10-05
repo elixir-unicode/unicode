@@ -1,7 +1,7 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "1.9.0"
+  @version "1.10.0"
 
   def project do
     [
@@ -52,7 +52,7 @@ defmodule Unicode.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :public_key, :inets]
     ]
   end
 
