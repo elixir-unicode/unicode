@@ -59,7 +59,7 @@ defmodule Unicode.MixProject do
   defp deps do
     [
       {:benchee, "~> 1.0", only: :dev},
-      {:ex_doc, "~> 0.19", only: [:release, :dev]},
+      {:ex_doc, "~> 0.19", runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true}
     ]
   end
@@ -82,7 +82,7 @@ defmodule Unicode.MixProject do
         "LICENSE.md",
         "CHANGELOG.md"
       ],
-      skip_undefined_reference_warnings_on: ["changelog"]
+      skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]
     ]
   end
 
