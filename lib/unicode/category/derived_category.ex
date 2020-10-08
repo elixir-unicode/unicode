@@ -8,17 +8,17 @@ defmodule Unicode.GeneralCategory.Derived do
 
   These categories are:
 
-  * `:any:` which is the full unicode character
+  * `:any` which is the full unicode character
     range `0x0..0x10ffff`
 
-  * `:assigned:` which is the set of codepoints
+  * `:assigned` which is the set of codepoints
     that are assigned and is therefore
     equivalent to `[:any]-[:Cn]`. In fact that is
     exactly how it is calculated using [unicode_set](https://hex.pm/packages/unicode_set)
     and the results are copied here so
     that there is no mutual dependency.
 
-  * `:ascii:` which is the range for the US ASCII
+  * `:ascii` which is the range for the US ASCII
     character set of `0x0..0x7f`
 
   In addition there are derived categories
@@ -29,12 +29,13 @@ defmodule Unicode.GeneralCategory.Derived do
     recognising quotation marks. See the
     module `Unicode.Category.QuoteMarks`.
 
-  * `:printable:` which implements the same
+  * `:printable` which implements the same
     semantics as `String.printable?/1`. This is
-    a very broad definitio of printable characters.
+    a very broad definition of printable characters.
 
-  * `:graphic:` which includes characters from the
-    `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]` set.
+  * `:graph` which includes characters from the
+    `[^\\p{space}\\p{gc=Control}\\p{gc=Surrogate}\\p{gc=Unassigned}]`
+    set defined by [Unicode Regular Expressions](http://unicode.org/reports/tr18/).
 
   """
 
@@ -54,8 +55,8 @@ defmodule Unicode.GeneralCategory.Derived do
     QuoteMarkSingle: QuoteMarks.quote_marks_single() |> Utils.list_to_ranges(),
     QuoteMarkDouble: QuoteMarks.quote_marks_double() |> Utils.list_to_ranges(),
     Printable: Unicode.DerivedCategory.Printable.printable(),
-    Graphic: Unicode.DerivedCategory.Graphic.graphic(),
-    Visible: Unicode.DerivedCategory.Graphic.graphic()
+    Graph: Unicode.DerivedCategory.Graph.graph(),
+    Visible: Unicode.DerivedCategory.Graph.graph()
   }
 
   @derived_aliases %{
@@ -69,8 +70,8 @@ defmodule Unicode.GeneralCategory.Derived do
     "quotemarksingle" => :QuoteMarkSingle,
     "quotemarkdouble" => :QuoteMarkDouble,
     "printable" => :Printable,
-    "visible" => :Graphic,
-    "graphic" => :Graphic
+    "visible" => :Graph,
+    "graph" => :Graph
   }
 
   @doc """
