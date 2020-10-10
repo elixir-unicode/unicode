@@ -51,101 +51,104 @@ These functions return the codepoints as list of 2-tuples for the given property
 
 The following functions return the block, script and category for codepoints and strings:
 
-* `Unicode.script/1`
-```
-iex> Unicode.script ?ä
-"latin"
+*   `Unicode.script/1`
 
-iex> Unicode.script ?خ
-"arabic"
+    ```
+    iex> Unicode.script ?ä
+    "latin"
 
-iex> Unicode.script ?अ
-"devanagari"
-```
+    iex> Unicode.script ?خ
+    "arabic"
 
-* `Unicode.block/1`
-```
-iex> Unicode.block ?ä
-:latin_1_supplement
+    iex> Unicode.script ?अ
+    "devanagari"
+    ```
 
-iex> Unicode.block ?A
-:basic_latin
+*   `Unicode.block/1`
 
-iex> Unicode.block "äA"
-[:latin_1_supplement, :basic_latin]
-```
+    ```
+    iex> Unicode.block ?ä
+    :latin_1_supplement
 
-* `Unicode.category/1`
+    iex> Unicode.block ?A
+    :basic_latin
 
-```
-iex> Unicode.category ?ä
-:Ll
-iex> Unicode.category ?A
-:Lu
-iex> Unicode.category ?🧐
-:So
-```
+    iex> Unicode.block "äA"
+    [:latin_1_supplement, :basic_latin]
+    ```
 
-* `Unicode.properties/1`
-```
-iex> Unicode.properties 0x1bf0
-[
-  :alphabetic,
-  :case_ignorable,
-  :grapheme_extend,
-  :id_continue,
-  :other_alphabetic,
-  :xid_continue
-]
+*   `Unicode.category/1`
 
-iex> Unicode.properties ?A
-[
-  :alphabetic,
-  :ascii_hex_digit,
-  :cased,
-  :changes_when_casefolded,
-  :changes_when_casemapped,
-  :changes_when_lowercased,
-  :grapheme_base,
-  :hex_digit,
-  :id_continue,
-  :id_start,
-  :uppercase,
-  :xid_continue,
-  :xid_start
-]
+    ```
+    iex> Unicode.category ?ä
+    :Ll
+    iex> Unicode.category ?A
+    :Lu
+    iex> Unicode.category ?🧐
+    :So
+    ```
 
-iex> Unicode.properties ?+
-[:grapheme_base, :math, :pattern_syntax]
+*   `Unicode.properties/1`
 
-iex> Unicode.properties "a1+"
-[
-  [
-    :alphabetic,
-    :ascii_hex_digit,
-    :cased,
-    :changes_when_casemapped,
-    :changes_when_titlecased,
-    :changes_when_uppercased,
-    :grapheme_base,
-    :hex_digit,
-    :id_continue,
-    :id_start,
-    :lowercase,
-    :xid_continue,
-    :xid_start
-  ],
-  [
-    :ascii_hex_digit,
-    :emoji,
-    :grapheme_base,
-    :hex_digit,
-    :id_continue,
-    :xid_continue
-  ],
-  [:grapheme_base, :math, :pattern_syntax]
-]
-```
+    ```
+    iex> Unicode.properties 0x1bf0
+    [
+      :alphabetic,
+      :case_ignorable,
+      :grapheme_extend,
+      :id_continue,
+      :other_alphabetic,
+      :xid_continue
+    ]
+
+    iex> Unicode.properties ?A
+    [
+      :alphabetic,
+      :ascii_hex_digit,
+      :cased,
+      :changes_when_casefolded,
+      :changes_when_casemapped,
+      :changes_when_lowercased,
+      :grapheme_base,
+      :hex_digit,
+      :id_continue,
+      :id_start,
+      :uppercase,
+      :xid_continue,
+      :xid_start
+    ]
+
+    iex> Unicode.properties ?+
+    [:grapheme_base, :math, :pattern_syntax]
+
+    iex> Unicode.properties "a1+"
+    [
+      [
+        :alphabetic,
+        :ascii_hex_digit,
+        :cased,
+        :changes_when_casemapped,
+        :changes_when_titlecased,
+        :changes_when_uppercased,
+        :grapheme_base,
+        :hex_digit,
+        :id_continue,
+        :id_start,
+        :lowercase,
+        :xid_continue,
+        :xid_start
+      ],
+      [
+        :ascii_hex_digit,
+        :emoji,
+        :grapheme_base,
+        :hex_digit,
+        :id_continue,
+        :xid_continue
+      ],
+      [:grapheme_base, :math, :pattern_syntax]
+    ]
+    ```
 
 ### Character classes
 
