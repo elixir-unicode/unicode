@@ -1,3 +1,11 @@
+# Changelog for Unicode v1.11.1
+
+This is the changelog for Unicode v1.11.1 released on January 5th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug fixes
+
+* Restrict `ex_doc` to only `:dev` and `:release`. Closes #3. Thanks to @manuelmontenegro.
+
 # Changelog for Unicode v1.11.0
 
 This is the changelog for Unicode v1.11.0 released on October 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
