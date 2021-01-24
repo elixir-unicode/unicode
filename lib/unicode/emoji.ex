@@ -37,6 +37,17 @@ defmodule Unicode.Emoji do
     end
   end
 
+  def emoji(string) when is_binary(string) do
+    string
+    |> String.graphemes()
+    |> Enum.map(&String.to_charlist/1)
+    |> Enum.map(&emoji/1)
+  end
+
+  def emoji(_codepoint) do
+    nil
+  end
+
   @doc """
   Returns a boolean based upon
   whether the given codepoint or binary
@@ -70,17 +81,6 @@ defmodule Unicode.Emoji do
   end
 
   def emoji?(_), do: false
-
-  def emoji(string) when is_binary(string) do
-    string
-    |> String.graphemes()
-    |> Enum.map(&String.to_charlist/1)
-    |> Enum.map(&emoji/1)
-  end
-
-  def emoji(_codepoint) do
-    nil
-  end
 
   defp ignorable?(codepoint) do
     properties = Property.properties(codepoint)
