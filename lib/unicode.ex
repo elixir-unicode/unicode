@@ -692,7 +692,7 @@ defmodule Unicode do
   """
   @all [{0x0, 0x10FFFF}]
 
-  @spec all :: [{pos_integer, pos_integer}]
+  @spec all :: [{0x0, 0x10FFFF}]
   def all do
     @all
   end

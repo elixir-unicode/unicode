@@ -85,6 +85,18 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the emoji sequence name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @emoji_sequences_path Path.join(Unicode.data_dir(), "emoji_sequences.txt")
+  @external_resource @emoji_sequences_path
+  def emoji_sequences do
+    parse_file(@emoji_sequences_path)
+    |> downcase_keys
+    |> atomize_keys()
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `grapheme_break` name
   as the key and a list of codepoint ranges as the values.
   """

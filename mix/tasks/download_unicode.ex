@@ -38,7 +38,9 @@ if File.exists?(Unicode.data_dir()) do
         {Path.join(root_url(), "/IndicSyllabicCategory.txt"), data_path("indic_syllabic_category.txt")},
         {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
         {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
-        {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")}
+        {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")},
+        {"https://unicode.org/Public/emoji/13.0/emoji-sequences.txt", data_path("emoji_sequences.txt")},
+        {"https://unicode.org/Public/emoji/13.0/emoji-zwj-sequences.txt", data_path("emoji_zwj_sequences.txt")}
       ]
     end
 
@@ -128,9 +130,9 @@ if File.exists?(Unicode.data_dir()) do
         A certificate trust store is required in
         order to download locales for your configuration.
 
-        Since ex_cldr could not detect a system
-        installed certificate trust store one of the
-        following actions may be taken:
+        Since no system installed certificate trust store
+        could be found, one of the following actions may be
+        taken:
 
         1. Install the hex package `castore`. It will
            be automatically detected after recompilation.
@@ -141,7 +143,7 @@ if File.exists?(Unicode.data_dir()) do
         3. Specify the location of a certificate trust store
            by configuring it in `config.exs`:
 
-           config :ex_cldr,
+           config #{inspect @app_name},
              cacertfile: "/path/to/cacertfile",
              ...
 

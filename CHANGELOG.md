@@ -1,4 +1,14 @@
-# Changelog for Unicode v1.11.1
+# Changelog
+
+## Unicode v1.11.2
+
+This is the changelog for Unicode v1.11.2 released on May 25th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug fixes
+
+* Make `ex_doc` and `benchee` optional. Thanks to @fireproofsocks.
+
+## Unicode v1.11.1
 
 This is the changelog for Unicode v1.11.1 released on January 5th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -6,7 +16,9 @@ This is the changelog for Unicode v1.11.1 released on January 5th, 2021.  For ol
 
 * Restrict `ex_doc` to only `:dev` and `:release`. Closes #3. Thanks to @manuelmontenegro.
 
-# Changelog for Unicode v1.11.0
+* Fix spec for `Unicode.all/0` so dialyzer is happy
+
+## Unicode v1.11.0
 
 This is the changelog for Unicode v1.11.0 released on October 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -14,7 +26,7 @@ This is the changelog for Unicode v1.11.0 released on October 8th, 2020.  For ol
 
 * Rename the derived category `:visible` to `:graph` and change the definition to that in [Unicode Regular Expressions](http://unicode.org/reports/tr18/). Deprecate the derived category `:visible`.
 
-# Changelog for Unicode v1.10.0
+## Unicode v1.10.0
 
 This is the changelog for Unicode v1.10.0 released on October 5th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -31,7 +43,7 @@ This is the changelog for Unicode v1.10.0 released on October 5th, 2020.  For ol
 * Rename `Unicode.ranges/0` to `Unicode.all/0` to better reflect the intent. `Unicode.ranges/0` is deprecated.
 
 
-# Changelog for Unicode v1.9.0
+## Unicode v1.9.0
 
 This is the changelog for Unicode v1.9.0 released on October 4th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -39,7 +51,7 @@ This is the changelog for Unicode v1.9.0 released on October 4th, 2020.  For old
 
 * Change the definition of the derived property `All` to be the disjoint set of unicode ranges, not the closed set.
 
-# Changelog for Unicode v1.8.0
+## Unicode v1.8.0
 
 This is the changelog for Unicode v1.8.0 released on July 12th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -49,7 +61,7 @@ This is the changelog for Unicode v1.8.0 released on July 12th, 2020.  For older
 
 * Add the word break property to `Unicode.Property.fetch/2` API
 
-# Changelog for Unicode v1.7.0
+## Unicode v1.7.0
 
 This is the changelog for Unicode v1.7.0 released on June 22nd, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -59,7 +71,7 @@ This is the changelog for Unicode v1.7.0 released on June 22nd, 2020.  For older
 
 * Add certificate verification to download process
 
-# Changelog for Unicode v1.6.0
+## Unicode v1.6.0
 
 This is the changelog for Unicode v1.6.0 released on May 17th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -69,7 +81,7 @@ This is the changelog for Unicode v1.6.0 released on May 17th, 2020.  For older 
 
 * Add `Unicode.Utils.special_casing/0`
 
-# Changelog for Unicode v1.5.0
+## Unicode v1.5.0
 
 This is the changelog for Unicode v1.5.0 released on March 14th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -77,7 +89,7 @@ This is the changelog for Unicode v1.5.0 released on March 14th, 2020.  For olde
 
 * Add derived categories `:printable:` and `:visible:`. `:printable:` implements the same semnantics `String.printable?/1`. `:visible:` combines the categories `[[:L:][:N:][:M:][:P:][:S:][:Zs:]]`.
 
-# Changelog for Unicode v1.4.1
+## Unicode v1.4.1
 
 This is the changelog for Unicode v1.4.1 released on March 11th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -85,7 +97,7 @@ This is the changelog for Unicode v1.4.1 released on March 11th, 2020.  For olde
 
 * Regenerate the assigned ranges for Unicode 13
 
-# Changelog for Unicode v1.4.0
+## Unicode v1.4.0
 
 This is the changelog for Unicode v1.4.0 released on March 11th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -117,7 +129,7 @@ iex> Unicode.Set.match? ?', "[[:quote_mark_ambidextrous:]]"
 true
 ````
 
-# Changelog for Unicode v1.3.1
+## Unicode v1.3.1
 
 This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -127,7 +139,7 @@ This is the changelog for Unicode v1.3.1 released on January 8th, 2020.  For old
 
 * Fix the ranges for the General Category `:assigned`.
 
-# Changelog for Unicode v1.3.0
+## Unicode v1.3.0
 
 This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -145,7 +157,7 @@ This is the changelog for Unicode v1.3.0 released on December 3rd, 2019.  For ol
 
 * Fixes `Unicode.aliases/0` to correctly use the aliases in `data/property_alias.txt`
 
-# Changelog for Unicode v1.2.0
+## Unicode v1.2.0
 
 This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -159,7 +171,7 @@ This is the changelog for Unicode v1.2.0 released on November 27th, 2019.  For o
 
 * Added additional properties to `Unicode.Property`. The set now includes those from the UCD files `DerivedCoreProperties.txt` and `PropList.txt`.
 
-# Changelog for Unicode v1.1.0
+## Unicode v1.1.0
 
 This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -183,7 +195,7 @@ This is the changelog for Unicode v1.1.0 released on November 23rd, 2019.  For o
 
 * Documented all public functions
 
-# Changelog for Unicode v1.0.0
+## Unicode v1.0.0
 
 This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
@@ -191,7 +203,7 @@ This is the changelog for Unicode v1.0.0 released on November 14th, 2019.  For o
 
 * Rename the module prefix to `Unicode` since this package is not linked in any way to the `Cldr` family. The hex package is renamed to `ex_unicode`.
 
-# Changelog for Cldr Unicode v0.7.1
+## Cldr Unicode v0.7.1
 
 This is the changelog for Unicode v0.7.1 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -201,7 +213,7 @@ This is the changelog for Unicode v0.7.1 released on November 12th, 2019.  For o
 
 * Replace deprecated `String.normalize/2` with `:unicode.characters_to_nfd_binary/` for OTP release 20 and later.
 
-# Changelog for Cldr Unicode v0.7.0
+## Cldr Unicode v0.7.0
 
 This is the changelog for Unicode v0.7.0 released on November 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -209,7 +221,7 @@ This is the changelog for Unicode v0.7.0 released on November 12th, 2019.  For o
 
 * Add `is_whitespace/1` guard generator
 
-# Changelog for Cldr Unicode v0.6.0
+## Cldr Unicode v0.6.0
 
 This is the changelog for Unicode v0.6.0 released on October 22nd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -217,7 +229,7 @@ This is the changelog for Unicode v0.6.0 released on October 22nd, 2019.  For ol
 
 * Update to Emoji 12.1
 
-# Changelog for Cldr Unicode v0.5.0
+## Cldr Unicode v0.5.0
 
 This is the changelog for Unicode v0.5.0 released on May 12th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -225,7 +237,7 @@ This is the changelog for Unicode v0.5.0 released on May 12th, 2019.  For older 
 
 * Update to Unicode 12.1
 
-# Changelog for Cldr Unicode v0.4.0
+## Cldr Unicode v0.4.0
 
 This is the changelog for Unicode v0.4.0 released on April 30th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -237,7 +249,7 @@ This is the changelog for Unicode v0.4.0 released on April 30th, 2019.  For olde
 
 * Block names are now atoms instead of strings
 
-# Changelog for Cldr Unicode v0.3.0
+## Cldr Unicode v0.3.0
 
 This is the changelog for Unicode v0.3.0 released on March 28th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -245,7 +257,7 @@ This is the changelog for Unicode v0.3.0 released on March 28th, 2019.  For olde
 
 * Updated to Unicode version 12
 
-# Changelog for Cldr Unicode v0.2.0
+## Cldr Unicode v0.2.0
 
 This is the changelog for Unicode v0.2.0 released on February 24th, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
@@ -257,7 +269,7 @@ This is the changelog for Unicode v0.2.0 released on February 24th, 2019.  For o
 
 * Removes the text annotations from the compiled functions which materially reduces the size of the beam files.
 
-# Changelog for Cldr Unicode v0.1.0
+## Cldr Unicode v0.1.0
 
 This is the changelog for Unicode v0.1.0 released on February 23rd, 2019.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-cldr/cldr_unicode/tags)
 
