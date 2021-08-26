@@ -124,10 +124,10 @@ defmodule Unicode.GeneralCategory do
   ## Example
 
       iex> Unicode.GeneralCategory.count(:Ll)
-      2155
+      2227
 
       iex> Unicode.GeneralCategory.count(:Nd)
-      650
+      660
 
   """
   @impl Unicode.Property.Behaviour

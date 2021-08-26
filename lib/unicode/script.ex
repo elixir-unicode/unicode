@@ -110,7 +110,7 @@ defmodule Unicode.Script do
   ## Example
 
       iex> Unicode.Script.count("mongolian")
-      167
+      168
 
   """
   @impl Unicode.Property.Behaviour
