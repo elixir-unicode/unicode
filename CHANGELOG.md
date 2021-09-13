@@ -6,7 +6,7 @@ This is the changelog for Unicode v1.12.0 released on September 14th, 2021.  For
 
 ### Enhancements
 
-* Updates to Unicode 14 final release data.
+* Update to use [Unicode 14](https://unicode.org/versions/Unicode14.0.0) release data.
 
 ## Unicode v1.12.0-rc.0
 
