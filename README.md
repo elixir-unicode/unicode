@@ -13,7 +13,7 @@ Since checking strings and codepoints for certain attributes - like whether they
 
 It is tempting to assume the use of [US ASCII](https://en.wikipedia.org/wiki/ASCII) encoding and checking only for characters in that range. For example it is very common to see code in Elixir checking `codepoint in ?a..?z` to check for lowercase alphabetic characters. When the underlying programming language has no canonical form for a string beyond bytes this may be considered acceptable - the programmer is defining the script domain as he or she sees fit.
 
-However Elixir string are declared to be [UTF8 encoded Unicode string](https://unicode.org/faq/utf_bom.html#utf8-1) it seems appropriate to make it easier to determine the characteristics of codepoints (and strings) using this standard.
+However since Elixir strings are declared to be [UTF8 encoded Unicode string](https://unicode.org/faq/utf_bom.html#utf8-1) it seems appropriate to make it easier to determine the characteristics of codepoints (and strings) using this standard.
 
 The Elixir standard library does not provide introspection beyond that required to support casing (String.downcase/1, String.upcase/1, String.capitalize/1).  This library aims to *fill in the blanks* a little bit.
 
