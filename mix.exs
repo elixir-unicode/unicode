@@ -5,7 +5,7 @@ defmodule Unicode.MixProject do
 
   def project do
     [
-      app: :ex_unicode,
+      app: :unicode,
       version: @version,
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.13.0
+
+This is the changelog for Unicode v1.13.0 released on ______, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Change the application name to `:unicode` (in collaboration with @Qqwy). The old name `ex_unicode` will be retired.
+
 ## Unicode v1.12.0
 
 This is the changelog for Unicode v1.12.0 released on September 14th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
