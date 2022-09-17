@@ -40,7 +40,6 @@ defmodule Unicode.MixProject do
       files: [
         "lib",
         "data",
-        "config",
         "logo.png",
         "mix.exs",
         "README*",
