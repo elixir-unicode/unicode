@@ -170,14 +170,14 @@ Although the unicode character database has a flag to indicate if a given codepo
 
 These additional derived categories can be used in [Unicode Sets](https://hex.pm/packages/unicode_sets), for example:
 
-```
+```elixir
 iex> Unicode.Set.match? ?', "[[:quote_mark:]]"
 true
 iex> Unicode.Set.match? ?', "[[:quote_mark_left:]]"
 false
 iex> Unicode.Set.match? ?', "[[:quote_mark_ambidextrous:]]"
 true
-````
+```
 
 ## Unicode v1.3.1
 
