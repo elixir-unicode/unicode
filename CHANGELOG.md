@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.13.1
+
+This is the changelog for Unicode v1.13.1 released on September 16th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug Fixes
+
+* When looking up scripts, general categories and properties we indirect through an alias table. But not all entries have alias so in the case alias lookup fails we still need to lookup using the original key.
+
 ## Unicode v1.13.0
 
 This is the changelog for Unicode v1.13.0 released on September 15th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

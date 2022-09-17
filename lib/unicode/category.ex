@@ -94,7 +94,7 @@ defmodule Unicode.GeneralCategory do
 
   def fetch(category) do
     category = Utils.downcase_and_remove_whitespace(category)
-    category = Map.get(aliases(), category, category)
+    category = Map.get(aliases(), category, category) |> Utils.maybe_atomize()
     Map.fetch(categories(), category)
   end
 

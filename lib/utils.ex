@@ -533,6 +533,13 @@ defmodule Unicode.Utils do
   end
 
   @doc false
+  def maybe_atomize(key) do
+    String.to_existing_atom(key)
+  rescue _e in ArgumentError ->
+    key
+  end
+
+  @doc false
   @reserved "<reserved"
   def remove_reserved_codepoints(data) do
     data

@@ -80,7 +80,7 @@ defmodule Unicode.Script do
 
   def fetch(script) do
     script = Utils.downcase_and_remove_whitespace(script)
-    script = Map.get(aliases(), script, script)
+    script = Map.get(aliases(), script, script) |> Utils.maybe_atomize()
     Map.fetch(scripts(), script)
   end
 

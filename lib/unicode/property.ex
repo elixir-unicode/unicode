@@ -94,7 +94,7 @@ defmodule Unicode.Property do
 
   def fetch(property) do
     property = Utils.downcase_and_remove_whitespace(property)
-    property = Map.get(aliases(), property, property)
+    property = Map.get(aliases(), property, property) |> Utils.maybe_atomize()
     Map.fetch(properties(), property)
   end
 

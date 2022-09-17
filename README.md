@@ -47,7 +47,7 @@ These functions return the codepoints as list of 2-tuples for the given property
 * `Unicode.IndicSyllabicCategory.indic_syllabic_categories/0`
 * `Unicode.Property.properties/0`
 
-### Basic introspection of codepoints and string
+### Introspection of codepoints and strings
 
 The following functions return the block, script and category for codepoints and strings:
 
