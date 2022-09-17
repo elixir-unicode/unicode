@@ -9,7 +9,7 @@ if File.exists?(Unicode.data_dir()) do
 
     @shortdoc "Download Unicode data files"
 
-    @root_url "https://www.unicode.org/Public/14.0.0/ucd/"
+    @root_url "https://www.unicode.org/Public/15.0.0/ucd/"
 
     @doc false
     def run(_) do
@@ -39,8 +39,8 @@ if File.exists?(Unicode.data_dir()) do
         {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
         {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
         {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")},
-        {"https://unicode.org/Public/emoji/14.0/emoji-sequences.txt", data_path("emoji_sequences.txt")},
-        {"https://unicode.org/Public/emoji/14.0/emoji-zwj-sequences.txt", data_path("emoji_zwj_sequences.txt")}
+        {"https://unicode.org/Public/emoji/15.0/emoji-sequences.txt", data_path("emoji_sequences.txt")},
+        {"https://unicode.org/Public/emoji/15.0/emoji-zwj-sequences.txt", data_path("emoji_zwj_sequences.txt")}
       ]
     end
 
@@ -80,11 +80,9 @@ if File.exists?(Unicode.data_dir()) do
       []
     end
 
-    @app_name Mix.Project.config[:app]
-
     @certificate_locations [
         # Configured cacertfile
-        Application.get_env(@app_name, :cacertfile),
+        Application.compile_env(:unicode, :cacertfile),
 
         # Populated if hex package CAStore is configured
         if(Code.ensure_loaded?(CAStore), do: CAStore.file_path()),
@@ -143,7 +141,7 @@ if File.exists?(Unicode.data_dir()) do
         3. Specify the location of a certificate trust store
            by configuring it in `config.exs`:
 
-           config #{inspect @app_name},
+           config :unicode,
              cacertfile: "/path/to/cacertfile",
              ...
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## Unicode v1.15.0
+
+This is the changelog for Unicode v1.15.0 released on September 17th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+Note there is no release 1.14.  The release is 1.15 to align with Unicode 15 and it is expected to keep this pattern into the future.
+
+### Deprecations
+
+* Fix deprecation warnings for Elixir 1.14.  Now requires Elixir 1.11 as a minimum release.
+
+### Enhancements
+
+* Updates to [Unicode 15](https://www.unicode.org/versions/Unicode15.0.0/). 
+
+### Bug Fixes
+
+* Fix code fences in docs to be Elixir
+
 ## Unicode v1.13.1
 
 This is the changelog for Unicode v1.13.1 released on September 16th, 2021.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

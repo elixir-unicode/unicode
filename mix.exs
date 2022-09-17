@@ -1,13 +1,13 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "1.13.1"
+  @version "1.13.2"
 
   def project do
     [
       app: :unicode,
       version: @version,
-      elixir: "~> 1.8",
+      elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),
@@ -34,7 +34,7 @@ defmodule Unicode.MixProject do
   defp package do
     [
       maintainers: ["Kip Cole"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       logo: "logo.png",
       links: links(),
       files: [
