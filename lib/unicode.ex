@@ -7,8 +7,40 @@ defmodule Unicode do
   """
   alias Unicode.Utils
 
+  @typedoc "A codepoint is an integer representing a Unicode character"
   @type codepoint :: non_neg_integer
+
+  @typedoc "A codepoint or a string"
   @type codepoint_or_string :: codepoint | String.t()
+
+  @typedoc "The valid scripts as of Unicode 15"
+  @type script ::
+     :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
+     :kannada | :deseret | :old_hungarian | :psalter_pahlavi | :tagbanwa | :wancho,
+     :khmer | :bengali | :soyombo | :chakma | :inscriptional_pahlavi | :carian,
+     :tai_viet | :georgian | :oriya | :meroitic_cursive | :meroitic_hieroglyphs,
+     :braille | :nandinagari | :vai | :adlam | :mahajani | :tirhuta | :mro,
+     :zanabazar_square | :cuneiform | :vithkuqi | :newa | :yezidi | :osage | :linear_a,
+     :hiragana | :mende_kikakui | :cyrillic | :hatran | :anatolian_hieroglyphs | :limbu,
+     :balinese | :ethiopic | :new_tai_lue | :dives_akuru | :old_uyghur | :saurashtra,
+     :linear_b | :mandaic | :tibetan | :caucasian_albanian | :avestan | :tangut,
+     :siddham | :duployan | :kawi | :common | :thai | :shavian | :tamil | :old_persian,
+     :nag_mundari | :ol_chiki | :samaritan | :tagalog | :grantha | :gujarati | :ugaritic,
+     :khitan_small_script | :nyiakeng_puachue_hmong | :buhid | :syriac | :old_sogdian,
+     :khudawadi | :lepcha | :lycian | :phags_pa | :bopomofo | :old_permic | :phoenician,
+     :katakana | :dogra | :javanese | :glagolitic | :tai_le | :old_turkic,
+     :old_south_arabian | :takri | :inscriptional_parthian | :signwriting | :osmanya,
+     :syloti_nagri | :sogdian | :egyptian_hieroglyphs | :gunjala_gondi | :sora_sompeng,
+     :arabic | :modi | :inherited | :chorasmian | :manichaean | :medefaidrin,
+     :imperial_aramaic | :nko | :cypriot | :bamum | :han | :masaram_gondi | :ahom,
+     :hanifi_rohingya | :coptic | :lao | :cham | :malayalam | :lisu | :yi | :old_italic,
+     :gothic | :cypro_minoan | :pau_cin_hau | :canadian_aboriginal | :mongolian,
+     :sharada | :tai_tham | :hanunoo | :old_north_arabian | :lydian | :rejang,
+     :warang_citi | :kharoshthi | :brahmi | :sinhala | :batak | :telugu | :gurmukhi,
+     :kayah_li | :marchen | :pahawh_hmong | :armenian | :bassa_vah | :multani,
+     :nabataean | :toto | :hangul | :devanagari | :khojki | :kaithi | :thaana | :nushu,
+     :sundanese | :bhaiksuki | :ogham | :makasar | :elbasan | :miao | :meetei_mayek,
+     :hebrew | :buginese | :tifinagh
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()
@@ -740,6 +772,94 @@ defmodule Unicode do
       end
     end)
     |> Enum.reverse()
+  end
+
+  @doc """
+  Returns the first index and grapheme count of each
+  script detected in a string.
+
+  ## Arguments
+
+  * `string` is any `String.t`.
+
+  ## Returns
+
+  * A map where the key is a `t:script/0` and the value
+    is a tuple where the first element is the index in the
+    string where that script first appeared and the second
+    element is the number of graphemes in that script.
+
+  ## Examples
+
+      iex> Unicode.script_statistic "Tokyo is the capital of 日本"
+      %{common: {5, 5}, han: {24, 2}, latin: {0, 19}}
+
+      iex> Unicode.script_statistic "おはよう"
+      %{hiragana: {0, 4}}
+
+  """
+  @doc since: "1.16.0"
+
+  @spec script_statistic(String.t()) :: %{script() => {non_neg_integer, pos_integer}}
+  def script_statistic(string) when is_binary(string) do
+    string
+    |> String.graphemes()
+    |> Enum.reduce({0, Map.new()}, fn grapheme, {index, map} ->
+      [script] = Unicode.script(grapheme)
+      map = Map.update(map, script, {index, 1}, fn {loc, count} -> {loc, count + 1} end)
+      {index + 1, map}
+    end)
+    |> elem(1)
+  end
+
+  @doc """
+  Returns a keyword list of scripts in descending dominance
+  order for a given string.
+
+  Dominance is determined by (in order of priority):
+
+  * Index of the first occurrence of the script
+  * Count of the number of graphemes in the script
+  * Lexical ordering of the script name (used as a final means
+    to ensure returning a deterministic result).
+
+  ## Arguments
+
+  * `string` is any `String.t`.
+
+  ## Returns
+
+  * A keyword list where the key is a `t:script/0` and the value
+    is a tuple where the first element is the index in the
+    string where that script first appeared and the second
+    element is the number of graphemes in that script. The list
+    is ordered by descending dominance.
+
+  ## Example
+
+      iex> Unicode.script_dominannce "Tokyo is the capital of 日本"
+      [latin: {0, 19}, common: {5, 5}, han: {24, 2}]
+
+      iex> Unicode.script_dominannce "おはよう"
+      [hiragana: {0, 4}]
+
+  """
+  @doc since: "1.16.0"
+
+  @spec script_dominannce(String.t()) :: [{script(), {non_neg_integer, pos_integer}}]
+  def script_dominannce(string) do
+    string
+    |> script_statistic()
+    |> Enum.sort(fn
+      {script_1, {index_1, count_1}}, {script_2, {index_1, count_1}} ->
+        to_string(script_1) < to_string(script_2)
+
+      {_script_1, {index_1, count_1}}, {_script_2, {index_1, count_2}} ->
+        count_1 < count_2
+
+      {_script_1, {index_1, _count_1}}, {_script_2, {index_2, _count_2}} ->
+        index_1 < index_2
+    end)
   end
 
   @doc false
