@@ -2,11 +2,11 @@
 
 ## Unicode v1.16.0
 
-This is the changelog for Unicode v1.16.0 released on March 18th, 2022.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+This is the changelog for Unicode v1.16.0 released on March 18th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Enhancements
 
-* Add `Unicode.script_statistic/1` that returns a the first index and grapheme count of the scripts in a string. This is useful to help derive the likely locale of a string. Determining the locale is outside the scope of this library but is required in [ex_cldr_person_names](https://hex.pm/packages/ex_cldr_person_names).
+* Add `Unicode.script_statistic/1` that returns the first index and grapheme count of the scripts in a string. This is useful to help derive the likely locale of a string. Determining the locale is outside the scope of this library but is required in [ex_cldr_person_names](https://hex.pm/packages/ex_cldr_person_names).
 
 * Add `Unicode.script_dominance/1` to sort the results of `Unicode.script_statistic/1` in descending dominance order.
 
