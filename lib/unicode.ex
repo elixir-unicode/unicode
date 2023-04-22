@@ -837,17 +837,17 @@ defmodule Unicode do
 
   ## Example
 
-      iex> Unicode.script_dominannce "Tokyo is the capital of 日本"
+      iex> Unicode.script_dominance "Tokyo is the capital of 日本"
       [latin: {0, 19}, common: {5, 5}, han: {24, 2}]
 
-      iex> Unicode.script_dominannce "おはよう"
+      iex> Unicode.script_dominance "おはよう"
       [hiragana: {0, 4}]
 
   """
   @doc since: "1.16.0"
 
-  @spec script_dominannce(String.t()) :: [{script(), {non_neg_integer, pos_integer}}]
-  def script_dominannce(string) do
+  @spec script_dominance(String.t()) :: [{script(), {non_neg_integer, pos_integer}}]
+  def script_dominance(string) do
     string
     |> script_statistic()
     |> Enum.sort(fn

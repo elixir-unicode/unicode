@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.16.1
+
+This is the changelog for Unicode v1.16.1 released on April 22nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Big Fixes
+
+* Fix spelling of `Unicode.script_dominance/1`.
+
 ## Unicode v1.16.0
 
 This is the changelog for Unicode v1.16.0 released on March 18th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
