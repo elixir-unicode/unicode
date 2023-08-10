@@ -4,6 +4,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `script` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @scripts_path Path.join(Unicode.data_dir(), "scripts.txt")
   @external_resource @scripts_path
@@ -16,6 +17,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `block` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @blocks_path Path.join(Unicode.data_dir(), "blocks.txt")
   @external_resource @blocks_path
@@ -28,6 +30,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `combining_class` number
   as the key and a list of codepoint ranges as the values.
+
   """
   @combining_class_path Path.join(Unicode.data_dir(), "combining_class.txt")
   @external_resource @combining_class_path
@@ -40,6 +43,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `category` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @categories_path Path.join(Unicode.data_dir(), "categories.txt")
   @external_resource @categories_path
@@ -51,6 +55,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `derived property` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @derived_properties_path Path.join(Unicode.data_dir(), "derived_properties.txt")
   @external_resource @derived_properties_path
@@ -63,6 +68,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `property` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @properties_path Path.join(Unicode.data_dir(), "properties.txt")
   @external_resource @properties_path
@@ -75,6 +81,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the emoji type name
   as the key and a list of codepoint ranges as the values.
+
   """
   @emoji_path Path.join(Unicode.data_dir(), "emoji.txt")
   @external_resource @emoji_path
@@ -87,6 +94,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the emoji sequence name
   as the key and a list of codepoint ranges as the values.
+
   """
   @emoji_sequences_path Path.join(Unicode.data_dir(), "emoji_sequences.txt")
   @external_resource @emoji_sequences_path
@@ -99,6 +107,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `grapheme_break` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @grapheme_breaks_path Path.join(Unicode.data_dir(), "grapheme_break.txt")
   @external_resource @grapheme_breaks_path
@@ -111,6 +120,7 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints with the `line_break` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @line_breaks_path Path.join(Unicode.data_dir(), "line_break.txt")
   @external_resource @line_breaks_path
@@ -135,13 +145,14 @@ defmodule Unicode.Utils do
   @doc """
   Returns a map of the Unicode codepoints from SpecialCasing.txt
   as the key and a list of codepoint ranges as the values.
+
   """
   @case_folding_path Path.join(Unicode.data_dir(), "case_folding.txt")
   @external_resource @case_folding_path
   def case_folding do
     parse_alias_file(@case_folding_path)
     |> Enum.map(fn
-      [from, status, to, _] -> [encode(status), extract(from), extract(to)]
+      [from, status, to, _] -> [encode(status), String.to_integer(from, 16), extract(to)]
     end)
     |> Enum.sort_by(&hd/1)
     |> Enum.reverse
@@ -153,40 +164,68 @@ defmodule Unicode.Utils do
   defp encode("s"), do: :simple
 
   @doc """
-  Returns a map of the Unicode codepoints from SpecialCasing.txt
-  as the key and a list of codepoint ranges as the values.
+  Returns a list of the Unicode codepoints from SpecialCasing.txt
+  and the special casing rules that should be applied based upon
+  language and surrounding context.
+
   """
   @special_casing_path Path.join(Unicode.data_dir(), "special_casing.txt")
   @external_resource @special_casing_path
   def special_casing do
     parse_alias_file(@special_casing_path)
-    |> Enum.map(fn row ->
-      Enum.map(row, &extract/1)
-      |> Enum.reverse
-      |> tl
-      |> Enum.reverse
+    |> Enum.map(fn
+      [codepoint, upcase, titlecase, downcase, context, ""] ->
+        [language, context] = parse(context)
+
+        %{
+          codepoint: String.to_integer(codepoint, 16),
+          language: language,
+          upcase: extract(upcase),
+          titlecase: extract(titlecase),
+          downcase: extract(downcase),
+          context: context
+        }
+
+      [codepoint, upcase, titlecase, downcase, ""] ->
+        %{
+          codepoint: String.to_integer(codepoint, 16),
+          language: :all,
+          upcase: extract(upcase),
+          titlecase: extract(titlecase),
+          downcase: extract(downcase),
+          context: nil
+         }
     end)
-    |> Enum.group_by(&hd/1)
+    |> Enum.sort_by(&(&1.codepoint))
   end
 
   defp extract(string) do
     string
     |> String.split(" ")
     |> Enum.map(&to_integer/1)
-    |> return_list_or_integer
-  rescue ArgumentError ->
-    string
+    |> return_list_or_nil
   end
 
-  def return_list_or_integer([integer]), do: integer
-  def return_list_or_integer(list), do: list
+  defp return_list_or_nil([nil]), do: :delete
+  defp return_list_or_nil(other), do: other
 
-  def to_integer(""), do: nil
-  def to_integer(string), do: String.to_integer(string, 16)
+  defp to_integer(""), do: nil
+  defp to_integer(string), do: String.to_integer(string, 16)
+
+  defp parse(rule) do
+    rule
+    |> String.split(" ")
+    |> case do
+      [language, rule] -> [String.to_atom(language), rule]
+      [<<_::utf8, _::utf8>> = language] -> [String.to_atom(language), nil]
+      [rule] -> [:all, rule]
+    end
+  end
 
   @doc """
   Returns a map of the Unicode codepoints with the `sentence_break` name
   as the key and a list of codepoint ranges as the values.
+
   """
   @sentence_breaks_path Path.join(Unicode.data_dir(), "sentence_break.txt")
   @external_resource @sentence_breaks_path
