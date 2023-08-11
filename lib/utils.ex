@@ -213,25 +213,25 @@ defmodule Unicode.Utils do
   def special_casing do
     parse_alias_file(@special_casing_path)
     |> Enum.map(fn
-      [codepoint, upcase, titlecase, downcase, context, ""] ->
+      [codepoint, upper, title, lower, context, ""] ->
         [language, context] = parse(context)
 
         %{
           codepoint: String.to_integer(codepoint, 16),
           language: language,
-          upper: extract(upcase),
-          title: extract(titlecase),
-          lower: extract(downcase),
+          upper: extract(upper),
+          title: extract(title),
+          lower: extract(lower),
           context: context
         }
 
-      [codepoint, upcase, titlecase, downcase, ""] ->
+      [codepoint, upper, title, lower, ""] ->
         %{
           codepoint: String.to_integer(codepoint, 16),
           language: :all,
-          upper: extract(upcase),
-          title: extract(titlecase),
-          lower: extract(downcase),
+          upper: extract(upper),
+          title: extract(title),
+          lower: extract(lower),
           context: nil
          }
     end)
