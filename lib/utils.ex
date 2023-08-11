@@ -6,6 +6,17 @@ defmodule Unicode.Utils do
   as the key and a list of codepoint ranges as the values.
 
   """
+  @unicode_data_path Path.join(Unicode.data_dir(), "unicode_data.txt")
+  @external_resource @unicode_data_path
+  def unicode do
+    parse_unicode_data(@unicode_data_path)
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `script` name
+  as the key and a list of codepoint ranges as the values.
+
+  """
   @scripts_path Path.join(Unicode.data_dir(), "scripts.txt")
   @external_resource @scripts_path
   def scripts do
@@ -164,6 +175,34 @@ defmodule Unicode.Utils do
   defp encode("s"), do: :simple
 
   @doc """
+  Returns a list of maps containing the default casing data
+  (upper, lower and title) for codepoints that
+  have multiple cases.
+
+  Additional casing data is returned by `Unicode.Utils.special_casing/0`.
+
+  """
+  def default_casing do
+    unicode()
+    |> Enum.reject(fn {_codepoint, [_, _, _, _, _, _, _, _, _, _, _, upper, lower, title]} ->
+      title = String.trim(title)
+      Enum.all?([upper, lower, title], &(&1 == ""))
+    end)
+    |> Enum.map(fn {codepoint, [_, _, _, _, _, _, _, _, _, _, _, upper, lower, title]} ->
+      title = String.trim(title)
+      %{
+        codepoint: codepoint_from(codepoint),
+        upper: extract(upper),
+        lower: extract(lower),
+        title: extract(title),
+        language: :all,
+        context: nil
+      }
+    end)
+    |> Enum.sort_by(&(&1.codepoint))
+  end
+
+  @doc """
   Returns a list of the Unicode codepoints from SpecialCasing.txt
   and the special casing rules that should be applied based upon
   language and surrounding context.
@@ -180,9 +219,9 @@ defmodule Unicode.Utils do
         %{
           codepoint: String.to_integer(codepoint, 16),
           language: language,
-          upcase: extract(upcase),
-          titlecase: extract(titlecase),
-          downcase: extract(downcase),
+          upper: extract(upcase),
+          title: extract(titlecase),
+          lower: extract(downcase),
           context: context
         }
 
@@ -190,9 +229,9 @@ defmodule Unicode.Utils do
         %{
           codepoint: String.to_integer(codepoint, 16),
           language: :all,
-          upcase: extract(upcase),
-          titlecase: extract(titlecase),
-          downcase: extract(downcase),
+          upper: extract(upcase),
+          title: extract(titlecase),
+          lower: extract(downcase),
           context: nil
          }
     end)
@@ -220,6 +259,18 @@ defmodule Unicode.Utils do
       [<<_::utf8, _::utf8>> = language] -> [String.to_atom(language), nil]
       [rule] -> [:all, rule]
     end
+  end
+
+  @doc """
+  Returns the merged data from default casing and
+  special casing.
+
+  The data is returned in an order that can be used
+  for generating functions to process the case mappings.
+
+  """
+  def casing do
+    [special_casing() | default_casing()]
   end
 
   @doc """
@@ -326,6 +377,23 @@ defmodule Unicode.Utils do
   end
 
   @doc false
+  def parse_unicode_data(path) do
+    Enum.reduce(File.stream!(path), %{}, fn line, map ->
+      case line do
+        <<"#", _rest::bitstring>> ->
+          map
+
+        <<"\n", _rest::bitstring>> ->
+          map
+
+        data ->
+          [codepoint | rest] = String.split(data, ";")
+          Map.put(map, codepoint, rest)
+      end
+    end)
+  end
+
+  @doc false
   def parse_file(path) do
     Enum.reduce(File.stream!(path), %{}, fn line, map ->
       case line do
@@ -386,6 +454,10 @@ defmodule Unicode.Utils do
   defp extract_codepoint_range([codepoint]) do
     cp = codepoint_from(codepoint)
     [cp, cp]
+  end
+
+  defp codepoint_from("") do
+    nil
   end
 
   defp codepoint_from(codepoint) do
