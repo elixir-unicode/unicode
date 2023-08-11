@@ -16,12 +16,13 @@ defmodule Unicode.Utils.Test do
       {46, 47},
       {48, 57}
     ]
+
     assert Unicode.Utils.compact_ranges(list) == [{32, 57}]
 
     assert Unicode.Utils.compact_ranges([{1, 2}, {3, 4}, {6, 7}, {9, 10}]) ==
-      [{1, 4}, {6, 7}, {9, 10}]
+             [{1, 4}, {6, 7}, {9, 10}]
 
     assert Unicode.Utils.compact_ranges([{1, 2}, {3, 4}, {6, 7}, {9, 10}, {11, 20}]) ==
-      [{1, 4}, {6, 7}, {9, 20}]
+             [{1, 4}, {6, 7}, {9, 20}]
   end
 end

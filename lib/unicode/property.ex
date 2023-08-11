@@ -17,8 +17,8 @@ defmodule Unicode.Property do
               |> Utils.remove_annotations()
 
   @all_properties @derived_properties
-  |> Map.merge(@properties)
-  |> Map.merge(Emoji.emoji())
+                  |> Map.merge(@properties)
+                  |> Map.merge(Emoji.emoji())
 
   @doc """
   Returns the map of Unicode

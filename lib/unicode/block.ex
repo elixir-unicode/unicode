@@ -156,10 +156,10 @@ defmodule Unicode.Block do
 
   """
   @assigned @blocks
-          |> Map.values()
-          |> Enum.map(&hd/1)
-          |> Enum.sort()
-          |> Unicode.compact_ranges()
+            |> Map.values()
+            |> Enum.map(&hd/1)
+            |> Enum.sort()
+            |> Unicode.compact_ranges()
 
   def assigned do
     @assigned

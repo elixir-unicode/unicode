@@ -18,7 +18,7 @@ defmodule Unicode.DerivedCategory.Printable do
     {256, 511},
     {55295, 55295},
     {57344, 65533},
-    {65536, 1114111}
+    {65536, 1_114_111}
   ]
 
   @doc false

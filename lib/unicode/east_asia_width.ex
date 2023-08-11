@@ -11,7 +11,7 @@ defmodule Unicode.EastAsianWidth do
   alias Unicode.Utils
 
   @east_asian_width_categories Utils.east_asian_width()
-                             |> Utils.remove_annotations()
+                               |> Utils.remove_annotations()
 
   @doc """
   Returns the map of Unicode
@@ -41,10 +41,10 @@ defmodule Unicode.EastAsianWidth do
   end
 
   @east_asian_width_alias Utils.property_value_alias()
-                                 |> Map.get("ea")
-                                 |> Utils.atomize_values()
-                                 |> Utils.downcase_keys_and_remove_whitespace()
-                                 |> Utils.add_canonical_alias()
+                          |> Map.get("ea")
+                          |> Utils.atomize_values()
+                          |> Utils.downcase_keys_and_remove_whitespace()
+                          |> Utils.add_canonical_alias()
 
   @doc """
   Returns a map of aliases for
@@ -79,7 +79,10 @@ defmodule Unicode.EastAsianWidth do
 
   def fetch(east_asian_width_category) do
     east_asian_width_category = Utils.downcase_and_remove_whitespace(east_asian_width_category)
-    east_asian_width_category = Map.get(aliases(), east_asian_width_category, east_asian_width_category)
+
+    east_asian_width_category =
+      Map.get(aliases(), east_asian_width_category, east_asian_width_category)
+
     Map.fetch(east_asian_width_categories(), east_asian_width_category)
   end
 

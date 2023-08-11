@@ -14,33 +14,35 @@ defmodule Unicode do
   @type codepoint_or_string :: codepoint | String.t()
 
   @typedoc "The valid scripts as of Unicode 15"
-  @type script ::
-     :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
-     :kannada | :deseret | :old_hungarian | :psalter_pahlavi | :tagbanwa | :wancho,
-     :khmer | :bengali | :soyombo | :chakma | :inscriptional_pahlavi | :carian,
-     :tai_viet | :georgian | :oriya | :meroitic_cursive | :meroitic_hieroglyphs,
-     :braille | :nandinagari | :vai | :adlam | :mahajani | :tirhuta | :mro,
-     :zanabazar_square | :cuneiform | :vithkuqi | :newa | :yezidi | :osage | :linear_a,
-     :hiragana | :mende_kikakui | :cyrillic | :hatran | :anatolian_hieroglyphs | :limbu,
-     :balinese | :ethiopic | :new_tai_lue | :dives_akuru | :old_uyghur | :saurashtra,
-     :linear_b | :mandaic | :tibetan | :caucasian_albanian | :avestan | :tangut,
-     :siddham | :duployan | :kawi | :common | :thai | :shavian | :tamil | :old_persian,
-     :nag_mundari | :ol_chiki | :samaritan | :tagalog | :grantha | :gujarati | :ugaritic,
-     :khitan_small_script | :nyiakeng_puachue_hmong | :buhid | :syriac | :old_sogdian,
-     :khudawadi | :lepcha | :lycian | :phags_pa | :bopomofo | :old_permic | :phoenician,
-     :katakana | :dogra | :javanese | :glagolitic | :tai_le | :old_turkic,
-     :old_south_arabian | :takri | :inscriptional_parthian | :signwriting | :osmanya,
-     :syloti_nagri | :sogdian | :egyptian_hieroglyphs | :gunjala_gondi | :sora_sompeng,
-     :arabic | :modi | :inherited | :chorasmian | :manichaean | :medefaidrin,
-     :imperial_aramaic | :nko | :cypriot | :bamum | :han | :masaram_gondi | :ahom,
-     :hanifi_rohingya | :coptic | :lao | :cham | :malayalam | :lisu | :yi | :old_italic,
-     :gothic | :cypro_minoan | :pau_cin_hau | :canadian_aboriginal | :mongolian,
-     :sharada | :tai_tham | :hanunoo | :old_north_arabian | :lydian | :rejang,
-     :warang_citi | :kharoshthi | :brahmi | :sinhala | :batak | :telugu | :gurmukhi,
-     :kayah_li | :marchen | :pahawh_hmong | :armenian | :bassa_vah | :multani,
-     :nabataean | :toto | :hangul | :devanagari | :khojki | :kaithi | :thaana | :nushu,
-     :sundanese | :bhaiksuki | :ogham | :makasar | :elbasan | :miao | :meetei_mayek,
-     :hebrew | :buginese | :tifinagh
+  @type(
+    script ::
+      :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
+    :kannada | :deseret | :old_hungarian | :psalter_pahlavi | :tagbanwa | :wancho,
+    :khmer | :bengali | :soyombo | :chakma | :inscriptional_pahlavi | :carian,
+    :tai_viet | :georgian | :oriya | :meroitic_cursive | :meroitic_hieroglyphs,
+    :braille | :nandinagari | :vai | :adlam | :mahajani | :tirhuta | :mro,
+    :zanabazar_square | :cuneiform | :vithkuqi | :newa | :yezidi | :osage | :linear_a,
+    :hiragana | :mende_kikakui | :cyrillic | :hatran | :anatolian_hieroglyphs | :limbu,
+    :balinese | :ethiopic | :new_tai_lue | :dives_akuru | :old_uyghur | :saurashtra,
+    :linear_b | :mandaic | :tibetan | :caucasian_albanian | :avestan | :tangut,
+    :siddham | :duployan | :kawi | :common | :thai | :shavian | :tamil | :old_persian,
+    :nag_mundari | :ol_chiki | :samaritan | :tagalog | :grantha | :gujarati | :ugaritic,
+    :khitan_small_script | :nyiakeng_puachue_hmong | :buhid | :syriac | :old_sogdian,
+    :khudawadi | :lepcha | :lycian | :phags_pa | :bopomofo | :old_permic | :phoenician,
+    :katakana | :dogra | :javanese | :glagolitic | :tai_le | :old_turkic,
+    :old_south_arabian | :takri | :inscriptional_parthian | :signwriting | :osmanya,
+    :syloti_nagri | :sogdian | :egyptian_hieroglyphs | :gunjala_gondi | :sora_sompeng,
+    :arabic | :modi | :inherited | :chorasmian | :manichaean | :medefaidrin,
+    :imperial_aramaic | :nko | :cypriot | :bamum | :han | :masaram_gondi | :ahom,
+    :hanifi_rohingya | :coptic | :lao | :cham | :malayalam | :lisu | :yi | :old_italic,
+    :gothic | :cypro_minoan | :pau_cin_hau | :canadian_aboriginal | :mongolian,
+    :sharada | :tai_tham | :hanunoo | :old_north_arabian | :lydian | :rejang,
+    :warang_citi | :kharoshthi | :brahmi | :sinhala | :batak | :telugu | :gurmukhi,
+    :kayah_li | :marchen | :pahawh_hmong | :armenian | :bassa_vah | :multani,
+    :nabataean | :toto | :hangul | :devanagari | :khojki | :kaithi | :thaana | :nushu,
+    :sundanese | :bhaiksuki | :ogham | :makasar | :elbasan | :miao | :meetei_mayek,
+    :hebrew | :buginese | :tifinagh
+  )
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()

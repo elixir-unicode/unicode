@@ -166,7 +166,7 @@ defmodule Unicode.Utils do
       [from, status, to, _] -> [encode(status), String.to_integer(from, 16), extract(to)]
     end)
     |> Enum.sort_by(&hd/1)
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   defp encode("c"), do: :common
@@ -184,22 +184,25 @@ defmodule Unicode.Utils do
   """
   def default_casing do
     unicode()
-    |> Enum.reject(fn {_codepoint, [_, _, _, _, _, _, _, _, _, _, _, upper, lower, title]} ->
-      title = String.trim(title)
+    |> Enum.map(fn {codepoint, parsed} ->
+      {codepoint, Enum.drop(parsed, 11) |> Enum.map(&String.trim/1)}
+    end)
+    |> Enum.reject(fn {_codepoint, [upper, lower, title]} ->
       Enum.all?([upper, lower, title], &(&1 == ""))
     end)
-    |> Enum.map(fn {codepoint, [_, _, _, _, _, _, _, _, _, _, _, upper, lower, title]} ->
-      title = String.trim(title)
-      %{
-        codepoint: codepoint_from(codepoint),
-        upper: extract(upper),
-        lower: extract(lower),
-        title: extract(title),
-        language: :any,
-        context: nil
-      }
+    |> Enum.reduce(%{}, fn {codepoint, [upper, lower, title]}, acc ->
+      codepoint = codepoint_from(codepoint)
+      context = nil
+
+      Map.put(acc, codepoint, %{
+        {:any, context} => %{
+          upper: extract(upper),
+          lower: extract(lower),
+          title: extract(title),
+          type: :default
+        }
+      })
     end)
-    |> Enum.sort_by(&(&1.codepoint))
   end
 
   @doc """
@@ -212,30 +215,43 @@ defmodule Unicode.Utils do
   @external_resource @special_casing_path
   def special_casing do
     parse_alias_file(@special_casing_path)
-    |> Enum.map(fn
-      [codepoint, upper, title, lower, context, ""] ->
+    |> Enum.reduce(Map.new(), fn
+      [codepoint, lower, title, upper, context, ""], acc ->
         [language, context] = parse(context)
+        codepoint = codepoint_from(codepoint)
 
-        %{
-          codepoint: String.to_integer(codepoint, 16),
-          language: language,
+        casing = %{
           upper: extract(upper),
           title: extract(title),
           lower: extract(lower),
-          context: context
+          type: :special
         }
 
-      [codepoint, upper, title, lower, ""] ->
-        %{
-          codepoint: String.to_integer(codepoint, 16),
-          language: :any,
+        update_casing(acc, codepoint, {language, context}, casing)
+
+      [codepoint, lower, title, upper, ""], acc ->
+        codepoint = codepoint_from(codepoint)
+        context = nil
+
+        casing = %{
           upper: extract(upper),
           title: extract(title),
           lower: extract(lower),
-          context: nil
-         }
+          type: :special
+        }
+
+        update_casing(acc, codepoint, {:any, context}, casing)
     end)
-    |> Enum.sort_by(&(&1.codepoint))
+  end
+
+  defp update_casing(acc, codepoint, language_context, casing) do
+    {_, acc} =
+      Map.get_and_update(acc, codepoint, fn
+        nil -> {nil, %{language_context => casing}}
+        existing -> {existing, Map.put(existing, language_context, casing)}
+      end)
+
+    acc
   end
 
   defp extract(string) do
@@ -245,19 +261,20 @@ defmodule Unicode.Utils do
     |> return_list_or_nil
   end
 
-  defp return_list_or_nil([nil]), do: :delete
+  defp return_list_or_nil([nil]), do: nil
   defp return_list_or_nil(other), do: other
 
   defp to_integer(""), do: nil
   defp to_integer(string), do: String.to_integer(string, 16)
 
-  defp parse(rule) do
+  @doc false
+  def parse(rule) do
     rule
     |> String.split(" ")
     |> case do
-      [language, rule] -> [String.to_atom(language), rule]
+      [language, context] -> [String.to_atom(language), context]
       [<<_::utf8, _::utf8>> = language] -> [String.to_atom(language), nil]
-      [rule] -> [:all, rule]
+      [rule] -> [:any, rule]
     end
   end
 
@@ -265,13 +282,60 @@ defmodule Unicode.Utils do
   Returns the merged data from default casing and
   special casing.
 
-  The data is returned in an order that can be used
-  for generating functions to process the case mappings.
-
   """
   def casing do
-    [special_casing() | default_casing()]
+    special_casing_map = special_casing()
+
+    # Merge special casing into default casing
+    first_phase_merge =
+      Enum.map(default_casing(), fn {codepoint, default_casing} ->
+        special_casing = Map.get(special_casing_map, codepoint, %{})
+        merged_casing = Map.merge(default_casing, special_casing)
+        {codepoint, merged_casing}
+      end)
+      |> Map.new
+
+    # Merge special casing that does not already exist in
+    # default casing
+    Enum.reduce(special_casing_map, first_phase_merge, fn {codepoint, casing}, acc ->
+      case Map.get(acc, codepoint) do
+        nil -> Map.put(acc, codepoint, casing)
+        _other -> acc
+      end
+    end)
   end
+
+  @doc """
+  Present casing in an order that is appropriate
+  for generating functions to process casing.
+
+  """
+  def casing_in_order do
+    casing()
+    |> Enum.sort()
+    |> Enum.map(fn {codepoint, casing} ->
+      casing
+      |> Enum.sort(&casing_sorter/2)
+      |> Enum.map(fn {{language, context}, casing} ->
+        casing
+        |> Map.put(:language, language)
+        |> Map.put(:context, context)
+        |> Map.put(:codepoint, codepoint)
+      end)
+    end)
+    |> List.flatten()
+  end
+
+  # :any language is the last rule.
+  def casing_sorter({{:any, nil}, _}, _b), do: false
+  def casing_sorter(_a, {{:any, nil}, _}), do: true
+
+  # A language with a context comes before language with no context
+  def casing_sorter({{language, nil}, _}, {{language, _context}, _}), do: false
+  def casing_sorter({{language, _context}, _}, {{language, nil}, _}), do: true
+
+  # A language with a context comes before language with no context
+  def casing_sorter({{language_1, _}, _}, {{language_2, _context}, _}), do: language_1 < language_2
 
   @doc """
   Returns a map of the Unicode codepoints with the `sentence_break` name
@@ -443,7 +507,7 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {key, ranges} ->
       {key, Enum.reverse(ranges)}
     end)
-    |> Map.new
+    |> Map.new()
   end
 
   # Range
@@ -563,16 +627,18 @@ defmodule Unicode.Utils do
   """
   def list_to_ranges(list) do
     list
-    |> Enum.sort
+    |> Enum.sort()
     |> Enum.reduce([], fn
       codepoint, [] ->
         [{codepoint, codepoint}]
+
       codepoint, [{start, finish} | rest] when codepoint == finish + 1 ->
         [{start, finish + 1} | rest]
+
       codepoint, acc ->
         [{codepoint, codepoint} | acc]
     end)
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   @doc """
@@ -584,7 +650,8 @@ defmodule Unicode.Utils do
     []
   end
 
-  def compact_ranges([{first, last}, {next, final} | rest]) when next >= first  and final <= last do
+  def compact_ranges([{first, last}, {next, final} | rest])
+      when next >= first and final <= last do
     compact_ranges([{first, last} | rest])
   end
 
@@ -646,8 +713,9 @@ defmodule Unicode.Utils do
   @doc false
   def maybe_atomize(key) do
     String.to_existing_atom(key)
-  rescue _e in ArgumentError ->
-    key
+  rescue
+    _e in ArgumentError ->
+      key
   end
 
   @doc false
