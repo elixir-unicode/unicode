@@ -195,7 +195,7 @@ defmodule Unicode.Utils do
         upper: extract(upper),
         lower: extract(lower),
         title: extract(title),
-        language: :all,
+        language: :any,
         context: nil
       }
     end)
@@ -228,7 +228,7 @@ defmodule Unicode.Utils do
       [codepoint, upper, title, lower, ""] ->
         %{
           codepoint: String.to_integer(codepoint, 16),
-          language: :all,
+          language: :any,
           upper: extract(upper),
           title: extract(title),
           lower: extract(lower),
