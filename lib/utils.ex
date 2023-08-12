@@ -338,6 +338,19 @@ defmodule Unicode.Utils do
   def casing_sorter({{language_1, _}, _}, {{language_2, _context}, _}), do: language_1 < language_2
 
   @doc """
+  Returns the list of locales that are referenced in
+  SpecialCasing.txt.
+
+  """
+  def known_casing_locales do
+    special_casing()
+    |> Enum.flat_map(fn {_codepoint, mappings} -> Map.keys(mappings) end)
+    |> Enum.map(&elem(&1, 0))
+    |> Enum.uniq()
+    |> List.delete(:any)
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `sentence_break` name
   as the key and a list of codepoint ranges as the values.
 
