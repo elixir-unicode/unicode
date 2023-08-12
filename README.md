@@ -1,4 +1,5 @@
 # Unicode
+
 ![Build status](https://github.com/elixir-unicode/unicode/actions/workflows/ci.yml/badge.svg)
 [![Hex.pm](https://img.shields.io/hexpm/v/unicode.svg)](https://hex.pm/packages/unicode)
 [![Hex.pm](https://img.shields.io/hexpm/dw/unicode.svg?)](https://hex.pm/packages/unicode)
