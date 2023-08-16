@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.16.2
+
+This is the changelog for Unicode v1.16.2 released on August 16th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Change the parsing of "SpecialCasing.text" specifically to support casing in [unicode_string](https://hex.pm/packages/unicode_string)/.
+
 ## Unicode v1.16.1
 
 This is the changelog for Unicode v1.16.1 released on April 22nd, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
