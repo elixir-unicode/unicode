@@ -1,5 +1,15 @@
 # Changelog
 
+## Unicode v1.17.0
+
+This is the changelog for Unicode v1.17.0 released on September 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Updates to [Unicode 15.1](https://unicode.org/versions/Unicode15.1.0/) data.
+
+* Improve the security of the `mix unicode.download` task.
+
 ## Unicode v1.16.2
 
 This is the changelog for Unicode v1.16.2 released on August 16th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
