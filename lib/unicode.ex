@@ -14,9 +14,8 @@ defmodule Unicode do
   @type codepoint_or_string :: codepoint | String.t()
 
   @typedoc "The valid scripts as of Unicode 15"
-  @type(
-    script ::
-      :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
+  @type script ::
+    :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
     :kannada | :deseret | :old_hungarian | :psalter_pahlavi | :tagbanwa | :wancho,
     :khmer | :bengali | :soyombo | :chakma | :inscriptional_pahlavi | :carian,
     :tai_viet | :georgian | :oriya | :meroitic_cursive | :meroitic_hieroglyphs,
@@ -42,7 +41,6 @@ defmodule Unicode do
     :nabataean | :toto | :hangul | :devanagari | :khojki | :kaithi | :thaana | :nushu,
     :sundanese | :bhaiksuki | :ogham | :makasar | :elbasan | :miao | :meetei_mayek,
     :hebrew | :buginese | :tifinagh
-  )
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()
@@ -68,6 +66,35 @@ defmodule Unicode do
   end
 
   @doc """
+  Ensures that a binary is valid UTF-8.
+
+  The string is validated by replacing any invalid UTF-8
+  bytes or incomplete sequences with a replacement string.
+
+  ### Arguments
+
+  * `binary` is any sequence of bytes.
+
+  * `replacement` is any string that will be used to replace
+    invalid UTF-8 bytes or incomplete sequences. The default
+    is `"�"`.
+
+  ### Returns
+
+  * A valid UTF-8 string that may or may not include
+    replacements for invalid UTF-8.
+
+  ### Example
+
+      iex> Unicode.validate_utf8(<<"foo", 0b11111111, "bar">>)
+      "foo�bar"
+
+  """
+  @doc since: "1.18.0"
+  @spec validate_utf8(binary :: binary(), replacement :: String.t()) :: String.t()
+  defdelegate validate_utf8(string, replacement \\ "�"), to: Unicode.Validation
+
+  @doc """
   Returns a map of aliases mapping
   property names to a module that
   serves that property
@@ -77,10 +104,12 @@ defmodule Unicode do
     Unicode.Property.servers()
   end
 
+  @doc false
   def fetch_property(property) when is_binary(property) do
     Map.fetch(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
 
+  @doc false
   def get_property(property) when is_binary(property) do
     Map.get(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
