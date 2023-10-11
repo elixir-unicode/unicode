@@ -1,4 +1,4 @@
-defmodule Unicode.Validation.UTF16 do
+defmodule Unicode.Validation.UTF32 do
   @moduledoc false
 
   @replacement_character :unicode.characters_to_binary("�", :utf8, :utf32)
