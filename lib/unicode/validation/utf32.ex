@@ -1,4 +1,4 @@
-defmodule UniRecover.UTF32 do
+defmodule Unicode.Validation.UTF32 do
   @moduledoc false
 
   @dialyzer :no_improper_lists
