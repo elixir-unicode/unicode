@@ -14,26 +14,26 @@ defmodule Unicode.Validation do
   end
 
   def replace_invalid(bytes, :utf16, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :be, rep)
+    Unicode.Validation.UTF16.replace_invalid(bytes, rep)
   end
 
   def replace_invalid(bytes, :utf16be, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :be, rep)
+    Unicode.Validation.UTF16.replace_invalid(bytes, rep)
   end
 
   def replace_invalid(bytes, :utf16le, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :le, rep)
+    Unicode.Validation.UTF16LE.replace_invalid(bytes, rep)
   end
 
   def replace_invalid(bytes, :utf32, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :be, rep)
+    Unicode.Validation.UTF16.replace_invalid(bytes, rep)
   end
 
   def replace_invalid(bytes, :utf32be, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :be, rep)
+    Unicode.Validation.UTF32.replace_invalid(bytes, rep)
   end
 
   def replace_invalid(bytes, :utf32le, rep) when is_binary(bytes) and is_binary(rep) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, :le, rep)
+    Unicode.Validation.UTF32LE.replace_invalid(bytes, rep)
   end
 end

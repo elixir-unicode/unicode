@@ -91,8 +91,8 @@ defmodule Unicode do
 
   """
   @doc since: "1.18.0"
-  @spec validate_utf8(binary :: binary(), replacement :: String.t()) :: String.t()
-  defdelegate validate_utf8(string, replacement \\ "�"), to: Unicode.Validation
+  @spec replace_invalid(binary :: binary(), encoding :: atom(), replacement :: String.t()) :: String.t()
+  defdelegate replace_invalid(string, encoding, replacement \\ "�"), to: Unicode.Validation
 
   @doc """
   Returns a map of aliases mapping

@@ -1,7 +1,7 @@
-defmodule Unicode.Validation.UTF16 do
+defmodule Unicode.Validation.UTF16LE do
   @moduledoc false
 
-  @replacement_character :unicode.characters_to_binary("�", :utf8, :utf32)
+  @replacement_character :unicode.characters_to_binary("�", :utf8, {:utf16, :little})
 
   def replace_invalid(<<>>, _), do: <<>>
 
@@ -10,12 +10,12 @@ defmodule Unicode.Validation.UTF16 do
   end
 
   # good sequence
-  defp do_replace(<<_::utf32, rest::binary>>, rep, acc) do
+  defp do_replace(<<_::utf16-little, rest::binary>>, rep, acc) do
     do_replace(rest, rep, acc)
   end
 
   # illegal sequence
-  defp do_replace(<<_::binary-size(4), rest::binary>>, rep, acc) do
+  defp do_replace(<<_::binary-size(2), rest::binary>>, rep, acc) do
     do_replace(rest, rep, <<acc::bits, rep::bits>>)
   end
 end
