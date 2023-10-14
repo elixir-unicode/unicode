@@ -1,4 +1,5 @@
 defmodule Unicode.Validation.UTF8.Test do
+  use ExUnit.Case
 
   alias Unicode.Validation.UTF8.Test.Helpers, as: Helpers
 
@@ -7,24 +8,37 @@ defmodule Unicode.Validation.UTF8.Test do
   #   Implement a way to save interesting or breaking tests.
   #   Also add a few sanity-check static tests.
 
-  str = <<>>
+  test "single valid sequence" do
+    assert Unicode.replace_invalid("é", :utf8) === "é"
+  end
 
-  steps = 100
+  test "single truncated sequence" do
+    {overlong_e, replacement} = Helpers.truncate("é")
 
-  # random valid overlong sequence | {in, out}
-  Helpers.random_valid_sequence()
-  |> Helpers.overlong(:rand.uniform(2))
+    assert Unicode.replace_invalid(overlong_e, :utf8) === replacement
+  end
 
-  Helpers.random_valid_sequence(:rand.uniform(3)+1)
-  |> Helpers.truncated()
+  test "single overlong sequence" do
+    {overlong_e, replacement} = Helpers.overlong("é", 3)
 
-  Helpers.random_valid_sequence(:rand.uniform(2)+2)
-  |> Helpers.truncated(2)
+    assert Unicode.replace_invalid(overlong_e, :utf8) === replacement
+  end
 
-  # at random points, do one of the following:
-  # - truncate the sequence
-  # - make them overlong
-  # - insert a surrogate
-  # - insert an undefined codepoint
-  # ... and record the index
+  test "clean multilingual hello world json" do
+    # https://github.com/novellac/multilanguage-hello-json/tree/master
+    j = File.read!("test/hello.json")
+
+    assert j === Unicode.replace_invalid(j, :utf8)
+  end
+
+  test "randomly generated illegal binary" do
+    # generate two binary strings, one valid and one invalid
+
+    orig = <<>>
+    final = <<>>
+
+    File.write!("test/last_valid.bin")
+
+    assert true === true
+  end
 end

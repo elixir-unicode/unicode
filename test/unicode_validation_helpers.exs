@@ -13,14 +13,16 @@ defmodule Unicode.Validation.UTF8.Test.Helpers do
   @quads 0x10000..@last_valid
 
   @doc """
-  Returns the provided utf-8 sequence as a truncated by "n" sequence.
+  Returns the provided utf-8 sequence as a truncate by "n" sequence,
+  and its expected replacement.
   """
-  def truncated(<<_::utf8>> = str, to_trunc \\ 1) when to_trunc > 0 and byte_size(str) - to_trunc > 0 do
+  def truncate(<<_::utf8>> = str, to_trunc \\ 1) when to_trunc > 0 and byte_size(str) - to_trunc > 0 do
     {binary_slice(str, 0, byte_size(str) - to_trunc), "�"}
   end
 
   @doc """
-  Returns the provided utf-8 sequence as an overlong by "n" sequence.
+  Returns the provided utf-8 sequence as an overlong by "n" sequence,
+  and its expected replacement.
   """
   def overlong(<<codepoint::utf8>> = str, extra_bytes \\ 1) when extra_bytes > 0 and (byte_size(str) + extra_bytes) in 2..6 do
     case byte_size(str) + extra_bytes do
@@ -46,22 +48,28 @@ defmodule Unicode.Validation.UTF8.Test.Helpers do
     end
   end
 
+  def random_surrogate() do
+    <<i::4, ii::6, iii::6>> = <<Enum.random(@surrogates)::16>>
+
+    {<<0b1110::4, i::4, 0b10::2, ii::6, 0b10::2, iii::6>>, "���"}
+  end
+
   @doc """
   Returns n random surrogate codepoints encoded as utf-8.
   """
   def random_surrogates(n) when is_integer(n) and n > 0 do
-    {make_random_surrogates(n), String.duplicate("�", n)}
+    {do_random_surrogates(n), String.duplicate("�", n)}
   end
 
-  defp make_random_surrogates(n, acc \\ <<>>)
+  defp do_random_surrogates(n, acc \\ <<>>)
 
-  defp make_random_surrogates(0, acc), do: acc
+  defp do_random_surrogates(0, acc), do: acc
 
-  defp make_random_surrogates(n, acc) do
+  defp do_random_surrogates(n, acc) do
     <<i::4, ii::6, iii::6>> = <<Enum.random(@surrogates)::16>>
     bytes = <<0b1110::4, i::4, 0b10::2, ii::6, 0b10::2, iii::6>>
 
-    make_random_surrogates(n-1, <<acc::bits, bytes::bytes>>)
+    do_random_surrogates(n-1, <<acc::bits, bytes::bytes>>)
   end
 
   def random_valid_sequence(), do: <<random_valid_codepoint()::utf8>>
@@ -105,5 +113,28 @@ defmodule Unicode.Validation.UTF8.Test.Helpers do
     <<i::3, ii::6, iii::6, iv::6>> = <<Enum.random(@unallocated)::21>>
 
     <<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, 0b10::2, iv::6>>
+  end
+
+  def random_overlong() do
+    random_valid_sequence() |> overlong()
+  end
+
+  def random_truncated() do
+    random_valid_sequence(:rand.uniform(3)+1) |> truncate()
+  end
+
+  def random_sequences(n, acc \\ <<>>, final \\ <<>>)
+
+  def random_sequences(0, acc, final), do: {acc, final}
+
+  def random_sequences(n, acc, final) do
+    f = Enum.random([&random_valid_sequence/0, &random_surrogate/0, &random_overlong/0, &random_truncated/0])
+
+    case f.() do
+      {bytes, rep} ->
+        random_sequences(n-1, acc <> bytes, final <> rep)
+      bytes when is_binary(bytes) ->
+        random_sequences(n-1, acc <> bytes, final <> bytes)
+    end
   end
 end

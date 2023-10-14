@@ -3,6 +3,8 @@ defmodule Unicode.Validation.UTF32LE do
 
   @replacement_character :unicode.characters_to_binary("�", :utf8, {:utf32, :little})
 
+  def replace_invalid(bytes, replacement \\ @replacement_character)
+
   def replace_invalid(<<>>, _), do: <<>>
 
   def replace_invalid(bytes, replacement) when is_binary(bytes) and is_binary(replacement) do

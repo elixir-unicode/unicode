@@ -6,8 +6,8 @@ defmodule Unicode.Validation.UTF8 do
   end
 
   # match ascii characters first for speed
-  defp do_replace(<<ascii::8, n_lead::2, n_rest::6, rest::bytes>>, rep, acc) when ascii in 0..127 and n_lead != 0b10 do
-    do_replace(rest, rep, <<acc::bits, ascii::8, n_lead::2, n_rest::6>>)
+  defp do_replace(<<ascii::8, n_lead::2, rest::bytes>>, rep, acc) when ascii in 0..127 and n_lead != 0b10 do
+    do_replace(rest, rep, <<acc::bits, ascii::8, n_lead::2>>)
   end
 
   defp do_replace(<<grapheme::utf8, rest::bytes>>, rep, acc) do
@@ -16,30 +16,41 @@ defmodule Unicode.Validation.UTF8 do
 
   # 2/3-byte truncated
   defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6>>, rep, acc) do
-    <<acc::bits, ii_of_iii(<<i::4, ii::6>>, rep)::bits>>
+    <<tcp::10>> = <<i::4, ii::6>>
+
+    <<acc::bits, ii_of_iii(tcp, rep)::bits>>
   end
 
-  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6, n_lead::2, n_rest::6, rest::bytes>>, rep, acc) when n_lead != 0b10 do
-    do_replace(<<n_lead::2, n_rest::6, rest::bytes>>, rep, <<acc::bits, ii_of_iii(<<i::4, ii::6>>, rep)::bits>>)
+  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6, n_lead::2, rest::bits>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::10>> = <<i::4, ii::6>>
+
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, ii_of_iii(tcp, rep)::bits>>)
   end
 
   # 2/4-byte truncated
   defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6>>, rep, acc) do
-    <<acc::bits, ii_of_iiii(<<i::4, ii::6>>, rep)::bits>>
+    <<tcp::10>> = <<i::4, ii::6>>
+
+    <<acc::bits, ii_of_iiii(tcp, rep)::bits>>
   end
 
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, n_lead::2, n_rest::6, rest::bytes>>, rep, acc) when n_lead != 0b10 do
-    do_replace(<<n_lead::2, n_rest::6, rest::bytes>>, rep, <<acc::bits, ii_of_iiii(<<i::4, ii::6>>, rep)::bits>>
-    )
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, n_lead::2, rest::bits>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::10>> = <<i::4, ii::6>>
+
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, ii_of_iiii(tcp, rep)::bits>>)
   end
 
   # 3/4-byte truncated
   defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6>>, rep, acc) do
-    <<acc::bits, iii_of__iiii(<<i::3, ii::6, iii::6>>, rep)::bits>>
+    <<tcp::15>> = <<i::3, ii::6, iii::6>>
+
+    <<acc::bits, iii_of__iiii(tcp, rep)::bits>>
   end
 
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, n_lead::2, n_rest::6, rest::bytes>>, rep, acc) when n_lead != 0b10 do
-    do_replace(<<n_lead::2, n_rest::6, rest::bytes>>, rep, <<acc::bits, iii_of__iiii(<<i::3, ii::6, iii::6>>, rep)::bits>>)
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, n_lead::2, rest::bytes>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::15>> = <<i::3, ii::6, iii::6>>
+
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, iii_of__iiii(tcp, rep)::bits>>)
   end
 
   defp do_replace(<<_, rest::bytes>>, rep, acc), do: do_replace(rest, rep, <<acc::bits, rep::bytes>>)
