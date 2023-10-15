@@ -86,7 +86,7 @@ defmodule Unicode do
 
   ### Example
 
-      iex> Unicode.validate_utf8(<<"foo", 0b11111111, "bar">>)
+      iex> Unicode.replace_invalid(<<"foo", 0b11111111, "bar">>, :utf8)
       "foo�bar"
 
   """
