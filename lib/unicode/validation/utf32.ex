@@ -12,12 +12,12 @@ defmodule Unicode.Validation.UTF32 do
   end
 
   # good sequence
-  defp do_replace(<<_::utf32, rest::binary>>, rep, acc) do
+  defp do_replace(<<_::utf32, rest::bits>>, rep, acc) do
     do_replace(rest, rep, acc)
   end
 
   # illegal sequence
-  defp do_replace(<<_::binary-size(4), rest::binary>>, rep, acc) do
+  defp do_replace(<<_::bytes-size(4), rest::bits>>, rep, acc) do
     do_replace(rest, rep, <<acc::bits, rep::bits>>)
   end
 end
