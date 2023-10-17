@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.18.0
+
+This is the changelog for Unicode v1.18.0 released on ______, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Adds `Unicode.validate_utf8/2` to force-validate a binary as a UTF-8 string. Any invalid codepoints or incomplete sequences are replaced with a replacement string.  Many thanks to @Moosieus for the contribution.
+
 ## Unicode v1.17.0
 
 This is the changelog for Unicode v1.17.0 released on September 17th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

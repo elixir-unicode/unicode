@@ -3,6 +3,7 @@
 ![Build status](https://github.com/elixir-unicode/unicode/actions/workflows/ci.yml/badge.svg)
 [![Hex.pm](https://img.shields.io/hexpm/v/unicode.svg)](https://hex.pm/packages/unicode)
 [![Hex.pm](https://img.shields.io/hexpm/dw/unicode.svg?)](https://hex.pm/packages/unicode)
+[![Hex.pm](https://img.shields.io/hexpm/dt/unicode.svg?)](https://hex.pm/packages/unicode)
 [![Hex.pm](https://img.shields.io/hexpm/l/unicode.svg)](https://hex.pm/packages/unicode)
 
 Functions to return information about Unicode codepoints.
@@ -13,13 +14,13 @@ Since checking strings and codepoints for certain attributes - like whether they
 
 It is tempting to assume the use of [US ASCII](https://en.wikipedia.org/wiki/ASCII) encoding and checking only for characters in that range. For example it is very common to see code in Elixir checking `codepoint in ?a..?z` to check for lowercase alphabetic characters. When the underlying programming language has no canonical form for a string beyond bytes this may be considered acceptable - the programmer is defining the script domain as he or she sees fit.
 
-However since Elixir strings are declared to be [UTF8 encoded Unicode strings](https://unicode.org/faq/utf_bom.html#utf8-1) it seems appropriate to make it easier to determine the characteristics of codepoints (and strings) using this standard.
+However since Elixir strings are declared to be [UTF-8 encoded Unicode strings](https://unicode.org/faq/utf_bom.html#utf8-1) it seems appropriate to make it easier to determine the characteristics of codepoints (and strings) using this standard.
 
 The Elixir standard library does not provide introspection beyond that required to support casing (String.downcase/1, String.upcase/1, String.capitalize/1).  This library aims to *fill in the blanks* a little bit.
 
 ### Unicode version
 
-As of [unicode version 1.15.0](https://hex.pm/pacakges/unicode/1.15.0) published on September 17th, 2022, [Unicode 15](https://www.unicode.org/versions/Unicode15.0.0/) forms the underlying data.
+As of [unicode version 1.17.0](https://hex.pm/pacakges/unicode/1.17.0) published on September 17th, 2023, [Unicode 15.1](https://www.unicode.org/versions/Unicode15.1.0/) forms the underlying data.
 
 ## Additional Unicode libraries
 
@@ -59,13 +60,13 @@ The following functions return the block, script and category for codepoints and
 
     ```elixir
     iex> Unicode.script ?ä
-    "latin"
+    :latin
 
     iex> Unicode.script ?خ
-    "arabic"
+    :arabic
 
     iex> Unicode.script ?अ
-    "devanagari"
+    :devanagari
     ```
 
 *   `Unicode.block/1`

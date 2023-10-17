@@ -1,0 +1,73 @@
+defmodule Unicode.Validation.UTF8 do
+  @moduledoc false
+
+  def replace_invalid(bytes, replacement \\ "�") when is_binary(bytes) and is_binary(replacement) do
+    do_replace(bytes, replacement, <<>>)
+  end
+
+  # ASCII (for better average speed)
+  defp do_replace(<<ascii::8, n_lead::2, rest::bits>>, rep, acc) when ascii in 0..127 and n_lead != 0b10 do
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, ascii::8>>)
+  end
+
+  # UTF-8 (valid)
+  defp do_replace(<<grapheme::utf8, rest::bits>>, rep, acc) do
+    do_replace(rest, rep, <<acc::bits, grapheme::utf8>>)
+  end
+
+  # 2/3 truncated sequence
+
+  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6>>, rep, acc) do
+    <<tcp::10>> = <<i::4, ii::6>>
+    <<acc::bits, ii_of_iii(tcp, rep)::bits>>
+  end
+
+  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6, n_lead::2, rest::bits>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::10>> = <<i::4, ii::6>>
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, ii_of_iii(tcp, rep)::bits>>)
+  end
+
+  # 2/4
+
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6>>, rep, acc) do
+    <<tcp::10>> = <<i::4, ii::6>>
+    <<acc::bits, ii_of_iiii(tcp, rep)::bits>>
+  end
+
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, n_lead::2, rest::bits>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::10>> = <<i::4, ii::6>>
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, ii_of_iiii(tcp, rep)::bits>>)
+  end
+
+  # 3/4
+
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6>>, rep, acc) do
+    <<tcp::15>> = <<i::3, ii::6, iii::6>>
+    <<acc::bits, iii_of__iiii(tcp, rep)::bits>>
+  end
+
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, n_lead::2, rest::bits>>, rep, acc) when n_lead != 0b10 do
+    <<tcp::15>> = <<i::3, ii::6, iii::6>>
+    do_replace(<<n_lead::2, rest::bits>>, rep, <<acc::bits, iii_of__iiii(tcp, rep)::bits>>)
+  end
+
+  # Everything else
+
+  defp do_replace(<<_, rest::bits>>, rep, acc), do: do_replace(rest, rep, <<acc::bits, rep::bits>>)
+
+  # Final
+
+  defp do_replace(<<>>, _, acc), do: acc
+
+  # bounds-checking truncated code points for overlong encodings
+
+  defp ii_of_iii(tcp, rep) when tcp >= 32 and tcp <= 863, do: rep
+  defp ii_of_iii(tcp, rep) when tcp >= 896 and tcp <= 1023, do: rep
+  defp ii_of_iii(_, rep), do: rep <> rep
+
+  defp ii_of_iiii(tcp, rep) when tcp >= 16 and tcp <= 271, do: rep
+  defp ii_of_iiii(_, rep), do: rep <> rep
+
+  defp iii_of__iiii(tcp, rep) when tcp >= 1024 and tcp <= 17407, do: rep
+  defp iii_of__iiii(_, rep), do: rep <> rep <> rep
+end
