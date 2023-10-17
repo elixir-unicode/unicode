@@ -78,7 +78,7 @@ defmodule Unicode do
 
   * `binary` is any sequence of bytes.
 
-  * ``encoding` is any UTF encoding being one of
+  * `encoding` is any UTF encoding being one of
     `:utf8`, `:utf16`, `:utf16be`, `:utf16le`, `:utf32`, `:utf32be` or
     `:utf32le`. The default is `:utf8`.
 

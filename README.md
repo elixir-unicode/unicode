@@ -45,7 +45,7 @@ The function `Unicode.replace_invalid/3` will ensure a given sequence of bytes i
 ```elixir
 iex> Unicode.replace_invalid(<<"foo", 0b11111111, "bar">>, :utf8)
 "foo�bar"
-````
+```
 
 ### Codepoint ranges
 
