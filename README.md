@@ -38,6 +38,15 @@ As of [unicode version 1.17.0](https://hex.pm/pacakges/unicode/1.17.0) published
 
 The following is a partial list of functions included in the library. See the documentation for the relevant module for further information:
 
+### UTF encoding validation
+
+The function `Unicode.replace_invalid/3` will ensure a given sequence of bytes is a correctly encoding UTF binary by replacing invalid or incomplete codepoint sequences with a replace string.  For example:
+
+```elixir
+iex> Unicode.replace_invalid(<<"foo", 0b11111111, "bar">>, :utf8)
+"foo�bar"
+````
+
 ### Codepoint ranges
 
 These functions return the codepoints as list of 2-tuples for the given property:
@@ -186,7 +195,7 @@ The package can be installed by adding `unicode` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:unicode, "~> 1.15"}
+    {:unicode, "~> 1.18"}
   ]
 end
 ```
