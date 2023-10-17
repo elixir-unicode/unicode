@@ -69,14 +69,18 @@ defmodule Unicode do
   end
 
   @doc """
-  Ensures that a binary is valid UTF-8.
+  Ensures that a binary is valid UTF encoded.
 
-  The string is validated by replacing any invalid UTF-8
+  The string is validated by replacing any invalid UTF
   bytes or incomplete sequences with a replacement string.
 
   ### Arguments
 
   * `binary` is any sequence of bytes.
+
+  * ``encoding` is any UTF encoding being one of
+    `:utf8`, `:utf16`, `:utf16be`, `:utf16le`, `:utf32`, `:utf32be` or
+    `:utf32le`. The default is `:utf8`.
 
   * `replacement` is any string that will be used to replace
     invalid UTF-8 bytes or incomplete sequences. The default
@@ -84,8 +88,9 @@ defmodule Unicode do
 
   ### Returns
 
-  * A valid UTF-8 string that may or may not include
-    replacements for invalid UTF-8.
+  * A valid UTF binary that may or may not include
+    replacements for invalid UTF. If `encoding` is `:utf8`
+    then the return type is a `t:String.t/0`.
 
   ### Example
 
