@@ -48,7 +48,8 @@ defmodule Unicode.Validation.UTF8.Test do
   end
 
   test "clean multilingual hello world json" do
-    j = File.read!("test/hello.json") # https://github.com/novellac/multilanguage-hello-json/tree/master
+    # https://github.com/novellac/multilanguage-hello-json/tree/master
+    j = File.read!("test/support/hello.json")
 
     assert j === Unicode.replace_invalid(j, :utf8)
   end

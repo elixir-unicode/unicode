@@ -13,6 +13,9 @@ defmodule Unicode do
   @typedoc "A codepoint or a string"
   @type codepoint_or_string :: codepoint | String.t()
 
+  @typedoc "Unicode UTF encodings"
+  @type encoding :: :utf8 | :utf16 | :utf16be | :utf16le | :utf32 | :utf32be | :utf32le
+
   @typedoc "The valid scripts as of Unicode 15"
   @type script ::
     :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
@@ -91,8 +94,8 @@ defmodule Unicode do
 
   """
   @doc since: "1.18.0"
-  @spec replace_invalid(binary :: binary(), encoding :: atom(), replacement :: String.t()) :: String.t()
-  defdelegate replace_invalid(string, encoding, replacement \\ "�"), to: Unicode.Validation
+  @spec replace_invalid(binary :: binary(), encoding :: encoding(), replacement :: String.t()) :: binary()
+  defdelegate replace_invalid(string, encoding \\ :utf8, replacement \\ "�"), to: Unicode.Validation
 
   @doc """
   Returns a map of aliases mapping

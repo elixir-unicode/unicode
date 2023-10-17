@@ -13,4 +13,5 @@ defmodule Unicode.Test do
   doctest Unicode.LineBreak
   doctest Unicode.SentenceBreak
   doctest Unicode.IndicSyllabicCategory
+
 end
