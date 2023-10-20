@@ -1,5 +1,13 @@
 # Changelog
 
+## Unicode v1.18.1
+
+This is the changelog for Unicode v1.18.1 released on ______, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Enhancements
+
+* Confirm that the README installation version matches the code version. Thanks to @Moosieus for the PR.
+
 ## Unicode v1.18.0
 
 This is the changelog for Unicode v1.18.0 released on October 19th, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
