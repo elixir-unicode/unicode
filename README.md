@@ -20,7 +20,7 @@ The Elixir standard library does not provide introspection beyond that required 
 
 ### Unicode version
 
-As of [unicode version 1.17.0](https://hex.pm/pacakges/unicode/1.17.0) published on September 17th, 2023, [Unicode 15.1](https://www.unicode.org/versions/Unicode15.1.0/) forms the underlying data.
+As of [unicode version 1.17.0](https://hex.pm/packages/unicode/1.17.0) published on September 17th, 2023, [Unicode 15.1](https://www.unicode.org/versions/Unicode15.1.0/) forms the underlying data.
 
 ## Additional Unicode libraries
 
@@ -183,12 +183,14 @@ The information functions are heavily inspired by [@qqwy's elixir-unicode packag
 
 The package can be installed by adding `unicode` to your list of dependencies in `mix.exs`:
 
+<!-- BEGIN: VERSION -->
 ```elixir
 def deps do
   [
-    {:unicode, "~> 1.15"}
+    {:unicode, "~> 1.18"}
   ]
 end
 ```
+<!-- END: VERSION -->
 
 The docs can be found at [https://hexdocs.pm/unicode](https://hexdocs.pm/unicode).
