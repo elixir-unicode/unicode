@@ -8,7 +8,7 @@
 
 Functions to return information about Unicode codepoints.
 
-Elixir strings are UTF8-encoded [Unicode](https://unicode.org) binaries. This is a flexible and complete encoding scheme for the worlds many scripts, characters and emjois. However since its a variable length encoding (using between one and four bytes for UTF8) it is harder to use high-performance byte-oriented functions to decompose strings.
+Elixir strings are UTF-8-encoded [Unicode](https://unicode.org) binaries. This is a flexible and complete encoding scheme for the worlds many scripts, characters and emjois. However since it's a variable length encoding (using between one and four bytes for UTF-8) it is harder to use high-performance byte-oriented functions to decompose strings.
 
 Since checking strings and codepoints for certain attributes - like whether they are upper case, or symbols, or whitespace - is a common occurrence, a performant approach to such detection is useful.
 

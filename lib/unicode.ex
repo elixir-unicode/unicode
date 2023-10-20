@@ -13,6 +13,9 @@ defmodule Unicode do
   @typedoc "A codepoint or a string"
   @type codepoint_or_string :: codepoint | String.t()
 
+  @typedoc "Unicode UTF encodings"
+  @type encoding :: :utf8 | :utf16 | :utf16be | :utf16le | :utf32 | :utf32be | :utf32le
+
   @typedoc "The valid scripts as of Unicode 15"
   @type script ::
     :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin,
@@ -66,14 +69,18 @@ defmodule Unicode do
   end
 
   @doc """
-  Ensures that a binary is valid UTF-8.
+  Ensures that a binary is valid UTF encoded.
 
-  The string is validated by replacing any invalid UTF-8
+  The string is validated by replacing any invalid UTF
   bytes or incomplete sequences with a replacement string.
 
   ### Arguments
 
   * `binary` is any sequence of bytes.
+
+  * `encoding` is any UTF encoding being one of
+    `:utf8`, `:utf16`, `:utf16be`, `:utf16le`, `:utf32`, `:utf32be` or
+    `:utf32le`. The default is `:utf8`.
 
   * `replacement` is any string that will be used to replace
     invalid UTF-8 bytes or incomplete sequences. The default
@@ -81,8 +88,9 @@ defmodule Unicode do
 
   ### Returns
 
-  * A valid UTF-8 string that may or may not include
-    replacements for invalid UTF-8.
+  * A valid UTF binary that may or may not include
+    replacements for invalid UTF. If `encoding` is `:utf8`
+    then the return type is a `t:String.t/0`.
 
   ### Example
 
@@ -91,13 +99,13 @@ defmodule Unicode do
 
   """
   @doc since: "1.18.0"
-  @spec replace_invalid(binary :: binary(), encoding :: atom(), replacement :: String.t()) :: String.t()
-  defdelegate replace_invalid(string, encoding, replacement \\ "�"), to: Unicode.Validation
+  @spec replace_invalid(binary :: binary(), encoding :: encoding(), replacement :: String.t()) :: binary()
+  defdelegate replace_invalid(string, encoding \\ :utf8, replacement \\ "�"), to: Unicode.Validation
 
   @doc """
   Returns a map of aliases mapping
   property names to a module that
-  serves that property
+  serves that property.
 
   """
   def property_servers do
@@ -121,7 +129,7 @@ defmodule Unicode do
   ## Argument
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -214,7 +222,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -263,7 +271,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -297,7 +305,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -388,7 +396,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -441,7 +449,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -479,7 +487,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -508,7 +516,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -539,7 +547,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -568,7 +576,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -612,7 +620,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -643,7 +651,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -693,7 +701,7 @@ defmodule Unicode do
   ## Arguments
 
   * `codepoint_or_string` is a single integer codepoint
-    or a `String.t`.
+    or a `t:String.t/0`.
 
   ## Returns
 
@@ -766,7 +774,7 @@ defmodule Unicode do
 
   ## Arguments
 
-  * `string` is any `String.t`
+  * `string` is any `t:String.t/0`
 
   ## Returns
 
@@ -811,7 +819,7 @@ defmodule Unicode do
 
   ## Arguments
 
-  * `string` is any `String.t`.
+  * `string` is any `t:String.t/0`.
 
   ## Returns
 
@@ -856,7 +864,7 @@ defmodule Unicode do
 
   ## Arguments
 
-  * `string` is any `String.t`.
+  * `string` is any `t:String.t/0`.
 
   ## Returns
 
