@@ -6,6 +6,8 @@ This is the changelog for Unicode v1.18.1 released on ______, 2023.  For older c
 
 ### Enhancements
 
+* Fix performance regression in `Unicode.replace_invalid/2` from the original UniRecover library and confirm the code memory usage remains a constant 128 bytes for all benchmark scenarios. Thanks to @Moosieus for the fabulous PR. Closes #10.
+
 * Confirm that the README installation version matches the code version. Thanks to @Moosieus for the PR.
 
 ## Unicode v1.18.0

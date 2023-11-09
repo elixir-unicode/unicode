@@ -5,10 +5,10 @@ alias Unicode.Validation.UTF8.Test.Helpers, as: Helpers
 {invalid_II, _valid_II} = Helpers.random_sequences(1_000)
 #{invalid_III, _valid_III} = Helpers.random_sequences(100_000)
 {invalid_IV, _valid_IV} = Helpers.random_sequences(1_000_000)
-{invalid_V, valid_V} = Helpers.random_sequences(10_000_000)
+{invalid_V, _valid_V} = Helpers.random_sequences(10_000_000)
 #{invalid_VI, valid_VI} = Helpers.random_sequences(100_000_000)
 
-moby_dick = File.read!("benchee/pg2701.txt")
+moby_dick = File.read!("benchee/support/pg2701.txt")
 
 mb_size = fn x ->
   "(#{Float.round(byte_size(x) / (1024 ** 2), 2)} MB)"
@@ -23,7 +23,7 @@ Benchee.run(
      "1k random sequences #{mb_size.(invalid_II)}" => invalid_II,
     #"100k sequences" => invalid_III,
     "1m random sequences #{mb_size.(invalid_IV)}" => invalid_IV,
-    "JSON, Once Invalid (~207KB)" => File.read!("benchee/hll_server_list-single_error.json"),
+    "JSON, Once Invalid (~207KB)" => File.read!("benchee/support/hll_server_list-single_error.json"),
     "10m random sequences #{mb_size.(invalid_V)}" => invalid_V,
     "Moby Dick #{mb_size.(moby_dick)}" => moby_dick,
     # "100m sequences" => invalid_VI,
