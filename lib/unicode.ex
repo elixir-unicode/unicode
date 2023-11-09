@@ -92,6 +92,12 @@ defmodule Unicode do
     replacements for invalid UTF. If `encoding` is `:utf8`
     then the return type is a `t:String.t/0`.
 
+  ## Notes
+
+  * `Unicode.replace_invalid(string, :utf8)` will delegate to
+    `String.replace_invalid/2` where available, which is from
+    Elixir 1.16 onwards.
+
   ### Example
 
       iex> Unicode.replace_invalid(<<"foo", 0b11111111, "bar">>, :utf8)
@@ -100,7 +106,17 @@ defmodule Unicode do
   """
   @doc since: "1.18.0"
   @spec replace_invalid(binary :: binary(), encoding :: encoding(), replacement :: String.t()) :: binary()
-  defdelegate replace_invalid(string, encoding \\ :utf8, replacement \\ "�"), to: Unicode.Validation
+  def replace_invalid(binary, encoding \\ :utf8, replacement \\ "�")
+
+  if Code.ensure_loaded?(String) && function_exported?(String, :replace_invalid, 2) do
+    def replace_invalid(binary, :utf8, replacement) do
+      String.replace_invalid(binary, replacement)
+    end
+  end
+
+  def replace_invalid(binary, encoding, replacement) do
+    Unicode.Validation.replace_invalid(binary, encoding, replacement)
+  end
 
   @doc """
   Returns a map of aliases mapping
