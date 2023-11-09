@@ -1,23 +1,20 @@
 defmodule Unicode.Validation.UTF8 do
   @moduledoc false
 
-  import Bitwise
-
   defguardp is_truncated_ii_of_iii(i, ii) when
-    (896 <= ((i <<< 6) ||| ii) and ((i <<< 6) ||| ii) <= 1023)
+    Bitwise.bor(Bitwise.bsl(i, 6), ii) in 32..863
     or
-    (32 <= ((i <<< 6) ||| ii) and ((i <<< 6) ||| ii) <= 863)
+    Bitwise.bor(Bitwise.bsl(i, 6), ii) in 896..1023
 
   defguardp is_truncated_ii_of_iv(i, ii) when
-    (16 <= ((i <<< 6) ||| ii)) and (((i <<< 6) ||| ii) <= 271)
+    Bitwise.bor(Bitwise.bsl(i, 6), ii) in 16..271
 
   defguardp is_truncated_iii_of_iv(i, ii, iii) when
-    (1024 <= (((i <<< 12) ||| (ii <<< 6)) ||| iii))
-    and ((((i <<< 12) ||| (ii <<< 6)) ||| iii) <= 17407)
+    Bitwise.bor(Bitwise.bor(Bitwise.bsl(i, 12), Bitwise.bsl(ii, 6)), iii) in 1024..17407
 
   defguardp is_ascii(codepoint) when codepoint in 0..127
 
-  defguardp is_next_sequence(next) when (next >>> 6) !== 0b10
+  defguardp is_next_sequence(next) when Bitwise.bsr(next, 6) !== 0b10
 
   def replace_invalid(bytes, replacement \\ "�")
      when is_binary(bytes) and is_binary(replacement) do
