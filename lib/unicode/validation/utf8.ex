@@ -3,12 +3,30 @@ defmodule Unicode.Validation.UTF8 do
 
   import Bitwise
 
-  def replace_invalid(bytes, replacement \\ "�") when is_binary(bytes) and is_binary(replacement) do
+  defguardp is_truncated_ii_of_iii(i, ii) when
+    (896 <= ((i <<< 6) ||| ii) and ((i <<< 6) ||| ii) <= 1023)
+    or
+    (32 <= ((i <<< 6) ||| ii) and ((i <<< 6) ||| ii) <= 863)
+
+  defguardp is_truncated_ii_of_iv(i, ii) when
+    (16 <= ((i <<< 6) ||| ii)) and (((i <<< 6) ||| ii) <= 271)
+
+  defguardp is_truncated_iii_of_iv(i, ii, iii) when
+    (1024 <= (((i <<< 12) ||| (ii <<< 6)) ||| iii))
+    and ((((i <<< 12) ||| (ii <<< 6)) ||| iii) <= 17407)
+
+  defguardp is_ascii(codepoint) when codepoint in 0..127
+
+  defguardp is_next_sequence(next) when (next >>> 6) !== 0b10
+
+  def replace_invalid(bytes, replacement \\ "�")
+     when is_binary(bytes) and is_binary(replacement) do
     do_replace(bytes, replacement, <<>>)
   end
 
   # ASCII (for better average speed)
-  defp do_replace(<<ascii::8, next::8, _::bytes>> = rest, rep, acc) when ascii in 0..127 and (next >>> 6) !== 0b10 do
+  defp do_replace(<<ascii::8, next::8, _::bytes>> = rest, rep, acc)
+     when is_ascii(ascii) and is_next_sequence(next) do
     <<_::8, rest::bytes>> = rest
     do_replace(rest, rep, acc <> <<ascii::8>>)
   end
@@ -19,55 +37,44 @@ defmodule Unicode.Validation.UTF8 do
   end
 
   # 2/3 truncated sequence
-
-  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6>>, rep, acc) do
-    acc <> ii_of_iii(<<i::4, ii::6>>, rep)
+  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6>>, rep, acc)
+     when is_truncated_ii_of_iii(i, ii) do
+    acc <> rep
   end
 
-  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6, next::8, _::bytes>> = rest, rep, acc) when (next >>> 6) !== 0b10 do
+  defp do_replace(<<0b1110::4, i::4, 0b10::2, ii::6, next::8, _::bytes>> = rest, rep, acc)
+     when is_truncated_ii_of_iii(i, ii) and is_next_sequence(next) do
     <<_::16, rest::bytes>> = rest
-    do_replace(rest, rep, acc <> ii_of_iii(<<i::4, ii::6>>, rep))
+    do_replace(rest, rep, acc <> rep)
   end
 
   # 2/4
-
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6>>, rep, acc) do
-    acc <> ii_of_iv(<<i::3, ii::6>>, rep)
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6>>, rep, acc)
+     when is_truncated_ii_of_iv(i, ii) do
+    acc <> rep
   end
 
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, next::8, _::bytes>> = rest, rep, acc) when (next >>> 6) !== 0b10 do
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, next::8, _::bytes>> = rest, rep, acc)
+     when is_truncated_ii_of_iv(i, ii) and is_next_sequence(next) do
     <<_::16, rest::bytes>> = rest
-    do_replace(rest, rep, acc <> ii_of_iv(<<i::3, ii::6>>, rep))
+    do_replace(rest, rep, acc <> rep)
   end
 
   # 3/4
-
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6>>, rep, acc) do
-    acc <> iii_of_iv(<<i::3, ii::6, iii::6>>, rep)
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6>>, rep, acc)
+     when is_truncated_iii_of_iv(i, ii, iii) do
+    acc <> rep
   end
 
-  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, next::8, _::bytes>> = rest, rep, acc) when (next >>> 6) !== 0b10 do
+  defp do_replace(<<0b11110::5, i::3, 0b10::2, ii::6, 0b10::2, iii::6, next::8, _::bytes>> = rest, rep, acc)
+     when is_truncated_iii_of_iv(i, ii, iii) and is_next_sequence(next) do
     <<_::24, rest::bytes>> = rest
-    do_replace(rest, rep, acc <> iii_of_iv(<<i::3, ii::6, iii::6>>, rep))
+    do_replace(rest, rep, acc <> rep)
   end
 
   # Everything else
-
   defp do_replace(<<_, rest::bytes>>, rep, acc), do: do_replace(rest, rep, acc <> rep)
 
   # Final
-
   defp do_replace(<<>>, _, acc), do: acc
-
-  # bounds-checking truncated code points for overlong encodings
-
-  defp ii_of_iii(<<tcp::10>>, rep) when tcp >= 32 and tcp <= 863, do: rep
-  defp ii_of_iii(<<tcp::10>>, rep) when tcp >= 896 and tcp <= 1023, do: rep
-  defp ii_of_iii(_, rep), do: rep <> rep
-
-  defp ii_of_iv(<<tcp::9>>, rep) when tcp >= 16 and tcp <= 271, do: rep
-  defp ii_of_iv(_, rep), do: rep <> rep
-
-  defp iii_of_iv(<<tcp::15>>, rep) when tcp >= 1024 and tcp <= 17407, do: rep
-  defp iii_of_iv(_, rep), do: rep <> rep <> rep
 end
