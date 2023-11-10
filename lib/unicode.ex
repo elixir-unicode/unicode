@@ -114,7 +114,8 @@ defmodule Unicode do
     end
   end
 
-  def replace_invalid(binary, encoding, replacement) do
+  def replace_invalid(binary, encoding, replacement)
+      when encoding in [:utf8, :utf16, :utf16be, :utf16le, :utf32, :utf32be, :utf32le] do
     Unicode.Validation.replace_invalid(binary, encoding, replacement)
   end
 
