@@ -4,7 +4,6 @@ defmodule Unicode.Emoji do
   alias Unicode.{Utils, Property}
 
   @emoji Utils.emoji()
-         |> Utils.remove_reserved_codepoints()
          |> Utils.remove_annotations()
 
   def emoji do
@@ -21,6 +20,9 @@ defmodule Unicode.Emoji do
     |> Map.get(emoji_category)
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
+
+  # FIXME This is not correct - if a codepoint has more than one
+  # emoji category, only the first is retained.
 
   for {emoji_category, ranges} <- @emoji,
       range <- ranges do

@@ -736,6 +736,10 @@ defmodule Unicode.Utils do
       key
   end
 
+  # FIXME this is incorrect since a codepoint
+  # range may have several annotations and this
+  # algorithm will delete the whole range.
+
   @doc false
   @reserved "<reserved"
   def remove_reserved_codepoints(data) do
