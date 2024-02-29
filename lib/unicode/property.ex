@@ -350,7 +350,6 @@ defmodule Unicode.Property do
     string
     |> String.to_charlist()
     |> Enum.map(&properties/1)
-    |> Enum.uniq()
   end
 
   @doc false

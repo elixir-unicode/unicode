@@ -2,7 +2,13 @@
 
 ## Unicode v1.18.1
 
-This is the changelog for Unicode v1.18.1 released on ______, 2023.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+This is the changelog for Unicode v1.18.1 released on ______, 2024.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug Fixes
+
+* `Unicode.properties/1` no longer does an `Enum.uniq/1` on the result since that breaks the functions contract.
+
+* Fix documentation in `Unicode.WordBreak`.
 
 ### Enhancements
 

@@ -3,7 +3,7 @@ defmodule Unicode.GeneralCategory.Derived do
   For certain operations and transformations
   (especially in [Unicode Sets](http://unicode.org/reports/tr35/#Unicode_Sets))
   there is an expectation that certain derived
-  general categories exists even though they are not
+  general categories exist even though they are not
   defined in the unicode character database.
 
   These categories are:

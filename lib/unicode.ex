@@ -327,11 +327,10 @@ defmodule Unicode do
   ## Returns
 
   * in the case of a single codepoint, an atom
-    list of properties
+    list of properties.
 
-  * in the case of a string, a list of atom
-    lisr for each codepoint in the
-  ` codepoint_or_string`
+  * in the case of a string, one atom list for each
+    codepoint in the `codepoint_or_string`.
 
   ## Exmaples
 

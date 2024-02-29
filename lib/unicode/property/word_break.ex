@@ -1,8 +1,7 @@
 defmodule Unicode.WordBreak do
   @moduledoc """
-  Functions to introspect Unicode
-  line breaks for binaries
-  (Strings) and codepoints.
+  Functions to introspect Unicode word breaks for
+  string and codepoints.
 
   """
 
@@ -15,9 +14,9 @@ defmodule Unicode.WordBreak do
 
   @doc """
   Returns the map of Unicode
-  line breaks.
+  word breaks.
 
-  The line break name is the map
+  The word break name is the map
   key and a list of codepoint
   ranges as tuples as the value.
 
@@ -29,10 +28,10 @@ defmodule Unicode.WordBreak do
 
   @doc """
   Returns a list of known Unicode
-  line break names.
+  word break names.
 
   This function does not return the
-  names of any line break aliases.
+  names of any word break aliases.
 
   """
   @known_word_breaks Map.keys(@word_breaks)
@@ -49,10 +48,10 @@ defmodule Unicode.WordBreak do
 
   @doc """
   Returns a map of aliases for
-  Unicode line breaks.
+  Unicode word breaks.
 
   An alias is an alternative name
-  for referring to a line break. Aliases
+  for referring to a word break. Aliases
   are resolved by the `fetch/1` and
   `get/1` functions.
 
@@ -64,7 +63,7 @@ defmodule Unicode.WordBreak do
 
   @doc """
   Returns the Unicode ranges for
-  a given line break as a list of
+  a given word break as a list of
   ranges as 2-tuples.
 
   Aliases are resolved by this function.
@@ -86,7 +85,7 @@ defmodule Unicode.WordBreak do
 
   @doc """
   Returns the Unicode ranges for
-  a given line break as a list of
+  a given word break as a list of
   ranges as 2-tuples.
 
   Aliases are resolved by this function.
@@ -109,7 +108,7 @@ defmodule Unicode.WordBreak do
 
   ## Example
 
-      iex> Unicode.LineBreak.count(:al)
+      iex> Unicode.WordBreak.count(:al)
       21400
 
   """
@@ -121,22 +120,24 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns the line break name(s) for the
+  Returns the word break name(s) for the
   given binary or codepoint.
 
   In the case of a codepoint, a single
   word_break name is returned.
 
-  For a binary a list of distinct line break
+  For a binary a list of distinct word break
   names represented by the lines in
   the binary is returned.
+
+  A value of `:xx` indicates there is no word
+  break property for a codepoint.
 
   """
   def word_break(string) when is_binary(string) do
     string
     |> String.to_charlist()
     |> Enum.map(&word_break/1)
-    |> Enum.uniq()
   end
 
   for {word_break, ranges} <- @word_breaks do

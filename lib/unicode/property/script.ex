@@ -1,8 +1,6 @@
 defmodule Unicode.Script do
   @moduledoc """
-  Functions to introspect Unicode
-  scripts for binaries
-  (Strings) and codepoints.
+  Property manager for the Unicode script property.
 
   """
 

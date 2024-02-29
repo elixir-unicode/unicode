@@ -410,6 +410,10 @@ defmodule Unicode.Utils do
     |> Map.new()
   end
 
+  @indic_conjunct_break_server %{
+    "incb" => Unicode.IndicConjunctBreak,
+    "indicconjunctbreak" => Unicode.IndicConjunctBreak
+  }
   @doc """
   Returns a mapping of property names and
   aliases to the module that serves that
@@ -425,6 +429,7 @@ defmodule Unicode.Utils do
     end)
     |> Enum.filter(fn {_k, v} -> ensure_compiled?(v) end)
     |> Map.new()
+    |> Map.merge(@indic_conjunct_break_server)
   end
 
   @doc """
