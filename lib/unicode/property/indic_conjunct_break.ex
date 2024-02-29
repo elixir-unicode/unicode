@@ -47,8 +47,8 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @indic_conjunct_break_alias @indic_conjunct_breaks
-  |> Map.keys()
-  |> Enum.map(fn value -> value |> Atom.to_string |> String.downcase() end)
+  |> Enum.map(fn {value, _} -> {value |> Atom.to_string |> String.downcase(), value} end)
+  |> Map.new()
 
   @doc """
   Returns a map of aliases for
