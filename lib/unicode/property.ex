@@ -3,6 +3,11 @@ defmodule Unicode.Property do
   Functions to introspect Unicode properties for binaries
   (Strings) and codepoints.
 
+  The functions in this module only represent boolean
+  properties. That is, properties that are either true
+  or false - or in several cases represented as "has property"
+  or "does not have property".
+
   """
   @behaviour Unicode.Property.Behaviour
 
