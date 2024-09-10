@@ -9,7 +9,7 @@ if File.exists?(Unicode.data_dir()) do
 
     @shortdoc "Download Unicode data files"
 
-    @root_url "https://www.unicode.org/Public/15.1.0/ucd/"
+    @root_url "https://www.unicode.org/Public/16.0.0/ucd/"
 
     @unicode_unsafe_https "UNICODE_UNSAFE_HTTPS"
     @unicode_default_timeout "120000"
@@ -50,9 +50,9 @@ if File.exists?(Unicode.data_dir()) do
         {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
         {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
         {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")},
-        {"https://unicode.org/Public/emoji/15.1/emoji-sequences.txt",
+        {"https://unicode.org/Public/emoji/16.0/emoji-sequences.txt",
          data_path("emoji_sequences.txt")},
-        {"https://unicode.org/Public/emoji/15.1/emoji-zwj-sequences.txt",
+        {"https://unicode.org/Public/emoji/16.0/emoji-zwj-sequences.txt",
          data_path("emoji_zwj_sequences.txt")}
       ]
     end

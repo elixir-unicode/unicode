@@ -1,13 +1,13 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "1.19.0"
+  @version "1.20.0"
 
   def project do
     [
       app: :unicode,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       build_embedded: Mix.env() == :prod,
       deps: deps(),

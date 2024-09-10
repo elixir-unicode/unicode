@@ -340,6 +340,7 @@ defmodule Unicode do
         :case_ignorable,
         :grapheme_extend,
         :id_continue,
+        :incb,
         :other_alphabetic,
         :xid_continue
       ]

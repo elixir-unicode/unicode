@@ -110,7 +110,7 @@ defmodule Unicode.SentenceBreak do
   ## Example
 
       iex> Unicode.SentenceBreak.count(:extend)
-      2550
+      2601
 
   """
   @impl Unicode.Property.Behaviour

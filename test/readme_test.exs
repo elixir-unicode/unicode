@@ -9,7 +9,7 @@ defmodule ReadmeTest do
 
     [readme_version] = Regex.run(~r/{:unicode, \"(?<version>.*)\"}/, readme_version_text, capture: :all_names)
     {:ok, readme_version} = Version.parse_requirement(readme_version)
-    [:~>, {readme_major, readme_minor, _, _, _}] = readme_version.lexed()
+    [:~>, {readme_major, readme_minor, _, _, _}] = readme_version.lexed
 
     %Version{major: mix_major, minor: mix_minor} =
       Mix.Project.config()[:version]
