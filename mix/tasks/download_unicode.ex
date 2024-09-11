@@ -9,7 +9,10 @@ if File.exists?(Unicode.data_dir()) do
 
     @shortdoc "Download Unicode data files"
 
-    @root_url "https://www.unicode.org/Public/16.0.0/ucd/"
+    @unicode_full_release "16.0.0"
+    @unicode_minor_release String.split(@unicode_full_release, ".") |> Enum.take(2) |> Enum.join(".")
+
+    @root_url "https://www.unicode.org/Public/#{@unicode_full_release}/ucd/"
 
     @unicode_unsafe_https "UNICODE_UNSAFE_HTTPS"
     @unicode_default_timeout "120000"
@@ -26,6 +29,7 @@ if File.exists?(Unicode.data_dir()) do
     defp required_files do
       [
         {Path.join(root_url(), "/UnicodeData.txt"), data_path("unicode_data.txt")},
+        {Path.join(root_url(), "/DoNotEmit.txt"), data_path("do_not_emit.txt")},
         {Path.join(root_url(), "/extracted/DerivedGeneralCategory.txt"),
          data_path("categories.txt")},
         {Path.join(root_url(), "/Blocks.txt"), data_path("blocks.txt")},
@@ -50,9 +54,9 @@ if File.exists?(Unicode.data_dir()) do
         {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
         {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
         {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")},
-        {"https://unicode.org/Public/emoji/16.0/emoji-sequences.txt",
+        {"https://unicode.org/Public/emoji/#{@unicode_minor_release}/emoji-sequences.txt",
          data_path("emoji_sequences.txt")},
-        {"https://unicode.org/Public/emoji/16.0/emoji-zwj-sequences.txt",
+        {"https://unicode.org/Public/emoji/#{@unicode_minor_release}/emoji-zwj-sequences.txt",
          data_path("emoji_zwj_sequences.txt")}
       ]
     end
