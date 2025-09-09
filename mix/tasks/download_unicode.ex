@@ -9,7 +9,7 @@ if File.exists?(Unicode.data_dir()) do
 
     @shortdoc "Download Unicode data files"
 
-    @unicode_full_release "16.0.0"
+    @unicode_full_release "17.0.0"
     @unicode_minor_release String.split(@unicode_full_release, ".") |> Enum.take(2) |> Enum.join(".")
 
     @root_url "https://www.unicode.org/Public/#{@unicode_full_release}/ucd/"
