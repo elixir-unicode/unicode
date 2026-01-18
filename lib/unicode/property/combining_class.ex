@@ -114,7 +114,7 @@ defmodule Unicode.CanonicalCombiningClass do
   ## Example
 
       iex> Unicode.CanonicalCombiningClass.count(230)
-      517
+      546
 
   """
   @impl Unicode.Property.Behaviour

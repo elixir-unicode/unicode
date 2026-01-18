@@ -132,7 +132,7 @@ defmodule Unicode.Property do
   ## Example
 
       iex> Unicode.Property.count(:lowercase)
-      2569
+      2595
 
   """
   @impl Unicode.Property.Behaviour
