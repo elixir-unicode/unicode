@@ -2,7 +2,7 @@
 
 ## Unicode v1.21.0
 
-This is the changelog for Unicode v1.21.0 released on September 10, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+This is the changelog for Unicode v1.21.0 released on January 19th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Enhancements
 

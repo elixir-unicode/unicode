@@ -74,7 +74,7 @@ defmodule Unicode.CanonicalCombiningClass do
 
   """
   @impl Unicode.Property.Behaviour
-  def fetch(combining_class) when is_atom(combining_class) do
+  def fetch(combining_class) when is_integer(combining_class) do
     Map.fetch(combining_classes(), combining_class)
   end
 
