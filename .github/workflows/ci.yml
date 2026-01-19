@@ -15,10 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pair:
-              elixir: 1.15.5
-              otp: 26.1.1
-            lint: lint
+          # minimum required versions
+          - otp: "27.2.4"
+            elixir: "1.18.4-otp-27"
+          - otp: "28.3.1"
+            elixir: "1.18.4-otp-28"
+          - otp: "27.2.4"
+            elixir: "1.19.5-otp-27"
+          - otp: "28.3.1"
+            elixir: "1.19.5-otp-28"
+          - otp: "28.3.1"
+            elixir: "1.20.0-rc.1-otp-28"
+            lint: true
     steps:
       - uses: actions/checkout@v3
 

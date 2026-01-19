@@ -20,7 +20,7 @@ The Elixir standard library does not provide introspection beyond that required 
 
 ### Unicode version
 
-As of [unicode version 1.21.0](https://hex.pm/packages/unicode/1.21.0) published on September 10th, 2025, [Unicode 17.0](https://www.unicode.org/versions/Unicode17.0.0/) forms the underlying data.
+As of [unicode version 1.21.0](https://hex.pm/packages/unicode/1.21.0) published on January 19th, 2026, [Unicode 17.0](https://www.unicode.org/versions/Unicode17.0.0/) forms the underlying data.
 
 ## Additional Unicode libraries
 
