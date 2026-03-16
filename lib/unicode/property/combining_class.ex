@@ -84,10 +84,6 @@ defmodule Unicode.CanonicalCombiningClass do
     Map.fetch(combining_classes(), combining_class)
   end
 
-  def fetch(combining_class) when is_integer(combining_class) do
-    Map.fetch(combining_classes(), combining_class)
-  end
-
   @doc """
   Returns the Unicode ranges for
   a given canonical combining class
