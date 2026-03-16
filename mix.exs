@@ -81,7 +81,7 @@ defmodule Unicode.MixProject do
         "LICENSE.md",
         "CHANGELOG.md"
       ],
-      formatters: ["html"],
+      formatters: ["html", "markdown"],
       skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]
     ]
   end
