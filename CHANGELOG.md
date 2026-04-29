@@ -4,7 +4,13 @@
 
 This is the changelog for Unicode v1.21.2 released on April 29th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
+### Breaking changes
+
+* Supported on Elixir 1.17 and later only.
+
 ### Bug Fixes
+
+* Fix type on `Unicode.script/1``
 
 ## Unicode v1.21.1
 
