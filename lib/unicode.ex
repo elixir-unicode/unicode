@@ -243,12 +243,12 @@ defmodule Unicode do
 
   ## Returns
 
-  * in the case of a single codepoint, a string
+  * in the case of a single codepoint, an atom
     script name
 
-  * in the case of a string, a list of string
+  * in the case of a string, a list of atom
     script names for each codepoint in the
-  ` codepoint_or_string`
+    `codepoint_or_string`
 
   ## Exmaples
 
@@ -277,7 +277,7 @@ defmodule Unicode do
       :myanmar
 
   """
-  @spec script(codepoint_or_string) :: String.t() | [String.t(), ...]
+  @spec script(codepoint_or_string) :: script() | [script(), ...]
   defdelegate script(codepoint_or_string), to: Unicode.Script
 
   @doc """
