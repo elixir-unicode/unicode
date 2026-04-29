@@ -1,8 +1,14 @@
 # Changelog
 
+## Unicode v1.21.2
+
+This is the changelog for Unicode v1.21.2 released on April 29th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug Fixes
+
 ## Unicode v1.21.1
 
-This is the changelog for Unicode v1.21.1 released on March 16th, 2025.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+This is the changelog for Unicode v1.21.1 released on March 16th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Bug Fixes
 
