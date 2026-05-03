@@ -2,51 +2,13 @@
 
 ## Unicode v1.22.0
 
+This is the changelog for Unicode v1.22.0 released on May 4th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
 ### Enhancements
 
-* Adds the `Bidi_Class` Unicode property:
+* Adds the `Bidi_Class` Unicode property.
 
-  * `Unicode.BidiClass` is the new property module, with the same API
-    surface as `Unicode.CanonicalCombiningClass` (`bidi_class/1`,
-    `bidi_classes/0`, `known_bidi_classes/0`, `aliases/0`, `fetch/1`,
-    `get/1`, `count/1`).
-
-  * `Unicode.bidi_class/1` is exposed at the top level. Codepoints
-    without an explicit assignment default to `:l` (Left_To_Right).
-
-  * The data is parsed at compile time from
-    `data/bidi_class.txt` (`extracted/DerivedBidiClass.txt` from
-    the UCD).
-
-  * Property name and value aliases (`bc`, `Bidi_Class`, `R`,
-    `Right_To_Left`, etc.) resolve via the standard
-    `Unicode.fetch_property/1` and `Unicode.BidiClass.fetch/1`
-    paths.
-
-* Adds the `Joining_Type` Unicode property:
-
-  * `Unicode.JoiningType` is the new property module with matching API
-    surface (`joining_type/1`, `joining_types/0`,
-    `known_joining_types/0`, `aliases/0`, `fetch/1`, `get/1`,
-    `count/1`).
-
-  * `Unicode.joining_type/1` is exposed at the top level. Codepoints
-    without an explicit assignment default to `:u` (Non_Joining).
-
-  * The data is parsed at compile time from
-    `data/joining_type.txt` (`extracted/DerivedJoiningType.txt`
-    from the UCD).
-
-  * Property name and value aliases (`jt`, `Joining_Type`, `D`,
-    `Dual_Joining`, etc.) resolve through the same paths.
-
-* `mix unicode.download` now refreshes both `bidi_class.txt` and
-  `joining_type.txt` alongside the other UCD files.
-
-These properties unblock pure-Elixir implementations of UAX #9 (the
-Unicode Bidirectional Algorithm), RFC 5893 (the IDNA bidi rule),
-and RFC 5892 Appendix A (CONTEXTJ for ZWJ/ZWNJ), and are consumed
-by `unicode_idna`.
+* Adds the `Joining_Type` Unicode property.
 
 ## Unicode v1.21.2
 
