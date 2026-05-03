@@ -315,6 +315,100 @@ defmodule Unicode do
   defdelegate block(codepoint_or_string), to: Unicode.Block
 
   @doc """
+  Returns the bidi class of a codepoint
+  or the list of bidi classes for each codepoint
+  in a string.
+
+  ## Arguments
+
+  * `codepoint_or_string` is a single integer codepoint
+    or a `t:String.t/0`.
+
+  ## Returns
+
+  * in the case of a single codepoint, an atom
+    bidi class name
+
+  * in the case of a string, a list of atom
+    bidi class names for each codepoint in the
+    `codepoint_or_string`
+
+  ## Notes
+
+  This is the Unicode `Bidi_Class` property
+  (see [UAX #44](https://www.unicode.org/reports/tr44/) and
+  [UAX #9](https://www.unicode.org/reports/tr9/)). Codepoints
+  without an explicit assignment default to `:l`
+  (Left_To_Right).
+
+  ## Examples
+
+      iex> Unicode.bidi_class ?A
+      :l
+
+      iex> Unicode.bidi_class ?0
+      :en
+
+      iex> Unicode.bidi_class 0x05D0
+      :r
+
+      iex> Unicode.bidi_class 0x0627
+      :al
+
+      iex> Unicode.bidi_class "abא"
+      [:l, :r]
+
+  """
+  @doc since: "1.22.0"
+  @spec bidi_class(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate bidi_class(codepoint_or_string), to: Unicode.BidiClass
+
+  @doc """
+  Returns the joining type of a codepoint
+  or the list of joining types for each codepoint
+  in a string.
+
+  ## Arguments
+
+  * `codepoint_or_string` is a single integer codepoint
+    or a `t:String.t/0`.
+
+  ## Returns
+
+  * in the case of a single codepoint, an atom
+    joining type name
+
+  * in the case of a string, a list of atom
+    joining type names for each codepoint in the
+    `codepoint_or_string`
+
+  ## Notes
+
+  This is the Unicode `Joining_Type` property
+  (see [UAX #44](https://www.unicode.org/reports/tr44/)).
+  Codepoints without an explicit assignment default to
+  `:u` (Non_Joining).
+
+  ## Examples
+
+      iex> Unicode.joining_type ?A
+      :u
+
+      iex> Unicode.joining_type 0x0640
+      :c
+
+      iex> Unicode.joining_type 0x0628
+      :d
+
+      iex> Unicode.joining_type 0x200D
+      :c
+
+  """
+  @doc since: "1.22.0"
+  @spec joining_type(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate joining_type(codepoint_or_string), to: Unicode.JoiningType
+
+  @doc """
   Returns the list of properties of each codepoint
   in a given string or the list of properties for a
   given string.

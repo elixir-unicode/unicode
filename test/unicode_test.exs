@@ -13,4 +13,6 @@ defmodule Unicode.Test do
   doctest Unicode.LineBreak
   doctest Unicode.SentenceBreak
   doctest Unicode.IndicSyllabicCategory
+  doctest Unicode.BidiClass
+  doctest Unicode.JoiningType
 end

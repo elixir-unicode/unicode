@@ -52,6 +52,32 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the `bidi_class` name
+  as the key and a list of codepoint ranges as the values.
+
+  """
+  @bidi_class_path Path.join(Unicode.data_dir(), "bidi_class.txt")
+  @external_resource @bidi_class_path
+  def bidi_classes do
+    parse_file(@bidi_class_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `joining_type` name
+  as the key and a list of codepoint ranges as the values.
+
+  """
+  @joining_type_path Path.join(Unicode.data_dir(), "joining_type.txt")
+  @external_resource @joining_type_path
+  def joining_types do
+    parse_file(@joining_type_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `category` name
   as the key and a list of codepoint ranges as the values.
 
