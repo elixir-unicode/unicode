@@ -9,31 +9,50 @@ defmodule Unicode.Validation do
   @spec replace_invalid(binary, Unicode.encoding(), String.t()) :: binary()
   def replace_invalid(bytes, encoding \\ :utf8, replacement \\ "�")
 
-  def replace_invalid(bytes, :utf8, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf8, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF8.replace_invalid(bytes, replacement)
   end
 
-  def replace_invalid(bytes, :utf16, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf16, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF16.replace_invalid(bytes, replacement)
   end
 
-  def replace_invalid(bytes, :utf16be, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf16be, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF16.replace_invalid(bytes, replacement)
   end
 
-  def replace_invalid(bytes, :utf16le, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf16le, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF16LE.replace_invalid(bytes, replacement)
   end
 
-  def replace_invalid(bytes, :utf32, replacement) when is_binary(bytes) and is_binary(replacement) do
-    Unicode.Validation.UTF16.replace_invalid(bytes, replacement)
-  end
-
-  def replace_invalid(bytes, :utf32be, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf32, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF32.replace_invalid(bytes, replacement)
   end
 
-  def replace_invalid(bytes, :utf32le, replacement) when is_binary(bytes) and is_binary(replacement) do
+  def replace_invalid(bytes, :utf32be, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
+    Unicode.Validation.UTF32.replace_invalid(bytes, replacement)
+  end
+
+  def replace_invalid(bytes, :utf32le, replacement)
+      when is_binary(bytes) and is_binary(replacement) do
     Unicode.Validation.UTF32LE.replace_invalid(bytes, replacement)
+  end
+
+  @doc false
+  def encode_replacement(replacement, encoding) do
+    case :unicode.characters_to_binary(replacement, :utf8, encoding) do
+      encoded when is_binary(encoded) ->
+        encoded
+
+      _other ->
+        raise ArgumentError,
+              "replacement must be a valid UTF-8 encoded string, found #{inspect(replacement)}"
+    end
   end
 end

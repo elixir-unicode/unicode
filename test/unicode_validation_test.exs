@@ -3,7 +3,7 @@ defmodule Unicode.Validation.UTF8.Test do
 
   alias Unicode.Validation.UTF8.Test.Helpers, as: Helpers
 
-  # Todo/Nice to haves:
+  # Nice to haves:
   #  Save interesting or breaking tests.
   #  More cases
 
