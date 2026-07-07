@@ -1,5 +1,31 @@
 # Changelog
 
+## Unicode v1.23.0
+
+This is the changelog for Unicode v1.23.0.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
+### Bug Fixes
+
+* Fix UTF-16 and UTF-32 validation. `Unicode.replace_invalid/3` for the `:utf16`, `:utf16be`, `:utf16le`, `:utf32`, `:utf32be` and `:utf32le` encodings previously crashed on any input and dropped valid codepoints.
+
+* Fix `:utf32` validation dispatching to the UTF-16 implementation.
+
+* Replacement strings for UTF-16 and UTF-32 validation are now transcoded to the target encoding rather than being spliced in as UTF-8 bytes.
+
+* Fix `Unicode.compact_ranges/1` truncating a range that fully contains the following range.
+
+* Fix `Unicode.Emoji.emoji/1` returning `nil` for single-codepoint emoji graphemes in a string.
+
+### Enhancements
+
+* Codepoint lookup functions such as `Unicode.GeneralCategory.category/1`, `Unicode.Script.script/1` and the `Unicode.Property` boolean functions are now implemented with binary search over compact range tables instead of very large generated guard clauses. Compilation is an order of magnitude faster and codepoint lookups are approximately 10x faster.
+
+* Adds `Unicode.RangeSearch` which builds the range search tables at compile time and performs the binary search over them.
+
+* Documentation for all public modules and functions now follows a standard format with arguments, return values and examples.
+
+* Removes the unused and incorrect `Unicode.Utils.remove_reserved_codepoints/1`.
+
 ## Unicode v1.22.0
 
 This is the changelog for Unicode v1.22.0 released on May 4th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
@@ -20,7 +46,7 @@ This is the changelog for Unicode v1.21.2 released on April 29th, 2026.  For old
 
 ### Bug Fixes
 
-* Fix type on `Unicode.script/1``
+* Fix type on `Unicode.script/1`
 
 ## Unicode v1.21.1
 

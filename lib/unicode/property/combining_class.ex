@@ -1,8 +1,10 @@
 defmodule Unicode.CanonicalCombiningClass do
   @moduledoc """
-  Functions to introspect Unicode
-  canonical combining classes for binaries
-  (Strings) and codepoints.
+  Functions to introspect the Unicode canonical combining class property for binaries (Strings) and codepoints.
+
+  The primary API is `combining_class/1` which returns the canonical combining class of a codepoint, or the list of canonical combining classes of a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges belonging to a combining class. `combining_classes/0`, `known_combining_classes/0` and `aliases/0` return the underlying combining class data.
 
   """
 
@@ -13,26 +15,38 @@ defmodule Unicode.CanonicalCombiningClass do
   @combining_classes Utils.combining_classes()
                      |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  canonical combining classes..
+  @combining_class_table Unicode.RangeSearch.new_value_table(@combining_classes)
 
-  The class name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode canonical combining classes.
+
+  ### Returns
+
+  * A map where the combining class number is the key and a list of codepoint ranges as 2-tuples is the value.
+
+  ### Examples
+
+      iex> Unicode.CanonicalCombiningClass.combining_classes() |> Map.get(214)
+      [{7630, 7630}]
 
   """
-
   def combining_classes do
     @combining_classes
   end
 
   @doc """
-  Returns a list of known Unicode
-  canonical combining class names.
+  Returns a list of known Unicode canonical combining class numbers.
 
-  This function does not return the
-  names of any class aliases.
+  This function does not return the names of any class aliases.
+
+  ### Returns
+
+  * A list of integer combining class numbers.
+
+  ### Examples
+
+      iex> 230 in Unicode.CanonicalCombiningClass.known_combining_classes()
+      true
 
   """
   @known_combining_classes Map.keys(@combining_classes)
@@ -48,13 +62,18 @@ defmodule Unicode.CanonicalCombiningClass do
                          |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode canonical combining classes..
+  Returns a map of aliases for Unicode canonical combining classes.
 
-  An alias is an alternative name
-  for referring to a class. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a class. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map where the alias string is the key and the combining class number is the value.
+
+  ### Examples
+
+      iex> Unicode.CanonicalCombiningClass.aliases() |> Map.get("above")
+      230
 
   """
   @impl Unicode.Property.Behaviour
@@ -63,14 +82,27 @@ defmodule Unicode.CanonicalCombiningClass do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given canonical combining class
-   as a list of ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given canonical combining class.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `combining_class` is any combining class number, or a class alias as a string.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the combining class is not known.
+
+  ### Examples
+
+      iex> Unicode.CanonicalCombiningClass.fetch(214)
+      {:ok, [{7630, 7630}]}
+
+      iex> Unicode.CanonicalCombiningClass.fetch(999)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -85,14 +117,27 @@ defmodule Unicode.CanonicalCombiningClass do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given canonical combining class
-   as a list of ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given canonical combining class.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `combining_class` is any combining class number, or a class alias as a string.
+
+  ### Returns
+
+  * A list of codepoint ranges as 2-tuples.
+
+  * `nil` if the combining class is not known.
+
+  ### Examples
+
+      iex> Unicode.CanonicalCombiningClass.get(214)
+      [{7630, 7630}]
+
+      iex> Unicode.CanonicalCombiningClass.get(999)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -104,10 +149,21 @@ defmodule Unicode.CanonicalCombiningClass do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given canonical combining class.
+  Returns the count of characters in a given canonical combining class.
 
-  ## Example
+  Aliases are resolved by this function.
+
+  ### Arguments
+
+  * `class` is any combining class number, or a class alias as a string.
+
+  ### Returns
+
+  * A non-negative integer count of the codepoints in the combining class.
+
+  * `:error` if the combining class is not known.
+
+  ### Examples
 
       iex> Unicode.CanonicalCombiningClass.count(230)
       546
@@ -121,15 +177,25 @@ defmodule Unicode.CanonicalCombiningClass do
   end
 
   @doc """
-  Returns the canonical combining class
-   name(s) for the given binary or codepoint.
+  Returns the canonical combining class(es) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  class name is returned.
+  ### Arguments
 
-  For a binary a list of distinct class
-  names represented by the graphemes in
-  the binary is returned.
+  * `string_or_codepoint` is either a binary (String) or a codepoint in the range `0..0x10FFFF`.
+
+  ### Returns
+
+  * For a codepoint, a single combining class number is returned.
+
+  * For a binary, a list of the distinct combining class numbers of the codepoints in the binary is returned.
+
+  ### Examples
+
+      iex> Unicode.CanonicalCombiningClass.combining_class(0x0301)
+      230
+
+      iex> Unicode.CanonicalCombiningClass.combining_class("abc")
+      [0]
 
   """
   def combining_class(string) when is_binary(string) do
@@ -139,13 +205,7 @@ defmodule Unicode.CanonicalCombiningClass do
     |> Enum.uniq()
   end
 
-  for {combining_class, ranges} <- @combining_classes do
-    def combining_class(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(combining_class)
-    end
-  end
-
   def combining_class(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    0
+    Unicode.RangeSearch.find(@combining_class_table, codepoint, 0)
   end
 end

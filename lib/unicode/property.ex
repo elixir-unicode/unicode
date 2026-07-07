@@ -13,7 +13,7 @@ defmodule Unicode.Property do
 
   @type string_or_codepoint :: String.t() | non_neg_integer
 
-  alias Unicode.{Utils, GeneralCategory, Emoji}
+  alias Unicode.{Emoji, GeneralCategory, Utils}
 
   @derived_properties Utils.derived_properties()
                       |> Utils.remove_annotations()
@@ -22,8 +22,7 @@ defmodule Unicode.Property do
               |> Utils.remove_annotations()
 
   @all_and_derived_properties @properties
-                  |> Map.merge(@derived_properties)
-
+                              |> Map.merge(@derived_properties)
 
   @all_properties @all_and_derived_properties
                   |> Map.merge(Emoji.emoji())
@@ -35,6 +34,15 @@ defmodule Unicode.Property do
   The property name is the map
   key and a list of codepoint
   ranges as tuples as the value.
+
+  ### Returns
+
+  * A map of property names to a list of codepoint ranges.
+
+  ### Examples
+
+      iex> Unicode.Property.properties() |> Map.get(:alphabetic) |> Enum.take(2)
+      [{65, 90}, {97, 122}]
 
   """
   def properties do
@@ -48,6 +56,15 @@ defmodule Unicode.Property do
   This function does not return the
   names of any property aliases.
 
+  ### Returns
+
+  * A list of atom property names.
+
+  ### Examples
+
+      iex> :alphabetic in Unicode.Property.known_properties()
+      true
+
   """
   @known_properties Map.keys(@all_properties)
 
@@ -57,12 +74,21 @@ defmodule Unicode.Property do
 
   @doc """
   Returns a map of aliases for
-  Unicode blocks.
+  Unicode properties.
 
   An alias is an alternative name
-  for referring to a block. Aliases
+  for referring to a property. Aliases
   are resolved by the `fetch/1` and
   `get/1` functions.
+
+  ### Returns
+
+  * A map of property aliases to property names.
+
+  ### Examples
+
+      iex> Unicode.Property.aliases() |> Map.get("alpha")
+      :alphabetic
 
   """
   @property_alias Utils.property_alias()
@@ -78,6 +104,15 @@ defmodule Unicode.Property do
   Returns a map of properties to the module
   that serves that property.
 
+  ### Returns
+
+  * A map of property names to the module that serves that property.
+
+  ### Examples
+
+      iex> Unicode.Property.servers() |> Map.get("script")
+      Unicode.Script
+
   """
   @servers Utils.property_servers()
   def servers do
@@ -86,13 +121,29 @@ defmodule Unicode.Property do
 
   @doc """
   Returns the Unicode ranges for
-  a given block as a list of
+  a given property as a list of
   ranges as 2-tuples.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `property` is a property name as a string or atom.
+
+  ### Returns
+
+  * `{:ok, range_list}` or
+
+  * `:error` if the property is not known.
+
+  ### Examples
+
+      iex> {:ok, ranges} = Unicode.Property.fetch(:alphabetic)
+      iex> Enum.take(ranges, 2)
+      [{65, 90}, {97, 122}]
+
+      iex> Unicode.Property.fetch(:not_a_property)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -108,13 +159,28 @@ defmodule Unicode.Property do
 
   @doc """
   Returns the Unicode ranges for
-  a given block as a list of
+  a given property as a list of
   ranges as 2-tuples.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `property` is a property name as a string or atom.
+
+  ### Returns
+
+  * `range_list` or
+
+  * `nil` if the property is not known.
+
+  ### Examples
+
+      iex> Unicode.Property.get(:alphabetic) |> Enum.take(2)
+      [{65, 90}, {97, 122}]
+
+      iex> Unicode.Property.get(:not_a_property)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -129,7 +195,15 @@ defmodule Unicode.Property do
   Returns the count of the number of characters
   for a given property.
 
-  ## Example
+  ### Arguments
+
+  * `property` is a property name as an atom.
+
+  ### Returns
+
+  * The number of codepoints that have the given property.
+
+  ### Examples
 
       iex> Unicode.Property.count(:lowercase)
       2595
@@ -148,12 +222,23 @@ defmodule Unicode.Property do
   is all numeric characters.
 
   This is useful when the desired result is
-  `truthy` or `falsy`
+  `truthy` or `falsy`.
 
-  ## Example
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `:numeric` or
+
+  * `nil`.
+
+  ### Examples
 
       iex> Unicode.Property.numeric "123"
       :numeric
+
       iex> Unicode.Property.numeric "123a"
       nil
 
@@ -168,12 +253,23 @@ defmodule Unicode.Property do
   is all alphanumeric characters.
 
   This is useful when the desired result is
-  `truthy` or `falsy`
+  `truthy` or `falsy`.
 
-  ## Example
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `:alphanumeric` or
+
+  * `nil`.
+
+  ### Examples
 
       iex> Unicode.Property.alphanumeric "123abc"
       :alphanumeric
+
       iex> Unicode.Property.alphanumeric "???"
       nil
 
@@ -185,20 +281,32 @@ defmodule Unicode.Property do
   @doc """
   Returns `:extended_numeric` or `nil` based upon
   whether the given codepoint or binary
-  is all alphanumeric characters.
+  is all extended numeric characters.
 
-  Extended numberic includes fractions, superscripts,
+  Extended numeric includes fractions, superscripts,
   subscripts and other characters in the category `No`.
 
   This is useful when the desired result is
-  `truthy` or `falsy`
+  `truthy` or `falsy`.
 
-  ## Example
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `:extended_numeric` or
+
+  * `nil`.
+
+  ### Examples
 
       iex> Unicode.Property.extended_numeric "123"
       :extended_numeric
+
       iex> Unicode.Property.extended_numeric "⅔"
       :extended_numeric
+
       iex> Unicode.Property.extended_numeric "-123"
       nil
 
@@ -208,23 +316,33 @@ defmodule Unicode.Property do
   end
 
   @numeric_ranges GeneralCategory.get(:Nd)
+  @numeric_table Unicode.RangeSearch.new_membership_table(@numeric_ranges)
 
   @doc """
   Returns a boolean based upon
   whether the given codepoint or binary
   is all numeric characters.
 
-  ## Example
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `true` or `false`. For a string, the result is `true` only if all codepoints in the string are numeric.
+
+  ### Examples
 
       iex> Unicode.Property.numeric? "123"
       true
+
       iex> Unicode.Property.numeric? "123a"
       false
 
   """
-  def numeric?(codepoint)
-      when unquote(Utils.ranges_to_guard_clause(@numeric_ranges)),
-      do: true
+  def numeric?(codepoint) when is_integer(codepoint) do
+    Unicode.RangeSearch.member?(@numeric_table, codepoint)
+  end
 
   def numeric?(string) when is_binary(string) do
     string_has_property?(string, &numeric?/1)
@@ -233,25 +351,38 @@ defmodule Unicode.Property do
   def numeric?(_), do: false
 
   @extended_numeric_ranges @numeric_ranges ++ GeneralCategory.get(:Nl) ++ GeneralCategory.get(:No)
+  @extended_numeric_table Unicode.RangeSearch.new_membership_table(@extended_numeric_ranges)
 
   @doc """
   Returns a boolean based upon
   whether the given codepoint or binary
-  is all numberic characters.
+  is all extended numeric characters.
 
-  ## Example
+  Extended numeric includes fractions, superscripts,
+  subscripts and other characters in the category `No`.
 
-     iex> Unicode.Property.extended_numeric? "123"
-     true
-     iex> Unicode.Property.extended_numeric? "⅔"
-     true
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `true` or `false`. For a string, the result is `true` only if all codepoints in the string are extended numeric.
+
+  ### Examples
+
+      iex> Unicode.Property.extended_numeric? "123"
+      true
+
+      iex> Unicode.Property.extended_numeric? "⅔"
+      true
 
   """
   def extended_numeric?(codepoint_or_binary)
 
-  def extended_numeric?(codepoint)
-      when unquote(Utils.ranges_to_guard_clause(@extended_numeric_ranges)),
-      do: true
+  def extended_numeric?(codepoint) when is_integer(codepoint) do
+    Unicode.RangeSearch.member?(@extended_numeric_table, codepoint)
+  end
 
   def extended_numeric?(string) when is_binary(string) do
     string_has_property?(string, &extended_numeric?/1)
@@ -264,10 +395,19 @@ defmodule Unicode.Property do
   whether the given codepoint or binary
   is all alphanumeric characters.
 
-  ## Example
+  ### Arguments
+
+  * `codepoint_or_binary` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * `true` or `false`. For a string, the result is `true` only if all codepoints in the string are alphanumeric.
+
+  ### Examples
 
       iex> Unicode.Property.alphanumeric? "123abc"
       true
+
       iex> Unicode.Property.alphanumeric? "⅔"
       false
 
@@ -296,25 +436,25 @@ defmodule Unicode.Property do
   for {property, ranges} <- @all_properties,
       property in @property_names do
     boolean_function = String.to_atom("#{property}?")
+    membership_table = ranges |> Unicode.RangeSearch.new_membership_table() |> Macro.escape()
 
     @doc """
     Returns a boolean indicating if the
     codepoint or string has the property
     `#{inspect(property)}`.
 
-    For string parameters, all codepoints in
-    the string must have the `#{inspect(property)}`
-    property in order for the result to be `true`.
+    ### Arguments
+
+    * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+    ### Returns
+
+    * `true` or `false`. For a string, the result is `true` only if all codepoints in the string have the `#{inspect(property)}` property.
 
     """
     def unquote(boolean_function)(codepoint)
-        when is_integer(codepoint) and unquote(Utils.ranges_to_guard_clause(ranges)) do
-      true
-    end
-
-    def unquote(boolean_function)(codepoint)
         when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-      false
+      Unicode.RangeSearch.member?(unquote(membership_table), codepoint)
     end
 
     def unquote(boolean_function)(string) when is_binary(string) do
@@ -326,9 +466,13 @@ defmodule Unicode.Property do
     if the codepoint or string has the property
     `#{inspect(property)}`.
 
-    For string parameters, all codepoints in
-    the string must have the `#{inspect(property)}`
-    property in order for the result to `#{inspect(property)}`.
+    ### Arguments
+
+    * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+    ### Returns
+
+    * `#{inspect(property)}` or `nil`. For a string, the result is `#{inspect(property)}` only if all codepoints in the string have the `#{inspect(property)}` property.
 
     """
     def unquote(property)(codepoint) do
@@ -340,11 +484,34 @@ defmodule Unicode.Property do
   Returns the property name(s) for the
   given binary or codepoint.
 
-  In the case of a codepoint, a single
-  list of properties for that codepoint name is returned.
+  ### Arguments
 
-  For a binary a list of list for each
-  codepoint in the binary is returned.
+  * `codepoint` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * In the case of a codepoint, a single list of the properties of that codepoint.
+
+  * In the case of a binary, a list of property lists, one for each codepoint in the binary.
+
+  ### Examples
+
+      iex> Unicode.Property.properties(?A)
+      [
+        :alphabetic,
+        :ascii_hex_digit,
+        :cased,
+        :changes_when_casefolded,
+        :changes_when_casemapped,
+        :changes_when_lowercased,
+        :grapheme_base,
+        :hex_digit,
+        :id_continue,
+        :id_start,
+        :uppercase,
+        :xid_continue,
+        :xid_start
+      ]
 
   """
   def properties(codepoint) when is_integer(codepoint) do

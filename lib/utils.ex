@@ -319,7 +319,7 @@ defmodule Unicode.Utils do
         merged_casing = Map.merge(default_casing, special_casing)
         {codepoint, merged_casing}
       end)
-      |> Map.new
+      |> Map.new()
 
     # Merge special casing that does not already exist in
     # default casing
@@ -361,7 +361,8 @@ defmodule Unicode.Utils do
   def casing_sorter({{language, _context}, _}, {{language, nil}, _}), do: true
 
   # A language with a context comes before language with no context
-  def casing_sorter({{language_1, _}, _}, {{language_2, _context}, _}), do: language_1 < language_2
+  def casing_sorter({{language_1, _}, _}, {{language_2, _context}, _}),
+    do: language_1 < language_2
 
   @doc """
   Returns the list of locales that are referenced in
@@ -503,55 +504,45 @@ defmodule Unicode.Utils do
 
   @doc false
   def parse_file(path) do
-    Enum.reduce(File.stream!(path), %{}, fn line, map ->
-      case line do
-        <<"#", _rest::bitstring>> ->
-          map
-
-        <<"\n", _rest::bitstring>> ->
-          map
-
-        data ->
-          [range, script | tail] =
-            data
-            |> String.split(~r/[;#]/)
-            |> Enum.map(&String.trim/1)
-
-          [start, finish] =
-            range
-            |> String.split("..")
-            |> extract_codepoint_range
-
-          range =
-            case Map.get(map, script) do
-              nil ->
-                [{start, finish, tail}]
-
-              [{first, last, text}] when is_integer(first) and is_integer(last) ->
-                if start == last + 1 do
-                  [{first, finish, tail ++ text}]
-                else
-                  [{start, finish, tail}, {first, last, text}]
-                end
-
-              [{first, last, text} | rest] when is_integer(first) and is_integer(last) ->
-                if start == last + 1 do
-                  [{first, finish, tail ++ text} | rest]
-                else
-                  [{start, finish, tail}, {first, last, text} | rest]
-                end
-
-              [{first, last, text} | rest] when is_list(first) and is_list(last) ->
-                [{start, finish, tail}, {first, last, text} | rest]
-            end
-
-          Map.put(map, script, range)
-      end
-    end)
+    Enum.reduce(File.stream!(path), %{}, &parse_line/2)
     |> Enum.map(fn {key, ranges} ->
       {key, Enum.reverse(ranges)}
     end)
     |> Map.new()
+  end
+
+  defp parse_line(<<"#", _rest::bitstring>>, map) do
+    map
+  end
+
+  defp parse_line(<<"\n", _rest::bitstring>>, map) do
+    map
+  end
+
+  defp parse_line(data, map) do
+    [range, script | tail] =
+      data
+      |> String.split(~r/[;#]/)
+      |> Enum.map(&String.trim/1)
+
+    [start, finish] =
+      range
+      |> String.split("..")
+      |> extract_codepoint_range()
+
+    Map.update(map, script, [{start, finish, tail}], &add_range(&1, start, finish, tail))
+  end
+
+  # Merges a new range into the accumulated (reversed) range list for one
+  # property value. A new integer range adjacent to the most recent one is
+  # coalesced with it, otherwise the new range is prepended.
+  defp add_range([{first, last, text} | rest], start, finish, tail)
+       when is_integer(first) and is_integer(last) and start == last + 1 do
+    [{first, finish, tail ++ text} | rest]
+  end
+
+  defp add_range(ranges, start, finish, tail) do
+    [{start, finish, tail} | ranges]
   end
 
   # Range
@@ -762,27 +753,6 @@ defmodule Unicode.Utils do
       key
   end
 
-  # FIXME this is incorrect since a codepoint
-  # range may have several annotations and this
-  # algorithm will delete the whole range.
-
-  @doc false
-  @reserved "<reserved"
-  def remove_reserved_codepoints(data) do
-    data
-    |> Enum.map(fn {k, v} ->
-      filtered_list =
-        Enum.reject(v, fn {_, _, notes} ->
-          Enum.any?(notes, fn note ->
-            String.contains?(note, @reserved)
-          end)
-        end)
-
-      {k, filtered_list}
-    end)
-    |> Map.new()
-  end
-
   @doc false
   def ranges_to_codepoints(ranges) when is_list(ranges) do
     Enum.reduce(ranges, [], fn
@@ -790,7 +760,7 @@ defmodule Unicode.Utils do
         [first | acc]
 
       {first, last}, acc ->
-        Enum.map(last..first, & &1) ++ acc
+        Enum.to_list(last..first//-1) ++ acc
     end)
   end
 

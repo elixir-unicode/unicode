@@ -1,8 +1,10 @@
 defmodule Unicode.Block do
   @moduledoc """
-  Functions to introspect Unicode
-  blocks for binaries
-  (Strings) and codepoints.
+  Functions to introspect the Unicode block property for binaries (Strings) and codepoints.
+
+  The primary API is `block/1` which returns the block of a codepoint, or the list of blocks of a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges belonging to a block. `blocks/0`, `known_blocks/0` and `aliases/0` return the underlying block data.
 
   """
 
@@ -13,13 +15,19 @@ defmodule Unicode.Block do
   @blocks Utils.blocks()
           |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  blocks.
+  @block_table Unicode.RangeSearch.new_value_table(@blocks)
 
-  The block name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode blocks.
+
+  ### Returns
+
+  * A map where the block name is the key and a list of codepoint ranges as 2-tuples is the value.
+
+  ### Examples
+
+      iex> Unicode.Block.blocks() |> Map.get(:basic_latin)
+      [{0, 127}]
 
   """
   def blocks do
@@ -27,11 +35,18 @@ defmodule Unicode.Block do
   end
 
   @doc """
-  Returns a list of known Unicode
-  block names.
+  Returns a list of known Unicode block names.
 
-  This function does not return the
-  names of any block aliases.
+  This function does not return the names of any block aliases.
+
+  ### Returns
+
+  * A list of atom block names.
+
+  ### Examples
+
+      iex> :basic_latin in Unicode.Block.known_blocks()
+      true
 
   """
   @known_blocks Map.keys(@blocks)
@@ -47,13 +62,18 @@ defmodule Unicode.Block do
                |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode blocks.
+  Returns a map of aliases for Unicode blocks.
 
-  An alias is an alternative name
-  for referring to a block. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a block. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map where the alias string is the key and the block name is the value.
+
+  ### Examples
+
+      iex> Unicode.Block.aliases() |> Map.get("ascii")
+      :basic_latin
 
   """
   @impl Unicode.Property.Behaviour
@@ -62,14 +82,27 @@ defmodule Unicode.Block do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given block as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given block.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `block` is any block name or alias, as an atom or string.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the block is not known.
+
+  ### Examples
+
+      iex> Unicode.Block.fetch(:basic_latin)
+      {:ok, [{0, 127}]}
+
+      iex> Unicode.Block.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -84,14 +117,27 @@ defmodule Unicode.Block do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given block as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given block.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `block` is any block name or alias, as an atom or string.
+
+  ### Returns
+
+  * A list of codepoint ranges as 2-tuples.
+
+  * `nil` if the block is not known.
+
+  ### Examples
+
+      iex> Unicode.Block.get(:basic_latin)
+      [{0, 127}]
+
+      iex> Unicode.Block.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -103,12 +149,21 @@ defmodule Unicode.Block do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given block.
+  Returns the count of characters in a given block.
 
   Aliases are resolved by this function.
 
-  ## Example
+  ### Arguments
+
+  * `block` is any block name or alias, as an atom or string.
+
+  ### Returns
+
+  * A non-negative integer count of the codepoints in the block.
+
+  * `:error` if the block is not known.
+
+  ### Examples
 
       iex> Unicode.Block.count(:old_north_arabian)
       32
@@ -122,15 +177,25 @@ defmodule Unicode.Block do
   end
 
   @doc """
-  Returns the block name(s) for the
-  given binary or codepoint.
+  Returns the block name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  block name is returned.
+  ### Arguments
 
-  For a binary a list of distinct block
-  names represented by the graphemes in
-  the binary is returned.
+  * `string_or_codepoint` is either a binary (String) or a codepoint in the range `0..0x10FFFF`.
+
+  ### Returns
+
+  * For a codepoint, a single block name is returned.
+
+  * For a binary, a list of the distinct block names of the codepoints in the binary is returned.
+
+  ### Examples
+
+      iex> Unicode.Block.block(?A)
+      :basic_latin
+
+      iex> Unicode.Block.block("abc")
+      [:basic_latin]
 
   """
   def block(string) when is_binary(string) do
@@ -140,19 +205,21 @@ defmodule Unicode.Block do
     |> Enum.uniq()
   end
 
-  for {block, ranges} <- @blocks do
-    def block(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(block)
-    end
-  end
-
   def block(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :no_block
+    Unicode.RangeSearch.find(@block_table, codepoint, :no_block)
   end
 
   @doc """
-  Returns a list of tuples representing the
-  assigned ranges of all Unicode code points.
+  Returns a list of tuples representing the assigned ranges of all Unicode codepoints.
+
+  ### Returns
+
+  * A list of codepoint ranges as 2-tuples.
+
+  ### Examples
+
+      iex> Unicode.Block.assigned() |> hd()
+      {0, 12255}
 
   """
   @assigned @blocks

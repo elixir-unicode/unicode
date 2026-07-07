@@ -73,11 +73,22 @@ defmodule Unicode.Category.QuoteMarks do
   | \uFF07 | U+FF07 | FULLWIDTH apostrophe | &amp;#65287; | Halfwidth and Fullwidth Forms, corresponds with U+0027
   | \uFF62 | U+FF62 | HALFWIDTH LEFT CORNER BRACKET | &amp;#65378; | Halfwidth and Fullwidth Forms, corresponds with U+300C
   | \uFF63 | U+FF63 | HALFWIDTH right CORNER BRACKET | &amp;#65379; | Halfwidth and Fullwidth Forms, corresponds with U+300D
+
   """
 
   @doc """
-  Return a list of codepoints representing quote marks
-  typically used on the left (for LTR languages)
+  Returns a list of codepoints representing quote marks
+  typically used on the left (for LTR languages).
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x00AB in Unicode.Category.QuoteMarks.quote_marks_left()
+      true
+
   """
   def quote_marks_left do
     [
@@ -100,8 +111,18 @@ defmodule Unicode.Category.QuoteMarks do
   end
 
   @doc """
-  Return a list of codepoints representing quote marks
-  typically used on the right (for LTR languages)
+  Returns a list of codepoints representing quote marks
+  typically used on the right (for LTR languages).
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x00BB in Unicode.Category.QuoteMarks.quote_marks_right()
+      true
+
   """
   def quote_marks_right do
     [
@@ -123,24 +144,54 @@ defmodule Unicode.Category.QuoteMarks do
   end
 
   @doc """
-  Return a list of codepoints representing quote marks
-  typically used on the left or right (for LTR languages)
+  Returns a list of codepoints representing quote marks
+  typically used on the left or right (for LTR languages).
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x0022 in Unicode.Category.QuoteMarks.quote_marks_ambidextrous()
+      true
+
   """
   def quote_marks_ambidextrous do
     [0x0022, 0x0027, 0x201F, 0x2E42, 0x301D, 0x301E, 0x301F, 0xFF02, 0xFF07, 0x1F678]
   end
 
   @doc """
-  Return a list of codepoints representing quote marks
-  typically used in Braille
+  Returns a list of codepoints representing quote marks
+  typically used in Braille.
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> Unicode.Category.QuoteMarks.quote_marks_braille()
+      [10278, 10292]
+
   """
   def quote_marks_braille do
     [0x2826, 0x2834]
   end
 
   @doc """
-  Return a list of codepoints representing quote marks
-  understood to be single marks
+  Returns a list of codepoints representing quote marks
+  understood to be single marks.
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x0027 in Unicode.Category.QuoteMarks.quote_marks_single()
+      true
+
   """
   def quote_marks_single do
     [
@@ -168,8 +219,18 @@ defmodule Unicode.Category.QuoteMarks do
   end
 
   @doc """
-  Return a list of codepoints representing quote marks
-  understood to be double marks
+  Returns a list of codepoints representing quote marks
+  understood to be double marks.
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x0022 in Unicode.Category.QuoteMarks.quote_marks_double()
+      true
+
   """
   def quote_marks_double do
     [
@@ -196,8 +257,21 @@ defmodule Unicode.Category.QuoteMarks do
   end
 
   @doc """
-  Return a list of codepoints representing all
+  Returns a list of codepoints representing all
   quote marks.
+
+  The list is the union of all the other lists in
+  this module with duplicates removed.
+
+  ### Returns
+
+  * A list of integer codepoints.
+
+  ### Examples
+
+      iex> 0x2018 in Unicode.Category.QuoteMarks.all_quote_marks()
+      true
+
   """
   def all_quote_marks do
     [

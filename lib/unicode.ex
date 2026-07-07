@@ -18,32 +18,170 @@ defmodule Unicode do
 
   @typedoc "The valid scripts as of Unicode 15"
   @type script ::
-    :tangsa | :runic | :greek | :myanmar | :cherokee | :palmyrene | :elymaic | :latin |
-    :kannada | :deseret | :old_hungarian | :psalter_pahlavi | :tagbanwa | :wancho |
-    :khmer | :bengali | :soyombo | :chakma | :inscriptional_pahlavi | :carian |
-    :tai_viet | :georgian | :oriya | :meroitic_cursive | :meroitic_hieroglyphs |
-    :braille | :nandinagari | :vai | :adlam | :mahajani | :tirhuta | :mro |
-    :zanabazar_square | :cuneiform | :vithkuqi | :newa | :yezidi | :osage | :linear_a |
-    :hiragana | :mende_kikakui | :cyrillic | :hatran | :anatolian_hieroglyphs | :limbu |
-    :balinese | :ethiopic | :new_tai_lue | :dives_akuru | :old_uyghur | :saurashtra |
-    :linear_b | :mandaic | :tibetan | :caucasian_albanian | :avestan | :tangut |
-    :siddham | :duployan | :kawi | :common | :thai | :shavian | :tamil | :old_persian |
-    :nag_mundari | :ol_chiki | :samaritan | :tagalog | :grantha | :gujarati | :ugaritic |
-    :khitan_small_script | :nyiakeng_puachue_hmong | :buhid | :syriac | :old_sogdian |
-    :khudawadi | :lepcha | :lycian | :phags_pa | :bopomofo | :old_permic | :phoenician |
-    :katakana | :dogra | :javanese | :glagolitic | :tai_le | :old_turkic |
-    :old_south_arabian | :takri | :inscriptional_parthian | :signwriting | :osmanya |
-    :syloti_nagri | :sogdian | :egyptian_hieroglyphs | :gunjala_gondi | :sora_sompeng |
-    :arabic | :modi | :inherited | :chorasmian | :manichaean | :medefaidrin |
-    :imperial_aramaic | :nko | :cypriot | :bamum | :han | :masaram_gondi | :ahom |
-    :hanifi_rohingya | :coptic | :lao | :cham | :malayalam | :lisu | :yi | :old_italic |
-    :gothic | :cypro_minoan | :pau_cin_hau | :canadian_aboriginal | :mongolian |
-    :sharada | :tai_tham | :hanunoo | :old_north_arabian | :lydian | :rejang |
-    :warang_citi | :kharoshthi | :brahmi | :sinhala | :batak | :telugu | :gurmukhi |
-    :kayah_li | :marchen | :pahawh_hmong | :armenian | :bassa_vah | :multani |
-    :nabataean | :toto | :hangul | :devanagari | :khojki | :kaithi | :thaana | :nushu |
-    :sundanese | :bhaiksuki | :ogham | :makasar | :elbasan | :miao | :meetei_mayek |
-    :hebrew | :buginese | :tifinagh | :unknown
+          :tangsa
+          | :runic
+          | :greek
+          | :myanmar
+          | :cherokee
+          | :palmyrene
+          | :elymaic
+          | :latin
+          | :kannada
+          | :deseret
+          | :old_hungarian
+          | :psalter_pahlavi
+          | :tagbanwa
+          | :wancho
+          | :khmer
+          | :bengali
+          | :soyombo
+          | :chakma
+          | :inscriptional_pahlavi
+          | :carian
+          | :tai_viet
+          | :georgian
+          | :oriya
+          | :meroitic_cursive
+          | :meroitic_hieroglyphs
+          | :braille
+          | :nandinagari
+          | :vai
+          | :adlam
+          | :mahajani
+          | :tirhuta
+          | :mro
+          | :zanabazar_square
+          | :cuneiform
+          | :vithkuqi
+          | :newa
+          | :yezidi
+          | :osage
+          | :linear_a
+          | :hiragana
+          | :mende_kikakui
+          | :cyrillic
+          | :hatran
+          | :anatolian_hieroglyphs
+          | :limbu
+          | :balinese
+          | :ethiopic
+          | :new_tai_lue
+          | :dives_akuru
+          | :old_uyghur
+          | :saurashtra
+          | :linear_b
+          | :mandaic
+          | :tibetan
+          | :caucasian_albanian
+          | :avestan
+          | :tangut
+          | :siddham
+          | :duployan
+          | :kawi
+          | :common
+          | :thai
+          | :shavian
+          | :tamil
+          | :old_persian
+          | :nag_mundari
+          | :ol_chiki
+          | :samaritan
+          | :tagalog
+          | :grantha
+          | :gujarati
+          | :ugaritic
+          | :khitan_small_script
+          | :nyiakeng_puachue_hmong
+          | :buhid
+          | :syriac
+          | :old_sogdian
+          | :khudawadi
+          | :lepcha
+          | :lycian
+          | :phags_pa
+          | :bopomofo
+          | :old_permic
+          | :phoenician
+          | :katakana
+          | :dogra
+          | :javanese
+          | :glagolitic
+          | :tai_le
+          | :old_turkic
+          | :old_south_arabian
+          | :takri
+          | :inscriptional_parthian
+          | :signwriting
+          | :osmanya
+          | :syloti_nagri
+          | :sogdian
+          | :egyptian_hieroglyphs
+          | :gunjala_gondi
+          | :sora_sompeng
+          | :arabic
+          | :modi
+          | :inherited
+          | :chorasmian
+          | :manichaean
+          | :medefaidrin
+          | :imperial_aramaic
+          | :nko
+          | :cypriot
+          | :bamum
+          | :han
+          | :masaram_gondi
+          | :ahom
+          | :hanifi_rohingya
+          | :coptic
+          | :lao
+          | :cham
+          | :malayalam
+          | :lisu
+          | :yi
+          | :old_italic
+          | :gothic
+          | :cypro_minoan
+          | :pau_cin_hau
+          | :canadian_aboriginal
+          | :mongolian
+          | :sharada
+          | :tai_tham
+          | :hanunoo
+          | :old_north_arabian
+          | :lydian
+          | :rejang
+          | :warang_citi
+          | :kharoshthi
+          | :brahmi
+          | :sinhala
+          | :batak
+          | :telugu
+          | :gurmukhi
+          | :kayah_li
+          | :marchen
+          | :pahawh_hmong
+          | :armenian
+          | :bassa_vah
+          | :multani
+          | :nabataean
+          | :toto
+          | :hangul
+          | :devanagari
+          | :khojki
+          | :kaithi
+          | :thaana
+          | :nushu
+          | :sundanese
+          | :bhaiksuki
+          | :ogham
+          | :makasar
+          | :elbasan
+          | :miao
+          | :meetei_mayek
+          | :hebrew
+          | :buginese
+          | :tifinagh
+          | :unknown
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()
@@ -53,6 +191,15 @@ defmodule Unicode do
 
   @doc """
   Returns the version of Unicode in use.
+
+  ### Returns
+
+  * The Unicode version as a 3-tuple of integers in the form `{major, minor, patch}`.
+
+  ### Examples
+
+      iex> Unicode.version()
+      {17, 0, 0}
 
   """
   @version File.read!("data/blocks.txt")
@@ -92,20 +239,21 @@ defmodule Unicode do
     replacements for invalid UTF. If `encoding` is `:utf8`
     then the return type is a `t:String.t/0`.
 
-  ## Notes
+  ### Notes
 
   * `Unicode.replace_invalid(string, :utf8)` will delegate to
     `String.replace_invalid/2` where available, which is from
     Elixir 1.16 onwards.
 
-  ### Example
+  ### Examples
 
       iex> Unicode.replace_invalid(<<"foo", 0b11111111, "bar">>, :utf8)
       "foo�bar"
 
   """
   @doc since: "1.18.0"
-  @spec replace_invalid(binary :: binary(), encoding :: encoding(), replacement :: String.t()) :: binary()
+  @spec replace_invalid(binary :: binary(), encoding :: encoding(), replacement :: String.t()) ::
+          binary()
   def replace_invalid(binary, encoding \\ :utf8, replacement \\ "�")
 
   if Code.ensure_loaded?(String) && function_exported?(String, :replace_invalid, 2) do
@@ -123,6 +271,15 @@ defmodule Unicode do
   Returns a map of aliases mapping
   property names to a module that
   serves that property.
+
+  ### Returns
+
+  * A map of property names to the module that serves that property.
+
+  ### Examples
+
+      iex> Unicode.property_servers() |> Map.get("script")
+      Unicode.Script
 
   """
   def property_servers do
@@ -143,22 +300,22 @@ defmodule Unicode do
   Returns the Unicode category for a codepoint or a list of
   categories for a string.
 
-  ## Argument
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom representing
-    one of the categories listed below
+  * In the case of a single codepoint, an atom representing
+    one of the categories listed below.
 
-  * in the case of a string, a list representing the
-    category for each codepoint in the string
+  * In the case of a string, a list representing the
+    category for each codepoint in the string.
 
-  ## Notes
+  ### Notes
 
-  THese categories match the names of the Unicode character
+  These categories match the names of the Unicode character
   classes used in various regular expression engines and in
   Unicode Sets.  The full list of categories is:
 
@@ -207,7 +364,7 @@ defmodule Unicode do
   They can only be identified by combining the results
   for each of the subsidiary categories.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.category ?ä
       :Ll
@@ -233,24 +390,24 @@ defmodule Unicode do
 
   @doc """
   Returns the script name of a codepoint
-  or the list of block names for each codepoint
+  or the list of script names for each codepoint
   in a string.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom
-    script name
+  * In the case of a single codepoint, an atom
+    script name.
 
-  * in the case of a string, a list of atom
+  * In the case of a string, a list of atom
     script names for each codepoint in the
-    `codepoint_or_string`
+    `codepoint_or_string`.
 
-  ## Exmaples
+  ### Examples
 
       iex> Unicode.script ?ä
       :latin
@@ -285,21 +442,21 @@ defmodule Unicode do
   or the list of block names for each codepoint
   in a string.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom
-    block name
+  * In the case of a single codepoint, an atom
+    block name.
 
-  * in the case of a string, a list of atom
+  * In the case of a string, a list of atom
     block names for each codepoint in the
-   `codepoint_or_string`
+    `codepoint_or_string`.
 
-  ## Exmaples
+  ### Examples
 
       iex> Unicode.block ?ä
       :latin_1_supplement
@@ -319,21 +476,21 @@ defmodule Unicode do
   or the list of bidi classes for each codepoint
   in a string.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom
-    bidi class name
+  * In the case of a single codepoint, an atom
+    bidi class name.
 
-  * in the case of a string, a list of atom
+  * In the case of a string, a list of atom
     bidi class names for each codepoint in the
-    `codepoint_or_string`
+    `codepoint_or_string`.
 
-  ## Notes
+  ### Notes
 
   This is the Unicode `Bidi_Class` property
   (see [UAX #44](https://www.unicode.org/reports/tr44/) and
@@ -341,7 +498,7 @@ defmodule Unicode do
   without an explicit assignment default to `:l`
   (Left_To_Right).
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.bidi_class ?A
       :l
@@ -368,28 +525,28 @@ defmodule Unicode do
   or the list of joining types for each codepoint
   in a string.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom
-    joining type name
+  * In the case of a single codepoint, an atom
+    joining type name.
 
-  * in the case of a string, a list of atom
+  * In the case of a string, a list of atom
     joining type names for each codepoint in the
-    `codepoint_or_string`
+    `codepoint_or_string`.
 
-  ## Notes
+  ### Notes
 
   This is the Unicode `Joining_Type` property
   (see [UAX #44](https://www.unicode.org/reports/tr44/)).
   Codepoints without an explicit assignment default to
   `:u` (Non_Joining).
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.joining_type ?A
       :u
@@ -411,22 +568,22 @@ defmodule Unicode do
   @doc """
   Returns the list of properties of each codepoint
   in a given string or the list of properties for a
-  given string.
+  given codepoint.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * in the case of a single codepoint, an atom
+  * In the case of a single codepoint, an atom
     list of properties.
 
-  * in the case of a string, one atom list for each
+  * In the case of a string, one atom list for each
     codepoint in the `codepoint_or_string`.
 
-  ## Exmaples
+  ### Examples
 
       iex> Unicode.properties 0x1bf0
       [
@@ -504,19 +661,19 @@ defmodule Unicode do
   These are all characters that are usually used as representations
   of letters/syllabes in words/sentences.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.alphabetic?(?a)
       true
@@ -557,16 +714,16 @@ defmodule Unicode do
   in the given string) are either `alphabetic?/1` or
   `numeric?/1` otherwise returns `false`.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
   ### Examples
@@ -595,22 +752,25 @@ defmodule Unicode do
   This group of characters represents the decimal digits zero
   through nine (0..9) and the equivalents in non-Latin scripts.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  For the string-version, the result will be true only if _all_
-  codepoints in the string adhere to the property.
+  ### Examples
 
-  ## Examples
+      iex> Unicode.digits?("123")
+      true
+
+      iex> Unicode.digits?("⅔")
+      false
 
   """
   @spec digits?(codepoint_or_string) :: boolean
@@ -622,21 +782,23 @@ defmodule Unicode do
   `:Nl` and `:No` otherwise returns `false`.
 
   This group of characters represents the decimal digits zero
-  through nine (0..9) and the equivalents in non-Latin scripts.
+  through nine (0..9), the equivalents in non-Latin scripts and
+  other numeric characters such as fractions, superscripts and
+  subscripts.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.numeric?("65535")
       true
@@ -655,16 +817,16 @@ defmodule Unicode do
   Returns `true` if a single Unicode codepoint (or all characters
   in the given string) are `emoji` otherwise returns `false`.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
   ### Examples
@@ -684,19 +846,19 @@ defmodule Unicode do
   concepts (and not in alphabets). Notice that the numerical digits
   are not part of this group.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.math?(?=)
       true
@@ -728,19 +890,19 @@ defmodule Unicode do
   an upper and lower representation and possibly a titlecase
   representation too.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.cased? ?ယ
       false
@@ -754,24 +916,24 @@ defmodule Unicode do
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
-  in the given string) the category `:Ll` otherwise returns `false`.
+  in the given string) are in the category `:Ll` otherwise returns `false`.
 
   Notice that there are many languages that do not have a distinction
   between cases. Their characters are not included in this group.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.lowercase?(?a)
       true
@@ -800,27 +962,56 @@ defmodule Unicode do
   """
   @spec lowercase?(codepoint_or_string) :: boolean
   defdelegate lowercase?(codepoint_or_string), to: Unicode.Property
-  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :lowercase?
 
   @doc """
   Returns `true` if a single Unicode codepoint (or all characters
-  in the given string) the category `:Lu` otherwise returns `false`.
+  in the given string) are in the category `:Ll` otherwise returns `false`.
 
-  Notice that there are many languages that do not have a distinction
-  between cases. Their characters are not included in this group.
+  This function is an alias for `lowercase?/1`.
 
-  ## Arguments
+  ### Arguments
 
   * `codepoint_or_string` is a single integer codepoint
     or a `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
-  * `true` or `false`
+  * `true` or `false`.
 
-  For the string-version, the result will be true only if _all_
+  For the string-version, the result will be `true` only if _all_
   codepoints in the string adhere to the property.
-  ## Examples
+
+  ### Examples
+
+      iex> Unicode.downcase?("léon")
+      true
+
+      iex> Unicode.downcase?("Elixir")
+      false
+
+  """
+  defdelegate downcase?(codepoint_or_string), to: Unicode.Property, as: :lowercase?
+
+  @doc """
+  Returns `true` if a single Unicode codepoint (or all characters
+  in the given string) are in the category `:Lu` otherwise returns `false`.
+
+  Notice that there are many languages that do not have a distinction
+  between cases. Their characters are not included in this group.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint
+    or a `t:String.t/0`.
+
+  ### Returns
+
+  * `true` or `false`.
+
+  For the string-version, the result will be `true` only if _all_
+  codepoints in the string adhere to the property.
+
+  ### Examples
 
       iex> Unicode.uppercase?(?a)
       false
@@ -849,6 +1040,34 @@ defmodule Unicode do
   """
   @spec uppercase?(codepoint_or_string) :: boolean
   defdelegate uppercase?(codepoint_or_string), to: Unicode.Property
+
+  @doc """
+  Returns `true` if a single Unicode codepoint (or all characters
+  in the given string) are in the category `:Lu` otherwise returns `false`.
+
+  This function is an alias for `uppercase?/1`.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint
+    or a `t:String.t/0`.
+
+  ### Returns
+
+  * `true` or `false`.
+
+  For the string-version, the result will be `true` only if _all_
+  codepoints in the string adhere to the property.
+
+  ### Examples
+
+      iex> Unicode.upcase?("CAMEMBERT")
+      true
+
+      iex> Unicode.upcase?("Elixir")
+      false
+
+  """
   defdelegate upcase?(codepoint_or_string), to: Unicode.Property, as: :uppercase?
 
   @doc """
@@ -857,6 +1076,15 @@ defmodule Unicode do
 
   This information is derived from the block
   ranges as defined by `Unicode.Block.blocks/0`.
+
+  ### Returns
+
+  * A list of 2-tuples representing the assigned ranges of Unicode code points.
+
+  ### Examples
+
+      iex> Unicode.assigned() |> hd()
+      {0, 12255}
 
   """
   @spec assigned :: [{pos_integer, pos_integer}]
@@ -871,6 +1099,15 @@ defmodule Unicode do
   Returns a list of tuples representing the
   full range of Unicode code points.
 
+  ### Returns
+
+  * A list with a single 2-tuple representing the full range of Unicode code points.
+
+  ### Examples
+
+      iex> Unicode.all()
+      [{0, 1114111}]
+
   """
   @all [{0x0, 0x10FFFF}]
 
@@ -883,23 +1120,23 @@ defmodule Unicode do
   Removes accents (diacritical marks) from
   a string.
 
-  ## Arguments
+  ### Arguments
 
-  * `string` is any `t:String.t/0`
+  * `string` is any `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
   * A string with all diacritical marks
-    removed
+    removed.
 
-  ## Notes
+  ### Notes
 
   The string is first normalised to `:nfd` form
   and then all characters in the block
-  `:comnbining_diacritical_marks` is removed
-  from the string
+  `:combining_diacritical_marks` are removed
+  from the string.
 
-  ## Example
+  ### Examples
 
       iex> Unicode.unaccent("Et Ça sera sa moitié.")
       "Et Ca sera sa moitie."
@@ -928,18 +1165,18 @@ defmodule Unicode do
   Returns the first index and grapheme count of each
   script detected in a string.
 
-  ## Arguments
+  ### Arguments
 
   * `string` is any `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
   * A map where the key is a `t:script/0` and the value
     is a tuple where the first element is the index in the
     string where that script first appeared and the second
     element is the number of graphemes in that script.
 
-  ## Examples
+  ### Examples
 
       iex> Unicode.script_statistic "Tokyo is the capital of 日本"
       %{common: {5, 5}, han: {24, 2}, latin: {0, 19}}
@@ -968,16 +1205,18 @@ defmodule Unicode do
 
   Dominance is determined by (in order of priority):
 
-  * Index of the first occurrence of the script
-  * Count of the number of graphemes in the script
+  * Index of the first occurrence of the script.
+
+  * Count of the number of graphemes in the script.
+
   * Lexical ordering of the script name (used as a final means
     to ensure returning a deterministic result).
 
-  ## Arguments
+  ### Arguments
 
   * `string` is any `t:String.t/0`.
 
-  ## Returns
+  ### Returns
 
   * A keyword list where the key is a `t:script/0` and the value
     is a tuple where the first element is the index in the
@@ -985,7 +1224,7 @@ defmodule Unicode do
     element is the number of graphemes in that script. The list
     is ordered by descending dominance.
 
-  ## Example
+  ### Examples
 
       iex> Unicode.script_dominance "Tokyo is the capital of 日本"
       [latin: {0, 19}, common: {5, 5}, han: {24, 2}]
@@ -1014,7 +1253,7 @@ defmodule Unicode do
 
   @doc false
   def compact_ranges([{as, ae}, {bs, be} | rest]) when ae >= bs - 1 and as <= be do
-    compact_ranges([{as, be} | rest])
+    compact_ranges([{as, max(ae, be)} | rest])
   end
 
   def compact_ranges([{as, ae}, {_bs, be} | rest]) when ae >= be do

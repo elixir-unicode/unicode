@@ -1,7 +1,10 @@
 defmodule Unicode.IndicConjunctBreak do
   @moduledoc """
-  Property manager for the Unicode Indic Conjunction Break
-  property.
+  Functions to introspect the Unicode Indic conjunct break property for binaries (Strings) and codepoints.
+
+  The primary API is `indic_conjunct_break/1` which returns the Indic conjunct break property for a codepoint or the list of Indic conjunct break properties for a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges associated with a given Indic conjunct break property. `indic_conjunct_break/0`, `known_indic_conjunct_breaks/0` and `aliases/0` return the underlying property data.
 
   """
 
@@ -10,22 +13,32 @@ defmodule Unicode.IndicConjunctBreak do
   alias Unicode.Utils
 
   @indic_conjunct_breaks Utils.derived_properties()
-  |> Map.fetch!(:incb)
-  |> Enum.map(fn {from, to, [value | _category_and_name]} ->
-    value =
-      value
-      |> String.downcase()
-      |> String.to_atom()
+                         |> Map.fetch!(:incb)
+                         |> Enum.map(fn {from, to, [value | _category_and_name]} ->
+                           value =
+                             value
+                             |> String.downcase()
+                             |> String.to_atom()
 
-    {value, {from, to}}
-  end)
-  |> Enum.group_by(&elem(&1, 0), &(elem(&1, 1)))
-  |> Enum.map(fn {value, range} -> {value, Enum.sort(range)} end)
-  |> Map.new()
+                           {value, {from, to}}
+                         end)
+                         |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+                         |> Enum.map(fn {value, range} -> {value, Enum.sort(range)} end)
+                         |> Map.new()
+
+  @indic_conjunct_break_table Unicode.RangeSearch.new_value_table(@indic_conjunct_breaks)
 
   @doc """
-  Returns the map of Unicode
-  Indic Conjunction Breaks..
+  Returns the map of Unicode Indic conjunct breaks.
+
+  ### Returns
+
+  * A map with the Indic conjunct break name as the key and a list of codepoint ranges as 2-tuples as the value.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.indic_conjunct_break() |> Map.keys() |> Enum.sort()
+      [:consonant, :extend, :linker]
 
   """
 
@@ -34,11 +47,18 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @doc """
-  Returns a list of known Unicode
-  indic_conjunct_break names.
+  Returns a list of known Unicode Indic conjunct break names.
 
-  This function does not return the
-  names of any indic_conjunct_break aliases.
+  This function does not return the names of any Indic conjunct break aliases.
+
+  ### Returns
+
+  * A list of Indic conjunct break names as atoms.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.known_indic_conjunct_breaks() |> Enum.sort()
+      [:consonant, :extend, :linker]
 
   """
   @known_indic_conjunct_breaks Map.keys(@indic_conjunct_breaks)
@@ -47,17 +67,24 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @indic_conjunct_break_alias @indic_conjunct_breaks
-  |> Enum.map(fn {value, _} -> {value |> Atom.to_string |> String.downcase(), value} end)
-  |> Map.new()
+                              |> Enum.map(fn {value, _} ->
+                                {value |> Atom.to_string() |> String.downcase(), value}
+                              end)
+                              |> Map.new()
 
   @doc """
-  Returns a map of aliases for
-  Unicode indic_conjunct_breaks.
+  Returns a map of aliases for Unicode Indic conjunct breaks.
 
-  An alias is an alternative name
-  for referring to a indic_conjunct_break. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to an Indic conjunct break. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map with the alias as a string key and the Indic conjunct break name as an atom value.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.aliases() |> Map.get("linker")
+      :linker
 
   """
   @impl Unicode.Property.Behaviour
@@ -66,14 +93,28 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given indic_conjunct_break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given Indic conjunct break.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `indic_conjunct_break` is any Indic conjunct break name as an atom, or a string alias for an Indic conjunct break.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the Indic conjunct break name is not known.
+
+  ### Examples
+
+      iex> {:ok, ranges} = Unicode.IndicConjunctBreak.fetch(:linker)
+      iex> Enum.take(ranges, 2)
+      [{2381, 2381}, {2509, 2509}]
+
+      iex> Unicode.IndicConjunctBreak.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -93,14 +134,27 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given indic_conjunct_break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given Indic conjunct break.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `indic_conjunct_break` is any Indic conjunct break name as an atom, or a string alias for an Indic conjunct break.
+
+  ### Returns
+
+  * `range_list` which is a list of codepoint ranges as 2-tuples.
+
+  * `nil` if the Indic conjunct break name is not known.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.get(:linker) |> Enum.take(2)
+      [{2381, 2381}, {2509, 2509}]
+
+      iex> Unicode.IndicConjunctBreak.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -112,13 +166,22 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given indic_conjunct_break.
+  Returns the count of the number of characters for a given Indic conjunct break.
 
-  ## Example
+  ### Arguments
 
-      iex> Unicode.Script.count("mongolian")
-      168
+  * `indic_conjunct_break` is any Indic conjunct break name as an atom, or a string alias for an Indic conjunct break.
+
+  ### Returns
+
+  * The number of codepoints that have the given Indic conjunct break.
+
+  * `:error` if the Indic conjunct break name is not known.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.count(:linker)
+      20
 
   """
   @impl Unicode.Property.Behaviour
@@ -129,15 +192,25 @@ defmodule Unicode.IndicConjunctBreak do
   end
 
   @doc """
-  Returns the indic_conjunct_break name(s) for the
-  given binary or codepoint.
+  Returns the Indic conjunct break name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  indic_conjunct_break name is returned.
+  ### Arguments
 
-  For a binary a list of distinct indic_conjunct_break
-  names represented by the graphemes in
-  the binary is returned.
+  * `codepoint_or_string` is either an integer codepoint or a string.
+
+  ### Returns
+
+  * In the case of a codepoint, a single Indic conjunct break name as an atom. Codepoints with no explicit Indic conjunct break property default to `:none`.
+
+  * In the case of a string, a list of the distinct Indic conjunct break names represented by the codepoints in the string.
+
+  ### Examples
+
+      iex> Unicode.IndicConjunctBreak.indic_conjunct_break(0x094D)
+      :linker
+
+      iex> Unicode.IndicConjunctBreak.indic_conjunct_break(?A)
+      :none
 
   """
   def indic_conjunct_break(string) when is_binary(string) do
@@ -147,13 +220,7 @@ defmodule Unicode.IndicConjunctBreak do
     |> Enum.uniq()
   end
 
-  for {indic_conjunct_break, ranges} <- @indic_conjunct_breaks do
-    def indic_conjunct_break(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(indic_conjunct_break)
-    end
-  end
-
   def indic_conjunct_break(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :none
+    Unicode.RangeSearch.find(@indic_conjunct_break_table, codepoint, :none)
   end
 end

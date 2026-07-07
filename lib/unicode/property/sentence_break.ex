@@ -1,8 +1,10 @@
 defmodule Unicode.SentenceBreak do
   @moduledoc """
-  Functions to introspect Unicode
-  sentence breaks for binaries
-  (Strings) and codepoints.
+  Functions to introspect the Unicode sentence break property for binaries (Strings) and codepoints.
+
+  The primary API is `sentence_break/1` which returns the sentence break property for a codepoint or the list of sentence break properties for a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges associated with a given sentence break property. `sentence_breaks/0`, `known_sentence_breaks/0` and `aliases/0` return the underlying property data.
 
   """
 
@@ -13,13 +15,19 @@ defmodule Unicode.SentenceBreak do
   @sentence_breaks Utils.sentence_breaks()
                    |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  sentence breaks.
+  @sentence_break_table Unicode.RangeSearch.new_value_table(@sentence_breaks)
 
-  The sentence break name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode sentence breaks.
+
+  ### Returns
+
+  * A map with the sentence break name as the key and a list of codepoint ranges as 2-tuples as the value.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.sentence_breaks() |> Map.get(:cr)
+      [{13, 13}]
 
   """
 
@@ -28,11 +36,18 @@ defmodule Unicode.SentenceBreak do
   end
 
   @doc """
-  Returns a list of known Unicode
-  sentence break names.
+  Returns a list of known Unicode sentence break names.
 
-  This function does not return the
-  names of any sentence break aliases.
+  This function does not return the names of any sentence break aliases.
+
+  ### Returns
+
+  * A list of sentence break names as atoms.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.known_sentence_breaks() |> Enum.sort() |> Enum.take(3)
+      [:aterm, :close, :cr]
 
   """
   @known_sentence_breaks Map.keys(@sentence_breaks)
@@ -48,13 +63,18 @@ defmodule Unicode.SentenceBreak do
                         |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode sentence breaks.
+  Returns a map of aliases for Unicode sentence breaks.
 
-  An alias is an alternative name
-  for referring to a sentence break. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a sentence break. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map with the alias as a string key and the sentence break name as an atom value.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.aliases() |> Map.get("up")
+      :upper
 
   """
   @impl Unicode.Property.Behaviour
@@ -63,14 +83,27 @@ defmodule Unicode.SentenceBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given sentence break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given sentence break.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `sentence_break` is any sentence break name as an atom, or a string alias for a sentence break.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the sentence break name is not known.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.fetch(:cr)
+      {:ok, [{13, 13}]}
+
+      iex> Unicode.SentenceBreak.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -85,14 +118,27 @@ defmodule Unicode.SentenceBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given sentence break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given sentence break.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `sentence_break` is any sentence break name as an atom, or a string alias for a sentence break.
+
+  ### Returns
+
+  * `range_list` which is a list of codepoint ranges as 2-tuples.
+
+  * `nil` if the sentence break name is not known.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.get(:cr)
+      [{13, 13}]
+
+      iex> Unicode.SentenceBreak.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -104,10 +150,19 @@ defmodule Unicode.SentenceBreak do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given sentence break.
+  Returns the count of the number of characters for a given sentence break.
 
-  ## Example
+  ### Arguments
+
+  * `sentence_break` is any sentence break name as an atom, or a string alias for a sentence break.
+
+  ### Returns
+
+  * The number of codepoints that have the given sentence break.
+
+  * `:error` if the sentence break name is not known.
+
+  ### Examples
 
       iex> Unicode.SentenceBreak.count(:extend)
       2643
@@ -121,15 +176,25 @@ defmodule Unicode.SentenceBreak do
   end
 
   @doc """
-  Returns the sentence break name(s) for the
-  given binary or codepoint.
+  Returns the sentence break name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  sentence break name is returned.
+  ### Arguments
 
-  For a binary a list of distinct sentence break
-  names represented by the graphemes in
-  the binary is returned.
+  * `codepoint_or_string` is either an integer codepoint or a string.
+
+  ### Returns
+
+  * In the case of a codepoint, a single sentence break name as an atom. Codepoints with no explicit sentence break property default to `:other`.
+
+  * In the case of a string, a list of the distinct sentence break names represented by the codepoints in the string.
+
+  ### Examples
+
+      iex> Unicode.SentenceBreak.sentence_break(?A)
+      :upper
+
+      iex> Unicode.SentenceBreak.sentence_break("Aa")
+      [:upper, :lower]
 
   """
   def sentence_break(string) when is_binary(string) do
@@ -139,13 +204,7 @@ defmodule Unicode.SentenceBreak do
     |> Enum.uniq()
   end
 
-  for {sentence_break, ranges} <- @sentence_breaks do
-    def sentence_break(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(sentence_break)
-    end
-  end
-
   def sentence_break(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :other
+    Unicode.RangeSearch.find(@sentence_break_table, codepoint, :other)
   end
 end

@@ -1,6 +1,10 @@
 defmodule Unicode.Script do
   @moduledoc """
-  Property manager for the Unicode script property.
+  Functions to introspect the Unicode script property for binaries (Strings) and codepoints.
+
+  The primary API is `script/1` which returns the script of a codepoint, or the list of scripts of a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges belonging to a script. `scripts/0`, `known_scripts/0` and `aliases/0` return the underlying script data.
 
   """
 
@@ -11,26 +15,38 @@ defmodule Unicode.Script do
   @scripts Utils.scripts()
            |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  scripts.
+  @script_table Unicode.RangeSearch.new_value_table(@scripts)
 
-  The script name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode scripts.
+
+  ### Returns
+
+  * A map where the script name is the key and a list of codepoint ranges as 2-tuples is the value.
+
+  ### Examples
+
+      iex> Unicode.Script.scripts() |> Map.get(:ogham)
+      [{5760, 5788}]
 
   """
-
   def scripts do
     @scripts
   end
 
   @doc """
-  Returns a list of known Unicode
-  script names.
+  Returns a list of known Unicode script names.
 
-  This function does not return the
-  names of any script aliases.
+  This function does not return the names of any script aliases.
+
+  ### Returns
+
+  * A list of atom script names.
+
+  ### Examples
+
+      iex> :latin in Unicode.Script.known_scripts()
+      true
 
   """
   @known_scripts Map.keys(@scripts)
@@ -46,13 +62,18 @@ defmodule Unicode.Script do
                 |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode scripts.
+  Returns a map of aliases for Unicode scripts.
 
-  An alias is an alternative name
-  for referring to a script. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a script. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map where the alias string is the key and the script name is the value.
+
+  ### Examples
+
+      iex> Unicode.Script.aliases() |> Map.get("ogam")
+      :ogham
 
   """
   @impl Unicode.Property.Behaviour
@@ -61,14 +82,27 @@ defmodule Unicode.Script do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given script as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given script.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `script` is any script name or alias, as an atom or string.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the script is not known.
+
+  ### Examples
+
+      iex> Unicode.Script.fetch(:ogham)
+      {:ok, [{5760, 5788}]}
+
+      iex> Unicode.Script.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -83,14 +117,27 @@ defmodule Unicode.Script do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given script as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given script.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `script` is any script name or alias, as an atom or string.
+
+  ### Returns
+
+  * A list of codepoint ranges as 2-tuples.
+
+  * `nil` if the script is not known.
+
+  ### Examples
+
+      iex> Unicode.Script.get(:ogham)
+      [{5760, 5788}]
+
+      iex> Unicode.Script.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -102,10 +149,21 @@ defmodule Unicode.Script do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given script.
+  Returns the count of characters in a given script.
 
-  ## Example
+  Aliases are resolved by this function.
+
+  ### Arguments
+
+  * `script` is any script name or alias, as an atom or string.
+
+  ### Returns
+
+  * A non-negative integer count of the codepoints in the script.
+
+  * `:error` if the script is not known.
+
+  ### Examples
 
       iex> Unicode.Script.count("mongolian")
       168
@@ -119,15 +177,25 @@ defmodule Unicode.Script do
   end
 
   @doc """
-  Returns the script name(s) for the
-  given binary or codepoint.
+  Returns the script name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  script name is returned.
+  ### Arguments
 
-  For a binary a list of distinct script
-  names represented by the graphemes in
-  the binary is returned.
+  * `string_or_codepoint` is either a binary (String) or a codepoint in the range `0..0x10FFFF`.
+
+  ### Returns
+
+  * For a codepoint, a single script name is returned.
+
+  * For a binary, a list of the distinct script names of the codepoints in the binary is returned.
+
+  ### Examples
+
+      iex> Unicode.Script.script(?A)
+      :latin
+
+      iex> Unicode.Script.script("abc")
+      [:latin]
 
   """
   def script(string) when is_binary(string) do
@@ -137,13 +205,7 @@ defmodule Unicode.Script do
     |> Enum.uniq()
   end
 
-  for {script, ranges} <- @scripts do
-    def script(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(script)
-    end
-  end
-
   def script(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :unknown
+    Unicode.RangeSearch.find(@script_table, codepoint, :unknown)
   end
 end

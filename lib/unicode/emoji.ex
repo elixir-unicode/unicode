@@ -1,7 +1,7 @@
 defmodule Unicode.Emoji do
   @moduledoc false
 
-  alias Unicode.{Utils, Property}
+  alias Unicode.{Property, Utils}
 
   @emoji Utils.emoji()
          |> Utils.remove_annotations()
@@ -21,8 +21,10 @@ defmodule Unicode.Emoji do
     |> Enum.reduce(0, fn {from, to}, acc -> acc + to - from + 1 end)
   end
 
-  # FIXME This is not correct - if a codepoint has more than one
-  # emoji category, only the first is retained.
+  # A codepoint may belong to more than one emoji category; the first
+  # category in map order wins. That is sufficient for `emoji?/1`, which
+  # only tests membership in any category. `Unicode.Property` exposes the
+  # per-category membership tests where the distinction matters.
 
   for {emoji_category, ranges} <- @emoji,
       range <- ranges do
@@ -44,6 +46,12 @@ defmodule Unicode.Emoji do
     |> String.graphemes()
     |> Enum.map(&String.to_charlist/1)
     |> Enum.map(&emoji/1)
+  end
+
+  # A single-codepoint grapheme is looked up as a codepoint; only
+  # multi-codepoint sequences have charlist clauses generated above.
+  def emoji([codepoint]) when is_integer(codepoint) do
+    emoji(codepoint)
   end
 
   def emoji(_codepoint) do

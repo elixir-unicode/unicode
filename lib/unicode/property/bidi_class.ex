@@ -1,8 +1,10 @@
 defmodule Unicode.BidiClass do
   @moduledoc """
-  Functions to introspect Unicode
-  bidi classes for binaries
-  (Strings) and codepoints.
+  Functions to introspect the Unicode bidirectional (bidi) class property for binaries (Strings) and codepoints.
+
+  The primary API is `bidi_class/1` which returns the bidi class of a codepoint, or the list of bidi classes of a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges belonging to a bidi class. `bidi_classes/0`, `known_bidi_classes/0` and `aliases/0` return the underlying bidi class data.
 
   """
 
@@ -13,26 +15,38 @@ defmodule Unicode.BidiClass do
   @bidi_classes Utils.bidi_classes()
                 |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  bidi classes.
+  @bidi_class_table Unicode.RangeSearch.new_value_table(@bidi_classes)
 
-  The bidi class name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode bidi classes.
+
+  ### Returns
+
+  * A map where the bidi class name is the key and a list of codepoint ranges as 2-tuples is the value.
+
+  ### Examples
+
+      iex> Unicode.BidiClass.bidi_classes() |> Map.get(:lre)
+      [{8234, 8234}]
 
   """
-
   def bidi_classes do
     @bidi_classes
   end
 
   @doc """
-  Returns a list of known Unicode
-  bidi class names.
+  Returns a list of known Unicode bidi class names.
 
-  This function does not return the
-  names of any class aliases.
+  This function does not return the names of any class aliases.
+
+  ### Returns
+
+  * A list of atom bidi class names.
+
+  ### Examples
+
+      iex> :l in Unicode.BidiClass.known_bidi_classes()
+      true
 
   """
   @known_bidi_classes Map.keys(@bidi_classes)
@@ -47,13 +61,18 @@ defmodule Unicode.BidiClass do
                     |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode bidi classes.
+  Returns a map of aliases for Unicode bidi classes.
 
-  An alias is an alternative name
-  for referring to a bidi class. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a bidi class. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map where the alias string is the key and the bidi class name is the value.
+
+  ### Examples
+
+      iex> Unicode.BidiClass.aliases() |> Map.get("arabicletter")
+      :al
 
   """
   @impl Unicode.Property.Behaviour
@@ -62,14 +81,27 @@ defmodule Unicode.BidiClass do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given bidi class as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given bidi class.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `bidi_class` is any bidi class name or alias, as an atom or string.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the bidi class is not known.
+
+  ### Examples
+
+      iex> Unicode.BidiClass.fetch(:lre)
+      {:ok, [{8234, 8234}]}
+
+      iex> Unicode.BidiClass.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -84,14 +116,27 @@ defmodule Unicode.BidiClass do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given bidi class as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given bidi class.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `bidi_class` is any bidi class name or alias, as an atom or string.
+
+  ### Returns
+
+  * A list of codepoint ranges as 2-tuples.
+
+  * `nil` if the bidi class is not known.
+
+  ### Examples
+
+      iex> Unicode.BidiClass.get(:lre)
+      [{8234, 8234}]
+
+      iex> Unicode.BidiClass.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -103,10 +148,21 @@ defmodule Unicode.BidiClass do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given bidi class.
+  Returns the count of characters in a given bidi class.
 
-  ## Example
+  Aliases are resolved by this function.
+
+  ### Arguments
+
+  * `bidi_class` is any bidi class name or alias, as an atom or string.
+
+  ### Returns
+
+  * A non-negative integer count of the codepoints in the bidi class.
+
+  * `:error` if the bidi class is not known.
+
+  ### Examples
 
       iex> Unicode.BidiClass.count(:al)
       1478
@@ -120,29 +176,31 @@ defmodule Unicode.BidiClass do
   end
 
   @doc """
-  Returns the bidi class name(s) for the
-  given binary or codepoint.
+  Returns the bidi class name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  bidi class name is returned.
+  ### Arguments
 
-  For a binary a list of distinct bidi class
-  names represented by the codepoints in
-  the binary is returned.
+  * `string_or_codepoint` is either a binary (String) or a codepoint in the range `0..0x10FFFF`.
 
-  ## Examples
+  ### Returns
 
-      iex> Unicode.BidiClass.bidi_class ?A
+  * For a codepoint, a single bidi class name is returned.
+
+  * For a binary, a list of the distinct bidi class names of the codepoints in the binary is returned.
+
+  ### Examples
+
+      iex> Unicode.BidiClass.bidi_class(?A)
       :l
 
-      iex> Unicode.BidiClass.bidi_class ?0
-      :en
-
-      iex> Unicode.BidiClass.bidi_class 0x05D0
+      iex> Unicode.BidiClass.bidi_class(0x05D0)
       :r
 
-      iex> Unicode.BidiClass.bidi_class 0x0627
+      iex> Unicode.BidiClass.bidi_class(0x0627)
       :al
+
+      iex> Unicode.BidiClass.bidi_class("abc")
+      [:l]
 
   """
   def bidi_class(string) when is_binary(string) do
@@ -152,13 +210,7 @@ defmodule Unicode.BidiClass do
     |> Enum.uniq()
   end
 
-  for {bidi_class, ranges} <- @bidi_classes do
-    def bidi_class(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(bidi_class)
-    end
-  end
-
   def bidi_class(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :l
+    Unicode.RangeSearch.find(@bidi_class_table, codepoint, :l)
   end
 end

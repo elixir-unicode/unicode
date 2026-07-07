@@ -1,8 +1,10 @@
 defmodule Unicode.JoiningType do
   @moduledoc """
-  Functions to introspect Unicode
-  joining types for binaries
-  (Strings) and codepoints.
+  Functions to introspect the Unicode joining type property for binaries (Strings) and codepoints.
+
+  The primary API is `joining_type/1` which returns the joining type for a codepoint or the list of joining types for a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges associated with a given joining type. `joining_types/0`, `known_joining_types/0` and `aliases/0` return the underlying property data.
 
   """
 
@@ -13,13 +15,19 @@ defmodule Unicode.JoiningType do
   @joining_types Utils.joining_types()
                  |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  joining types.
+  @joining_type_table Unicode.RangeSearch.new_value_table(@joining_types)
 
-  The joining type name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode joining types.
+
+  ### Returns
+
+  * A map with the joining type name as the key and a list of codepoint ranges as 2-tuples as the value.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.joining_types() |> Map.get(:c)
+      [{1600, 1600}, {2042, 2042}, {2179, 2181}, {6154, 6154}, {8205, 8205}]
 
   """
 
@@ -28,11 +36,18 @@ defmodule Unicode.JoiningType do
   end
 
   @doc """
-  Returns a list of known Unicode
-  joining type names.
+  Returns a list of known Unicode joining type names.
 
-  This function does not return the
-  names of any type aliases.
+  This function does not return the names of any joining type aliases.
+
+  ### Returns
+
+  * A list of joining type names as atoms.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.known_joining_types() |> Enum.sort()
+      [:c, :d, :l, :r, :t]
 
   """
   @known_joining_types Map.keys(@joining_types)
@@ -47,13 +62,18 @@ defmodule Unicode.JoiningType do
                       |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode joining types.
+  Returns a map of aliases for Unicode joining types.
 
-  An alias is an alternative name
-  for referring to a joining type. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a joining type. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map with the alias as a string key and the joining type name as an atom value.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.aliases() |> Map.get("dualjoining")
+      :d
 
   """
   @impl Unicode.Property.Behaviour
@@ -62,14 +82,27 @@ defmodule Unicode.JoiningType do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given joining type as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given joining type.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `joining_type` is any joining type name as an atom, or a string alias for a joining type.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the joining type name is not known.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.fetch(:c)
+      {:ok, [{1600, 1600}, {2042, 2042}, {2179, 2181}, {6154, 6154}, {8205, 8205}]}
+
+      iex> Unicode.JoiningType.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -84,14 +117,27 @@ defmodule Unicode.JoiningType do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given joining type as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given joining type.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `joining_type` is any joining type name as an atom, or a string alias for a joining type.
+
+  ### Returns
+
+  * `range_list` which is a list of codepoint ranges as 2-tuples.
+
+  * `nil` if the joining type name is not known.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.get(:c)
+      [{1600, 1600}, {2042, 2042}, {2179, 2181}, {6154, 6154}, {8205, 8205}]
+
+      iex> Unicode.JoiningType.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -103,10 +149,19 @@ defmodule Unicode.JoiningType do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given joining type.
+  Returns the count of the number of characters for a given joining type.
 
-  ## Example
+  ### Arguments
+
+  * `joining_type` is any joining type name as an atom, or a string alias for a joining type.
+
+  ### Returns
+
+  * The number of codepoints that have the given joining type.
+
+  * `:error` if the joining type name is not known.
+
+  ### Examples
 
       iex> Unicode.JoiningType.count(:d)
       615
@@ -120,31 +175,25 @@ defmodule Unicode.JoiningType do
   end
 
   @doc """
-  Returns the joining type name(s) for the
-  given binary or codepoint.
+  Returns the joining type name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  joining type name is returned. Code points
-  with no explicit `Joining_Type` assignment
-  default to `:u` (Non_Joining).
+  ### Arguments
 
-  For a binary a list of distinct joining
-  type names represented by the codepoints
-  in the binary is returned.
+  * `codepoint_or_string` is either an integer codepoint or a string.
 
-  ## Examples
+  ### Returns
 
-      iex> Unicode.JoiningType.joining_type ?A
+  * In the case of a codepoint, a single joining type name as an atom. Codepoints with no explicit `Joining_Type` assignment default to `:u` (Non_Joining).
+
+  * In the case of a string, a list of the distinct joining type names represented by the codepoints in the string.
+
+  ### Examples
+
+      iex> Unicode.JoiningType.joining_type(?A)
       :u
 
-      iex> Unicode.JoiningType.joining_type 0x0640
-      :c
-
-      iex> Unicode.JoiningType.joining_type 0x0628
+      iex> Unicode.JoiningType.joining_type(0x0628)
       :d
-
-      iex> Unicode.JoiningType.joining_type 0x200D
-      :c
 
   """
   def joining_type(string) when is_binary(string) do
@@ -154,13 +203,7 @@ defmodule Unicode.JoiningType do
     |> Enum.uniq()
   end
 
-  for {joining_type, ranges} <- @joining_types do
-    def joining_type(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(joining_type)
-    end
-  end
-
   def joining_type(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :u
+    Unicode.RangeSearch.find(@joining_type_table, codepoint, :u)
   end
 end

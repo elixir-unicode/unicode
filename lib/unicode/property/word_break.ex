@@ -1,7 +1,10 @@
 defmodule Unicode.WordBreak do
   @moduledoc """
-  Functions to introspect Unicode word breaks for
-  string and codepoints.
+  Functions to introspect the Unicode word break property for binaries (Strings) and codepoints.
+
+  The primary API is `word_break/1` which returns the word break property for a codepoint or the list of word break properties for a string.
+
+  The functions `fetch/1`, `get/1` and `count/1` provide introspection of the codepoint ranges associated with a given word break property. `word_breaks/0`, `known_word_breaks/0` and `aliases/0` return the underlying property data.
 
   """
 
@@ -12,13 +15,19 @@ defmodule Unicode.WordBreak do
   @word_breaks Utils.word_breaks()
                |> Utils.remove_annotations()
 
-  @doc """
-  Returns the map of Unicode
-  word breaks.
+  @word_break_table Unicode.RangeSearch.new_value_table(@word_breaks)
 
-  The word break name is the map
-  key and a list of codepoint
-  ranges as tuples as the value.
+  @doc """
+  Returns the map of Unicode word breaks.
+
+  ### Returns
+
+  * A map with the word break name as the key and a list of codepoint ranges as 2-tuples as the value.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.word_breaks() |> Map.get(:zwj)
+      [{8205, 8205}]
 
   """
 
@@ -27,11 +36,18 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns a list of known Unicode
-  word break names.
+  Returns a list of known Unicode word break names.
 
-  This function does not return the
-  names of any word break aliases.
+  This function does not return the names of any word break aliases.
+
+  ### Returns
+
+  * A list of word break names as atoms.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.known_word_breaks() |> Enum.sort() |> Enum.take(3)
+      [:aletter, :cr, :double_quote]
 
   """
   @known_word_breaks Map.keys(@word_breaks)
@@ -47,13 +63,18 @@ defmodule Unicode.WordBreak do
                     |> Utils.add_canonical_alias()
 
   @doc """
-  Returns a map of aliases for
-  Unicode word breaks.
+  Returns a map of aliases for Unicode word breaks.
 
-  An alias is an alternative name
-  for referring to a word break. Aliases
-  are resolved by the `fetch/1` and
-  `get/1` functions.
+  An alias is an alternative name for referring to a word break. Aliases are resolved by the `fetch/1` and `get/1` functions.
+
+  ### Returns
+
+  * A map with the alias as a string key and the word break name as an atom value.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.aliases() |> Map.get("le")
+      :aletter
 
   """
   @impl Unicode.Property.Behaviour
@@ -62,14 +83,27 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given word break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given word break.
 
   Aliases are resolved by this function.
 
-  Returns either `{:ok, range_list}` or
-  `:error`.
+  ### Arguments
+
+  * `word_break` is any word break name as an atom, or a string alias for a word break.
+
+  ### Returns
+
+  * `{:ok, range_list}` where `range_list` is a list of codepoint ranges as 2-tuples.
+
+  * `:error` if the word break name is not known.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.fetch(:zwj)
+      {:ok, [{8205, 8205}]}
+
+      iex> Unicode.WordBreak.fetch(:invalid)
+      :error
 
   """
   @impl Unicode.Property.Behaviour
@@ -84,14 +118,27 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns the Unicode ranges for
-  a given word break as a list of
-  ranges as 2-tuples.
+  Returns the Unicode codepoint ranges for a given word break.
 
   Aliases are resolved by this function.
 
-  Returns either `range_list` or
-  `nil`.
+  ### Arguments
+
+  * `word_break` is any word break name as an atom, or a string alias for a word break.
+
+  ### Returns
+
+  * `range_list` which is a list of codepoint ranges as 2-tuples.
+
+  * `nil` if the word break name is not known.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.get(:zwj)
+      [{8205, 8205}]
+
+      iex> Unicode.WordBreak.get(:invalid)
+      nil
 
   """
   @impl Unicode.Property.Behaviour
@@ -103,13 +150,22 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns the count of the number of characters
-  for a given word_break.
+  Returns the count of the number of characters for a given word break.
 
-  ## Example
+  ### Arguments
 
-      iex> Unicode.WordBreak.count(:al)
-      21400
+  * `word_break` is any word break name as an atom, or a string alias for a word break.
+
+  ### Returns
+
+  * The number of codepoints that have the given word break.
+
+  * `:error` if the word break name is not known.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.count(:aletter)
+      33973
 
   """
   @impl Unicode.Property.Behaviour
@@ -120,18 +176,25 @@ defmodule Unicode.WordBreak do
   end
 
   @doc """
-  Returns the word break name(s) for the
-  given binary or codepoint.
+  Returns the word break name(s) for the given binary or codepoint.
 
-  In the case of a codepoint, a single
-  word_break name is returned.
+  ### Arguments
 
-  For a binary a list of distinct word break
-  names represented by the lines in
-  the binary is returned.
+  * `codepoint_or_string` is either an integer codepoint or a string.
 
-  A value of `:xx` indicates there is no word
-  break property for a codepoint.
+  ### Returns
+
+  * In the case of a codepoint, a single word break name as an atom. Codepoints with no explicit word break property default to `:xx`.
+
+  * In the case of a string, a list of the word break names for each codepoint in the string, in order. One entry is returned for each codepoint.
+
+  ### Examples
+
+      iex> Unicode.WordBreak.word_break(0x200D)
+      :zwj
+
+      iex> Unicode.WordBreak.word_break("A")
+      [:aletter]
 
   """
   def word_break(string) when is_binary(string) do
@@ -140,13 +203,7 @@ defmodule Unicode.WordBreak do
     |> Enum.map(&word_break/1)
   end
 
-  for {word_break, ranges} <- @word_breaks do
-    def word_break(codepoint) when unquote(Utils.ranges_to_guard_clause(ranges)) do
-      unquote(word_break)
-    end
-  end
-
   def word_break(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    :xx
+    Unicode.RangeSearch.find(@word_break_table, codepoint, :xx)
   end
 end

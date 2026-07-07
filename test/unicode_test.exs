@@ -12,7 +12,12 @@ defmodule Unicode.Test do
   doctest Unicode.GraphemeClusterBreak
   doctest Unicode.LineBreak
   doctest Unicode.SentenceBreak
+  doctest Unicode.WordBreak
+  doctest Unicode.IndicConjunctBreak
   doctest Unicode.IndicSyllabicCategory
   doctest Unicode.BidiClass
+  doctest Unicode.EastAsianWidth
   doctest Unicode.JoiningType
+  doctest Unicode.RangeSearch
+  doctest Unicode.Category.QuoteMarks
 end
