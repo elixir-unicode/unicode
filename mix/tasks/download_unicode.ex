@@ -10,7 +10,9 @@ if File.exists?(Unicode.data_dir()) do
     @shortdoc "Download Unicode data files"
 
     @unicode_full_release "17.0.0"
-    @unicode_minor_release String.split(@unicode_full_release, ".") |> Enum.take(2) |> Enum.join(".")
+    @unicode_minor_release String.split(@unicode_full_release, ".")
+                           |> Enum.take(2)
+                           |> Enum.join(".")
 
     @root_url "https://www.unicode.org/Public/#{@unicode_full_release}/ucd/"
 
@@ -38,8 +40,7 @@ if File.exists?(Unicode.data_dir()) do
          data_path("derived_properties.txt")},
         {Path.join(root_url(), "/extracted/DerivedCombiningClass.txt"),
          data_path("combining_class.txt")},
-        {Path.join(root_url(), "/extracted/DerivedBidiClass.txt"),
-         data_path("bidi_class.txt")},
+        {Path.join(root_url(), "/extracted/DerivedBidiClass.txt"), data_path("bidi_class.txt")},
         {Path.join(root_url(), "/extracted/DerivedJoiningType.txt"),
          data_path("joining_type.txt")},
         {Path.join(root_url(), "/emoji/emoji-data.txt"), data_path("emoji.txt")},
@@ -110,12 +111,12 @@ if File.exists?(Unicode.data_dir()) do
 
     * `:timeout` is the number of milliseconds available
       for the request to complete. The default is
-      #{inspect @unicode_default_timeout}. This option may also be
+      #{inspect(@unicode_default_timeout)}. This option may also be
       set with the `CLDR_HTTP_TIMEOUT` environment variable.
 
     * `:connection_timeout` is the number of milliseconds
       available for the a connection to be estabklished to
-      the remote host. The default is #{inspect @unicode_default_connection_timeout}.
+      the remote host. The default is #{inspect(@unicode_default_connection_timeout)}.
       This option may also be set with the
       `CLDR_HTTP_CONNECTION_TIMEOUT` environment variable.
 
@@ -184,8 +185,8 @@ if File.exists?(Unicode.data_dir()) do
     ```
 
     """
-    @spec get(String.t | {String.t, list()}, options :: Keyword.t) ::
-      {:ok, binary} | {:not_modified, any()} | {:error, any}
+    @spec get(String.t() | {String.t(), list()}, options :: Keyword.t()) ::
+            {:ok, binary} | {:not_modified, any()} | {:error, any}
 
     def get(url, options \\ [])
 
@@ -196,7 +197,8 @@ if File.exists?(Unicode.data_dir()) do
       end
     end
 
-    def get({url, headers}, options) when is_binary(url) and is_list(headers) and is_list(options) do
+    def get({url, headers}, options)
+        when is_binary(url) and is_list(headers) and is_list(options) do
       case get_with_headers({url, headers}, options) do
         {:ok, _headers, body} -> {:ok, body}
         other -> other
@@ -232,12 +234,12 @@ if File.exists?(Unicode.data_dir()) do
 
     * `:timeout` is the number of milliseconds available
       for the request to complete. The default is
-      #{inspect @unicode_default_timeout}. This option may also be
+      #{inspect(@unicode_default_timeout)}. This option may also be
       set with the `CLDR_HTTP_TIMEOUT` environment variable.
 
     * `:connection_timeout` is the number of milliseconds
       available for the a connection to be estabklished to
-      the remote host. The default is #{inspect @unicode_default_connection_timeout}.
+      the remote host. The default is #{inspect(@unicode_default_connection_timeout)}.
       This option may also be set with the
       `CLDR_HTTP_CONNECTION_TIMEOUT` environment variable.
 
@@ -322,8 +324,8 @@ if File.exists?(Unicode.data_dir()) do
     """
     @doc since: "2.21.0"
 
-    @spec get_with_headers(String.t | {String.t, list()}, options :: Keyword.t) ::
-      {:ok, list(), binary} | {:not_modified, any()} | {:error, any}
+    @spec get_with_headers(String.t() | {String.t(), list()}, options :: Keyword.t()) ::
+            {:ok, list(), binary} | {:not_modified, any()} | {:error, any}
 
     def get_with_headers(request, options \\ [])
 
@@ -331,73 +333,111 @@ if File.exists?(Unicode.data_dir()) do
       get_with_headers({url, []}, options)
     end
 
-    def get_with_headers({url, headers}, options) when is_binary(url) and is_list(headers) and is_list(options) do
+    def get_with_headers({url, headers}, options)
+        when is_binary(url) and is_list(headers) and is_list(options) do
       require Logger
 
       hostname = String.to_charlist(URI.parse(url).host)
       url = String.to_charlist(url)
       http_options = http_opts(hostname, options)
-      https_proxy = https_proxy(options)
 
-      if https_proxy do
-        case URI.parse(https_proxy) do
-          %{host: host, port: port} when is_binary(host) and is_integer(port) ->
-            :httpc.set_options([{:https_proxy, {{String.to_charlist(host), port}, []}}])
-          _other ->
-            Logger.bare_log(:warning, "https_proxy was set to an invalid value. Found #{inspect https_proxy}.")
-        end
+      maybe_set_https_proxy(https_proxy(options))
+
+      :httpc.request(:get, {url, headers}, http_options, [])
+      |> handle_response(url, http_options)
+    end
+
+    defp maybe_set_https_proxy(nil) do
+      :ok
+    end
+
+    defp maybe_set_https_proxy(https_proxy) do
+      require Logger
+
+      case URI.parse(https_proxy) do
+        %{host: host, port: port} when is_binary(host) and is_integer(port) ->
+          :httpc.set_options([{:https_proxy, {{String.to_charlist(host), port}, []}}])
+
+        _other ->
+          Logger.bare_log(
+            :warning,
+            "https_proxy was set to an invalid value. Found #{inspect(https_proxy)}."
+          )
       end
+    end
 
-      case :httpc.request(:get, {url, headers}, http_options, []) do
-        {:ok, {{_version, 200, _}, headers, body}} ->
-          {:ok, headers, body}
+    defp handle_response({:ok, {{_version, 200, _}, headers, body}}, _url, _http_options) do
+      {:ok, headers, body}
+    end
 
-        {:ok, {{_version, 304, _}, headers, _body}} ->
-          {:not_modified, headers}
+    defp handle_response({:ok, {{_version, 304, _}, headers, _body}}, _url, _http_options) do
+      {:not_modified, headers}
+    end
 
-        {_, {{_version, code, message}, _headers, _body}} ->
-          Logger.bare_log(
-            :error,
-            "Failed to download #{inspect url}. " <>
-              "HTTP Error: (#{code}) #{inspect(message)}"
-          )
+    defp handle_response({_, {{_version, code, message}, _headers, _body}}, url, _http_options) do
+      require Logger
 
-          {:error, code}
+      Logger.bare_log(
+        :error,
+        "Failed to download #{inspect(url)}. " <>
+          "HTTP Error: (#{code}) #{inspect(message)}"
+      )
 
-        {:error, {:failed_connect, [{_, {host, _port}}, {_, _, sys_message}]}} ->
-          if sys_message == :timeout do
-            Logger.bare_log(
-              :error,
-              "Timeout connecting to #{inspect(host)} to download #{inspect url}. " <>
-              "Connection time exceeded #{http_options[:connect_timeout]}ms."
-            )
+      {:error, code}
+    end
 
-            {:error, :connection_timeout}
-          else
-            Logger.bare_log(
-              :error,
-              "Failed to connect to #{inspect(host)} to download #{inspect url}"
-            )
+    defp handle_response(
+           {:error, {:failed_connect, [{_, {host, _port}}, {_, _, :timeout}]}},
+           url,
+           http_options
+         ) do
+      require Logger
 
-            {:error, sys_message}
-          end
+      Logger.bare_log(
+        :error,
+        "Timeout connecting to #{inspect(host)} to download #{inspect(url)}. " <>
+          "Connection time exceeded #{http_options[:connect_timeout]}ms."
+      )
 
-        {:error, {other}} ->
-          Logger.bare_log(
-            :error,
-            "Failed to download #{inspect url}. Error #{inspect other}"
-          )
+      {:error, :connection_timeout}
+    end
 
-          {:error, other}
+    defp handle_response(
+           {:error, {:failed_connect, [{_, {host, _port}}, {_, _, sys_message}]}},
+           url,
+           _http_options
+         ) do
+      require Logger
 
-        {:error, :timeout} ->
-          Logger.bare_log(
-            :error,
-            "Timeout downloading from #{inspect url}. " <>
-            "Request exceeded #{http_options[:timeout]}ms."
-          )
-          {:error, :timeout}
-      end
+      Logger.bare_log(
+        :error,
+        "Failed to connect to #{inspect(host)} to download #{inspect(url)}"
+      )
+
+      {:error, sys_message}
+    end
+
+    defp handle_response({:error, {other}}, url, _http_options) do
+      require Logger
+
+      Logger.bare_log(
+        :error,
+        "Failed to download #{inspect(url)}. Error #{inspect(other)}"
+      )
+
+      {:error, other}
+    end
+
+    defp handle_response({:error, :timeout}, url, http_options) do
+      require Logger
+
+      Logger.bare_log(
+        :error,
+        "Timeout downloading from #{inspect(url)}. " <>
+          "Request exceeded #{http_options[:timeout]}ms."
+      )
+
+      {:error, :timeout}
     end
 
     @static_certificate_locations [
@@ -428,16 +468,22 @@ if File.exists?(Unicode.data_dir()) do
         # Configured cacertfile
         Application.get_env(:ex_cldr, :cacertfile),
 
-        # Populated if hex package CAStore is configured
+        # Populated if hex package CAStore is configured. `apply/3` avoids
+        # a compile-time reference to a dependency that may be absent.
+        # credo:disable-for-next-line Credo.Check.Refactor.Apply
         if(Code.ensure_loaded?(CAStore), do: apply(CAStore, :file_path, [])),
 
-        # Populated if hex package certfi is configured
-        if(Code.ensure_loaded?(:certifi), do: apply(:certifi, :cacertfile, []) |> List.to_string())
+        # Populated if hex package certfi is configured. `apply/3` avoids
+        # a compile-time reference to a dependency that may be absent.
+        if(Code.ensure_loaded?(:certifi),
+          # credo:disable-for-next-line Credo.Check.Refactor.Apply
+          do: apply(:certifi, :cacertfile, []) |> List.to_string()
+        )
       ]
       |> Enum.reject(&is_nil/1)
     end
 
-    def certificate_locations() do
+    def certificate_locations do
       dynamic_certificate_locations() ++ @static_certificate_locations
     end
 
@@ -530,7 +576,7 @@ if File.exists?(Unicode.data_dir()) do
           reuse_sessions: true,
           versions: protocol_versions(),
           ciphers: preferred_ciphers(),
-          versions: protocol_versions(),
+          versions: protocol_versions()
         ]
       end
     end
@@ -583,13 +629,13 @@ if File.exists?(Unicode.data_dir()) do
 
     defp https_proxy(options) do
       options[:https_proxy] ||
-      Application.get_env(:unicode, :https_proxy) ||
-      System.get_env("HTTPS_PROXY") ||
-      System.get_env("https_proxy")
+        Application.get_env(:unicode, :https_proxy) ||
+        System.get_env("HTTPS_PROXY") ||
+        System.get_env("https_proxy")
     end
 
     def otp_version do
-      :erlang.system_info(:otp_release) |> List.to_integer
+      :erlang.system_info(:otp_release) |> List.to_integer()
     end
 
     defp data_path(filename) do

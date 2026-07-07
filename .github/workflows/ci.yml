@@ -36,7 +36,7 @@ jobs:
           - otp: "28.3.1"
             elixir: "1.19.5-otp-28"
           - otp: "28.3.1"
-            elixir: "1.20.0-rc.1-otp-28"
+            elixir: "1.20.1-otp-28"
             lint: true
     steps:
     # Step: Setup Elixir + Erlang image as the base.
@@ -51,31 +51,32 @@ jobs:
       uses: actions/checkout@v5
 
     # Step: Define how to cache deps. Restores existing cache if present.
+    # Cache keys include the OTP and Elixir versions so matrix entries
+    # never share BEAMs compiled by a different toolchain.
     - name: Cache deps
       id: cache-deps
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-elixir-deps
       with:
         path: deps
-        key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+        key: ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-mix-deps-${{ hashFiles('**/mix.lock') }}
         restore-keys: |
-          ${{ runner.os }}-mix-${{ env.cache-name }}-
+          ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-mix-deps-
 
     # Step: Define how to cache the `_build` directory. After the first run,
     # this speeds up tests runs a lot. This includes not re-compiling our
     # project's downloaded deps every run.
     - name: Cache compiled build
       id: cache-build
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         cache-name: cache-compiled-build
       with:
         path: _build
-        key: ${{ runner.os }}-mix-${{ env.cache-name }}-${{ hashFiles('**/mix.lock') }}
+        key: ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-mix-build-${{ hashFiles('**/mix.lock') }}
         restore-keys: |
-          ${{ runner.os }}-mix-${{ env.cache-name }}-
-          ${{ runner.os }}-mix-
+          ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-mix-build-
 
     # Step: Download project dependencies. If unchanged, uses
     # the cached version.
@@ -89,13 +90,24 @@ jobs:
 
     # Step: Check that the checked in code has already been formatted.
     # This step fails if something was found unformatted.
-    # Customize this step as desired.
-    # - name: Check Formatting
-    #   run: mix format --check-formatted
+    - name: Check Formatting
+      if: ${{ matrix.lint }}
+      run: mix format --check-formatted
+
+    # Step: Static code analysis.
+    - name: Run credo
+      if: ${{ matrix.lint }}
+      run: mix credo --strict
 
     # Step: Execute the tests.
     - name: Run tests
+      if: ${{ !matrix.lint }}
       run: mix test
+
+    # Step: Execute the tests with coverage measurement on the lint entry.
+    - name: Run tests with coverage
+      if: ${{ matrix.lint }}
+      run: mix test --cover
 
     # Step: Execute dialyzer.
     - name: Run dialyzer

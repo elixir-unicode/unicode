@@ -17,10 +17,28 @@ defmodule Unicode.MixProject do
       description: description(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
+      test_coverage: [
+        summary: [threshold: 90],
+        ignore_modules: coverage_ignore_modules()
+      ],
       dialyzer: [
         plt_add_apps: ~w(mix inets public_key)a,
         ignore_warnings: ".dialyzer_ignore_warnings"
       ]
+    ]
+  end
+
+  # Modules excluded from `mix test --cover` measurement so the
+  # coverage number reflects the runtime library, not build tooling:
+  #
+  # * `Mix.Tasks.*` — the Unicode data download task, run at build
+  #   time, never at library runtime.
+  #
+  # * Test support modules under `test/support` — test harness code.
+  defp coverage_ignore_modules do
+    [
+      ~r/^Mix\.Tasks\./,
+      Unicode.Validation.UTF8.Test.Helpers
     ]
   end
 
@@ -59,7 +77,8 @@ defmodule Unicode.MixProject do
     [
       {:benchee, "~> 1.0", only: :dev, optional: true},
       {:ex_doc, "~> 0.24", only: [:dev, :release], runtime: false, optional: true},
-      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false, optional: true}
+      {:dialyxir, "~> 1.1", only: [:dev, :test], runtime: false, optional: true},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false, optional: true}
     ]
   end
 
