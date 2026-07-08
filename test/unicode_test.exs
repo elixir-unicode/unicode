@@ -20,4 +20,5 @@ defmodule Unicode.Test do
   doctest Unicode.JoiningType
   doctest Unicode.RangeSearch
   doctest Unicode.Category.QuoteMarks
+  doctest Unicode.Guards
 end

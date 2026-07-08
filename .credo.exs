@@ -16,12 +16,6 @@
 #   naturally-branchy functions carry inline `credo:disable`
 #   annotations with a one-line justification instead of a raised
 #   global limit.
-#
-# * `Readability.LargeNumbers` is excluded for the generated static
-#   range tables (`lib/unicode/category/assigned.ex` and
-#   `lib/unicode/category/graph.ex`). They are regenerated from the
-#   Unicode database each release, so hand-editing 1,100+ literals
-#   would be undone by the next regeneration.
 %{
   configs: [
     %{
@@ -34,15 +28,6 @@
       checks: %{
         disabled: [
           {Credo.Check.Design.AliasUsage, []}
-        ],
-        extra: [
-          {Credo.Check.Readability.LargeNumbers,
-           files: %{
-             excluded: [
-               "lib/unicode/category/assigned.ex",
-               "lib/unicode/category/graph.ex"
-             ]
-           }}
         ]
       }
     }

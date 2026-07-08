@@ -1,24 +1,27 @@
 defmodule Unicode.DerivedCategory.Printable do
   @moduledoc false
 
-  # The definition of `printable` is the same as that applied by
-  # Elixir.
+  # The definition of `printable` matches `String.printable?/1`. A more
+  # Unicode-relevant version would be the derived category `:Graphic:`
+  # (available here as `:Graph`).
   #
-  # A more Unicode relevant version would be the derived category `:Graphic:`.
+  # The set is the printable ASCII range plus the whitespace and escape
+  # control characters Elixir treats as printable, together with the
+  # assignable BMP and supplementary ranges:
   #
-  # iex> {:ok, set} = Unicode.Set.parse "[[\u0020-\u007e][\u0100-\u01FF][\u00A0..\uD7FF][\uE000-\uFFFD][\u{10000}-\u{10FFFF}]\n\r\t\v\b\f\e\d\a]"
-  # iex> expanded = Unicode.Set.Operation.expand set
-  # iex> expanded.parsed
+  # * `0x07..0x0D` (\a \b \t \n \v \f \r) and `0x1B` (\e)
+  # * `0x20..0x7F` (printable ASCII plus \d)
+  # * `0xA0..0xD7FF` (BMP up to the surrogate area)
+  # * `0xE000..0xFFFD` (BMP after the surrogate area)
+  # * `0x10000..0x10FFFF` (supplementary planes)
 
   @printable [
-    {7, 13},
-    {27, 27},
-    {32, 127},
-    {160, 160},
-    {256, 511},
-    {55_295, 55_295},
-    {57_344, 65_533},
-    {65_536, 1_114_111}
+    {0x07, 0x0D},
+    {0x1B, 0x1B},
+    {0x20, 0x7F},
+    {0xA0, 0xD7FF},
+    {0xE000, 0xFFFD},
+    {0x10000, 0x10FFFF}
   ]
 
   @doc false

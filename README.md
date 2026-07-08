@@ -28,9 +28,9 @@ As of [unicode version 1.21.0](https://hex.pm/packages/unicode/1.21.0) published
 
 * [unicode_set](https://github.com/elixir-unicode/unicode_set) implements functions to parse and match on [unicode sets](http://unicode.org/reports/tr35/#Unicode_Sets)
 
-* [unicode_guards](https://github.com/elixir-unicode/unicode_guards) is a simple library implementing common function guards using `unicode_set` and `unicode`
-
 * [unicode_string](https://github.com/elixir-unicode/unicode_string) is a library to implement efficient string splitting into words and sentences based upon the [Unicode Segementation](https://unicode.org/reports/tr29/) algorithm.
+
+As of version 2.0, the common function guards previously provided by the separate `unicode_guards` library are built in as `Unicode.Guards`.
 
 * [unicode_transform](https://github.com/elixir-unicode/unicode_transform) implements the [Unicode transform](https://unicode.org/reports/tr35/tr35-general.html#Transforms) specification.
 
@@ -187,7 +187,7 @@ The package can be installed by adding `unicode` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:unicode, "~> 1.23"}
+    {:unicode, "~> 2.0"}
   ]
 end
 ```

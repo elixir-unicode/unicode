@@ -13,10 +13,8 @@ defmodule Unicode.GeneralCategory.Derived do
 
   * `:assigned` which is the set of codepoints
     that are assigned and is therefore
-    equivalent to `[:any]-[:Cn]`. In fact that is
-    exactly how it is calculated using [unicode_set](https://hex.pm/packages/unicode_set)
-    and the results are copied here so
-    that there is no mutual dependency.
+    equivalent to `[:any]-[:Cn]`. It is computed
+    directly from the general category data.
 
   * `:ascii` which is the range for the US ASCII
     character set of `0x0..0x7f`
@@ -34,8 +32,10 @@ defmodule Unicode.GeneralCategory.Derived do
     a very broad definition of printable characters.
 
   * `:graph` which includes characters from the
-    `[^\\p{space}\\p{gc=Control}\\p{gc=Surrogate}\\p{gc=Unassigned}]`
+    `[^\\p{White_Space}\\p{gc=Control}\\p{gc=Surrogate}\\p{gc=Unassigned}]`
     set defined by [Unicode Regular Expressions](http://unicode.org/reports/tr18/).
+    It is computed directly from the general category and
+    `White_Space` property data.
 
   """
 
@@ -44,10 +44,31 @@ defmodule Unicode.GeneralCategory.Derived do
 
   @ascii_category [{0x0, 0x7F}]
 
+  # The concrete general categories, read directly from the character
+  # database. `GeneralCategory` cannot be used here because it depends on
+  # this module, so the derived categories are computed from `Utils` data.
+  @categories Utils.categories() |> Utils.remove_annotations()
+  @white_space Utils.properties() |> Utils.remove_annotations() |> Map.fetch!(:white_space)
+
+  # Assigned is every codepoint that has a general category other than
+  # `Cn` (Unassigned), i.e. the complement of `Cn`.
+  @assigned Utils.complement_ranges(Map.fetch!(@categories, :Cn))
+
+  # Graph is the assigned characters that are not whitespace, control or
+  # surrogate, matching the Unicode TR18 definition.
+  @graph Utils.difference_ranges(
+           @assigned,
+           Utils.union_ranges([
+             @white_space,
+             Map.fetch!(@categories, :Cc),
+             Map.fetch!(@categories, :Cs)
+           ])
+         )
+
   @derived_categories %{
     Ascii: @ascii_category,
     Any: Unicode.all(),
-    Assigned: Unicode.DerivedCategory.Assigned.assigned(),
+    Assigned: @assigned,
     QuoteMark: QuoteMarks.all_quote_marks() |> Utils.list_to_ranges(),
     QuoteMarkLeft: QuoteMarks.quote_marks_left() |> Utils.list_to_ranges(),
     QuoteMarkRight: QuoteMarks.quote_marks_right() |> Utils.list_to_ranges(),
@@ -55,8 +76,8 @@ defmodule Unicode.GeneralCategory.Derived do
     QuoteMarkSingle: QuoteMarks.quote_marks_single() |> Utils.list_to_ranges(),
     QuoteMarkDouble: QuoteMarks.quote_marks_double() |> Utils.list_to_ranges(),
     Printable: Unicode.DerivedCategory.Printable.printable(),
-    Graph: Unicode.DerivedCategory.Graph.graph(),
-    Visible: Unicode.DerivedCategory.Graph.graph()
+    Graph: @graph,
+    Visible: @graph
   }
 
   @derived_aliases %{

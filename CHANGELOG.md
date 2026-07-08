@@ -1,5 +1,23 @@
 # Changelog
 
+## Unicode v2.0.0
+
+This is a major release that folds the `unicode_guards` library into `unicode` and replaces the hand-maintained derived category tables with values computed directly from the character database.
+
+### Breaking changes
+
+* The `Unicode.Guards` module is now provided by this library. The separate `unicode_guards` package is no longer required; remove it from your dependencies and depend on `unicode` instead.
+
+* The derived general categories `:Assigned`, `:Graph`, `:Visible` and `:Printable` now reflect the current Unicode data. The previous static tables were stale: `:Assigned` gained 15,942 codepoints (283,440 to 299,382), `:Graph`/`:Visible` gained the same 15,942 (281,308 to 297,250), and `:Printable` is corrected to match `String.printable?/1` (it previously excluded most of the BMP, including Arabic, CJK and Hangul).
+
+* The internal `Unicode.DerivedCategory.Assigned` and `Unicode.DerivedCategory.Graph` modules have been removed; these categories are now computed at compile time.
+
+### Enhancements
+
+* Adds `Unicode.Guards`, a set of guards (`is_upper/1`, `is_lower/1`, `is_digit/1`, `is_whitespace/1`, `is_graph/1`, the quotation-mark guards and more) for use in function `when` clauses. Folded in from `unicode_guards` with no runtime dependencies.
+
+* Derived categories are computed from the character database using new range-set helpers (`Unicode.Utils.union_ranges/1`, `complement_ranges/1` and `difference_ranges/2`), removing the need to regenerate static tables by hand each release.
+
 ## Unicode v1.23.0
 
 This is the changelog for Unicode v1.23.0 released on July 8th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

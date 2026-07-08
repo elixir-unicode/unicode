@@ -36,7 +36,9 @@ jobs:
           - otp: "28.3.1"
             elixir: "1.19.5-otp-28"
           - otp: "28.3.1"
-            elixir: "1.20.1-otp-28"
+            elixir: "1.20.2-otp-28"
+          - otp: "29.0.1"
+            elixir: "1.20.2-otp-29"
             lint: true
     steps:
     # Step: Setup Elixir + Erlang image as the base.
@@ -109,6 +111,9 @@ jobs:
       if: ${{ matrix.lint }}
       run: mix test --cover
 
-    # Step: Execute dialyzer.
+    # Step: Execute dialyzer. Runs on the lint entry only; a single
+    # analysis per change is sufficient and avoids rebuilding a PLT for
+    # every toolchain in the matrix.
     - name: Run dialyzer
+      if: ${{ matrix.lint }}
       run: mix dialyzer

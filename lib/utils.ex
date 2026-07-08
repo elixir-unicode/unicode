@@ -631,27 +631,45 @@ defmodule Unicode.Utils do
   end
 
   @doc false
-  def ranges_to_guard_clause([{first, first}]) do
+  # Builds a guard expression that is true when the guard variable
+  # `codepoint` falls within any of the given ranges. The expression is a
+  # *balanced* binary tree of `or` clauses so its nesting depth is O(log n)
+  # rather than O(n). A deep, right-nested linear chain is pathologically
+  # slow for the BEAM to compile as a `defguard` (roughly 3x here) and, past
+  # a few hundred ranges, can exceed the compiler's stack-slot limit; the
+  # balanced tree keeps the nesting shallow.
+  def ranges_to_guard_clause(ranges) do
+    ranges_to_guard_clause(ranges, quote(do: var!(codepoint)))
+  end
+
+  @doc false
+  # As `ranges_to_guard_clause/1` but tests the given `variable` AST
+  # rather than the hygienic `codepoint` variable. Used by macros that
+  # must substitute the caller's own expression into the guard.
+  def ranges_to_guard_clause(ranges, variable) do
+    ranges
+    |> Enum.sort()
+    |> balanced_guard_clause(variable)
+  end
+
+  defp balanced_guard_clause([{first, first}], variable) do
     quote do
-      var!(codepoint) == unquote(first)
+      unquote(variable) == unquote(first)
     end
   end
 
-  def ranges_to_guard_clause([{first, last}]) do
+  defp balanced_guard_clause([{first, last}], variable) do
     quote do
-      var!(codepoint) in unquote(first)..unquote(last)
+      unquote(variable) in unquote(first)..unquote(last)
     end
   end
 
-  def ranges_to_guard_clause([{first, first} | rest]) do
-    quote do
-      var!(codepoint) == unquote(first) or unquote(ranges_to_guard_clause(rest))
-    end
-  end
+  defp balanced_guard_clause(ranges, variable) do
+    {left, right} = Enum.split(ranges, div(length(ranges), 2))
 
-  def ranges_to_guard_clause([{first, last} | rest]) do
     quote do
-      var!(codepoint) in unquote(first)..unquote(last) or unquote(ranges_to_guard_clause(rest))
+      unquote(balanced_guard_clause(left, variable)) or
+        unquote(balanced_guard_clause(right, variable))
     end
   end
 
@@ -705,6 +723,50 @@ defmodule Unicode.Utils do
 
   def compact_ranges([entry | rest]) do
     [entry | compact_ranges(rest)]
+  end
+
+  # The last codepoint of the Unicode codespace, used as the upper bound
+  # when complementing a range list.
+  @codespace_last 0x10FFFF
+
+  @doc """
+  Returns the union of one or more lists of codepoint ranges as a single
+  sorted, compacted range list.
+
+  """
+  def union_ranges(range_lists) do
+    range_lists
+    |> List.flatten()
+    |> Enum.sort()
+    |> compact_ranges()
+  end
+
+  @doc """
+  Returns the complement of a list of codepoint ranges over the Unicode
+  codespace `0..0x10FFFF` — that is, every codepoint that is not covered
+  by the given ranges.
+
+  """
+  def complement_ranges(ranges) do
+    {gaps, next} =
+      ranges
+      |> Enum.sort()
+      |> Enum.reduce({[], 0}, fn {first, last}, {gaps, next} ->
+        gaps = if first > next, do: [{next, first - 1} | gaps], else: gaps
+        {gaps, max(next, last + 1)}
+      end)
+
+    gaps = if next <= @codespace_last, do: [{next, @codespace_last} | gaps], else: gaps
+    Enum.reverse(gaps)
+  end
+
+  @doc """
+  Returns the difference of two lists of codepoint ranges — the codepoints
+  in `ranges` that are not in `subtract`.
+
+  """
+  def difference_ranges(ranges, subtract) do
+    complement_ranges(union_ranges([complement_ranges(ranges), subtract]))
   end
 
   @doc false
