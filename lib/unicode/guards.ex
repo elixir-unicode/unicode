@@ -28,18 +28,17 @@ defmodule Unicode.Guards do
         def character_type(_codepoint), do: :other
       end
 
-  ### Guards and macros
+  ### Implementation
 
-  Most guards are defined with `defguard/1`, so they compile once in this
-  module, are cheap at every call site, and can be composed inside other
-  guards. Their guard expression is built as a balanced tree of comparisons
-  to keep the compiled guard within the BEAM's limits even for the large
-  letter sets (`is_upper/1`, `is_lower/1`).
+  The guards are defined as macros. Each expands, at its call site, to a
+  membership test built as a balanced tree of comparisons over the ranges
+  of its Unicode set. Some sets are large (`is_graph/1` spans ~740 ranges),
+  so prefer using a guard in a single function clause rather than repeating
+  it at many `when` sites, since every use re-expands the membership test.
 
-  The three graphic-set guards (`is_graph/1`, `is_print/1`, `is_visible/1`)
-  each cover ~740 ranges, which exceeds the limit for a compiled `defguard`,
-  so they are defined as macros expanded at each call site. Prefer using
-  each in a single function clause.
+  Because they are macros rather than `defguard/1` definitions, they can be
+  used in any `when` clause but cannot themselves be used to define another
+  `defguard`.
 
   """
 
@@ -65,9 +64,8 @@ defmodule Unicode.Guards do
   # tab, so this reduces to graph ∪ Zs).
   @print Utils.compact_ranges(Enum.sort(GeneralCategory.get(:Graph) ++ GeneralCategory.get(:Zs)))
 
-  # Each guard is a `defguard`, compiled once here rather than at each call
-  # site. Each entry is {guard_name, codepoint_ranges, doc_or_false}. The
-  # large sets (Lu, Ll, Graph, Print) rely on the balanced guard tree built
+  # Each entry is {guard_name, codepoint_ranges, doc_or_false}. The large
+  # sets (Lu, Ll, Graph, Print) rely on the balanced guard tree built
   # by `Unicode.Utils.ranges_to_guard_clause/1` to stay within the BEAM's
   # guard limits.
   @guards [
@@ -266,77 +264,55 @@ defmodule Unicode.Guards do
          iex> match?(codepoint when is_quote_mark_double(codepoint), ?")
          true
 
-     """}
+     """},
+    {:is_graph, @graph,
+     """
+     Guards whether a codepoint is a graphic character.
+
+     Graphic characters are those that are non-space, non-control,
+     non-surrogate and assigned, as modelled by the `:Graph` derived
+     general category.
+
+     ### Examples
+
+         iex> import Unicode.Guards
+         iex> match?(codepoint when is_graph(codepoint), ?A)
+         true
+         iex> match?(codepoint when is_graph(codepoint), ?\\s)
+         false
+
+     """},
+    {:is_print, @print,
+     """
+     Guards whether a codepoint is a printing character.
+
+     Matches the combination of the graphic characters and the space
+     separators, matching the POSIX `[:print:]` class.
+
+     ### Examples
+
+         iex> import Unicode.Guards
+         iex> match?(codepoint when is_print(codepoint), ?A)
+         true
+         iex> match?(codepoint when is_print(codepoint), ?\\s)
+         true
+
+     """},
+    # Retained for compatibility with `unicode_guards`; `is_graph/1` is the
+    # preferred name. Uses the same `:Graph` derived category.
+    {:is_visible, @graph, false}
   ]
 
   for {guard_name, ranges, doc} <- @guards do
+    escaped_ranges = Macro.escape(ranges)
+
     @doc doc
-    defguard unquote(guard_name)(codepoint)
-             when is_integer(codepoint) and
-                    unquote(Utils.ranges_to_guard_clause(ranges))
-  end
+    defmacro unquote(guard_name)(codepoint) do
+      guard = Unicode.Utils.ranges_to_guard_clause(unquote(escaped_ranges), codepoint)
 
-  # `is_graph/1`, `is_print/1` and `is_visible/1` each cover ~740-range
-  # sets. A `defguard` over a set that large exceeds the BEAM's guard
-  # stack-slot limit, so these are defined as macros whose guard expression
-  # is expanded (and compiled) at each call site. Prefer using each in a
-  # single function clause, since every `when` use recompiles the guard.
-
-  @doc """
-  Guards whether a codepoint is a graphic character.
-
-  Graphic characters are those that are non-space, non-control,
-  non-surrogate and assigned, as modelled by the `:Graph` derived
-  general category.
-
-  ### Examples
-
-      iex> import Unicode.Guards
-      iex> match?(codepoint when is_graph(codepoint), ?A)
-      true
-      iex> match?(codepoint when is_graph(codepoint), ?\\s)
-      false
-
-  """
-  defmacro is_graph(codepoint) do
-    guard = Utils.ranges_to_guard_clause(@graph, codepoint)
-
-    quote generated: true do
-      is_integer(unquote(codepoint)) and unquote(guard)
-    end
-  end
-
-  @doc """
-  Guards whether a codepoint is a printing character.
-
-  Matches the combination of the graphic characters and the space
-  separators, matching the POSIX `[:print:]` class.
-
-  ### Examples
-
-      iex> import Unicode.Guards
-      iex> match?(codepoint when is_print(codepoint), ?A)
-      true
-      iex> match?(codepoint when is_print(codepoint), ?\\s)
-      true
-
-  """
-  defmacro is_print(codepoint) do
-    guard = Utils.ranges_to_guard_clause(@print, codepoint)
-
-    quote generated: true do
-      is_integer(unquote(codepoint)) and unquote(guard)
-    end
-  end
-
-  @doc false
-  # Retained for compatibility with `unicode_guards`; `is_graph/1` is the
-  # preferred name. Uses the same `:Graph` derived category.
-  defmacro is_visible(codepoint) do
-    guard = Utils.ranges_to_guard_clause(@graph, codepoint)
-
-    quote generated: true do
-      is_integer(unquote(codepoint)) and unquote(guard)
+      quote generated: true do
+        is_integer(unquote(codepoint)) and unquote(guard)
+      end
     end
   end
 end

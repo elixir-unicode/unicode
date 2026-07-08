@@ -28,6 +28,8 @@ jobs:
         include:
           # minimum required versions
           - otp: "27.2.4"
+            elixir: "1.17.3-otp-27"
+          - otp: "27.2.4"
             elixir: "1.18.4-otp-27"
           - otp: "28.3.1"
             elixir: "1.18.4-otp-28"

@@ -136,15 +136,14 @@ defmodule Unicode.Guards.Test do
   end
 
   describe "guard composition and non-integer input" do
-    # Small-set guards are real defguards, so they compose in another guard.
-    # (Composing the large letter guards would exceed the BEAM guard limit.)
-    defguardp is_space_or_digit(codepoint)
-              when is_digit(codepoint) or is_whitespace(codepoint)
+    # The guards are macros, so several can be combined in one `when` clause.
+    defp space_or_digit?(codepoint) when is_digit(codepoint) or is_whitespace(codepoint), do: true
+    defp space_or_digit?(_), do: false
 
-    test "small defguards compose inside another defguard" do
-      assert match?(codepoint when is_space_or_digit(codepoint), ?5)
-      assert match?(codepoint when is_space_or_digit(codepoint), ?\s)
-      refute match?(codepoint when is_space_or_digit(codepoint), ?A)
+    test "guards combine within a single function guard" do
+      assert space_or_digit?(?5)
+      assert space_or_digit?(?\s)
+      refute space_or_digit?(?A)
     end
 
     test "guards reject non-integer input via is_integer/1" do
