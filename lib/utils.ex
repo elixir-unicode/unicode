@@ -454,6 +454,21 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {k, v} ->
       {k, Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
     end)
+    # TODO: These UCD enumerated properties appear in PropertyAliases but have no
+    # backing data module, so `ensure_compiled?/1` drops them below and they
+    # cannot be resolved via `Unicode.fetch_property/1`. Adding a data module for
+    # each (named `Unicode.<CamelCasedProperty>`) makes it resolve automatically:
+    #
+    #   * Script_Extensions (scx)  - UTS18 RL1.2 conformance MUST; needs set-of-scripts semantics
+    #   * Age (age)
+    #   * Numeric_Value (nv) and Numeric_Type (nt)
+    #   * Joining_Group (jg)
+    #   * Decomposition_Type (dt)
+    #   * Hangul_Syllable_Type (hst)
+    #   * Bidi_Paired_Bracket_Type (bpt)
+    #   * Indic_Positional_Category (InPC)
+    #   * Vertical_Orientation (vo)
+    #   * the *_Quick_Check properties (NFC_QC, NFD_QC, NFKC_QC, NFKD_QC)
     |> Enum.filter(fn {_k, v} -> ensure_compiled?(v) end)
     |> Map.new()
     |> Map.merge(@indic_conjunct_break_server)

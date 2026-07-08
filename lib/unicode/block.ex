@@ -54,12 +54,24 @@ defmodule Unicode.Block do
     @known_blocks
   end
 
+  # The PropertyValueAliases short/long names do not always normalise to the
+  # same string as the Blocks.txt-derived key (e.g. `:latin_1_supplement`
+  # normalises to "latin1supplement", which no PropertyValueAliases entry
+  # produces). Merge a self-alias `normalise(key) => key` for every block so the
+  # canonical block name always resolves regardless of digits, spaces, hyphens
+  # or underscores.
+  @block_canonical_alias Map.new(
+                           Map.keys(@blocks),
+                           &{Utils.downcase_and_remove_whitespace(&1), &1}
+                         )
+
   @block_alias Utils.property_value_alias()
                |> Map.get("blk")
                |> Utils.invert_map()
                |> Utils.atomize_values()
                |> Utils.downcase_keys_and_remove_whitespace()
                |> Utils.add_canonical_alias()
+               |> Map.merge(@block_canonical_alias)
 
   @doc """
   Returns a map of aliases for Unicode blocks.
