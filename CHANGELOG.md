@@ -2,6 +2,8 @@
 
 ## Unicode v2.0.0
 
+This is the changelog for Unicode v2.0.0 released on July 9th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
 This is a major release that folds the `unicode_guards` library into `unicode` and replaces the hand-maintained derived category tables with values computed directly from the character database.
 
 ### Breaking changes
@@ -14,13 +16,17 @@ This is a major release that folds the `unicode_guards` library into `unicode` a
 
 ### Enhancements
 
+* Codepoint lookup functions such as `Unicode.GeneralCategory.category/1`, `Unicode.Script.script/1` and the `Unicode.Property` boolean functions are now implemented with binary search over compact range tables instead of very large generated guard clauses. Compilation is an order of magnitude faster and codepoint lookups are approximately 10x faster.
+
+* Adds `Unicode.RangeSearch` which builds the range search tables at compile time and performs the binary search over them.
+
+* Documentation for all public modules and functions now follows a standard format with arguments, return values and examples.
+
+* Removes the unused and incorrect `Unicode.Utils.remove_reserved_codepoints/1`.
+
 * Adds `Unicode.Guards`, a set of guards (`is_upper/1`, `is_lower/1`, `is_digit/1`, `is_whitespace/1`, `is_graph/1`, the quotation-mark guards and more) for use in function `when` clauses. Folded in from `unicode_guards` with no runtime dependencies.
 
 * Derived categories are computed from the character database using new range-set helpers (`Unicode.Utils.union_ranges/1`, `complement_ranges/1` and `difference_ranges/2`), removing the need to regenerate static tables by hand each release.
-
-## Unicode v1.23.0
-
-This is the changelog for Unicode v1.23.0 released on July 8th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
 
 ### Bug Fixes
 
@@ -34,15 +40,7 @@ This is the changelog for Unicode v1.23.0 released on July 8th, 2026.  For older
 
 * Fix `Unicode.Emoji.emoji/1` returning `nil` for single-codepoint emoji graphemes in a string.
 
-### Enhancements
-
-* Codepoint lookup functions such as `Unicode.GeneralCategory.category/1`, `Unicode.Script.script/1` and the `Unicode.Property` boolean functions are now implemented with binary search over compact range tables instead of very large generated guard clauses. Compilation is an order of magnitude faster and codepoint lookups are approximately 10x faster.
-
-* Adds `Unicode.RangeSearch` which builds the range search tables at compile time and performs the binary search over them.
-
-* Documentation for all public modules and functions now follows a standard format with arguments, return values and examples.
-
-* Removes the unused and incorrect `Unicode.Utils.remove_reserved_codepoints/1`.
+* Fix `Unicode.Block.fetch/1` and `Unicode.Block.get/1` for block names containing digits, such as `"Latin-1 Supplement"` and `"Number Forms"`, which previously returned `:error`/`nil` for every spelling of the canonical name because no alias mapped the normalised name to the block key.
 
 ## Unicode v1.22.0
 
