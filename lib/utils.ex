@@ -517,16 +517,29 @@ defmodule Unicode.Utils do
     end)
   end
 
+  # Number of names per front-coded block. Every `@name_block_size`-th name is
+  # stored in full (a "restart point") and is what the binary search compares
+  # against; the rest are prefix-compressed relative to the previous name.
+  @name_block_size 16
+
   @doc """
-  Returns the character-name lookup table as `{name_blob, offsets}`.
+  Returns the front-coded character-name lookup table as `{blob, restarts}`.
 
   Character names are normalized with `downcase_and_remove_whitespace/1` (so
-  lookups are case/whitespace/`_`/`-` insensitive), sorted, and concatenated into
-  a single `name_blob` binary. `offsets` is a fixed-width index of
-  `<<start_offset::24, codepoint::24>>` records, sorted to match `name_blob`, with
-  a trailing sentinel whose offset is `byte_size(name_blob)`. This lets a caller
-  binary-search the names without materialising a large map (see
-  `Unicode.CharacterName`).
+  lookups are case/whitespace/`_`/`-` insensitive), sorted, de-duplicated, and
+  written into a single `blob` binary using block-based front coding: the sorted
+  names are grouped into blocks of #{@name_block_size}, the first name of each
+  block is stored in full, and every following name is stored as the length of
+  the prefix it shares with the previous name plus the remaining suffix. `blob`
+  records are:
+
+    * restart (first in a block): `<<name_length, name, codepoint::24>>`
+    * other: `<<shared_prefix_length, suffix_length, suffix, codepoint::24>>`
+
+  `restarts` is a fixed-width `<<blob_offset::32>>` index, one per block, so a
+  caller can binary-search the restart names and then scan-decode within a single
+  block (see `Unicode.CharacterName`). Front coding roughly halves the table
+  because sorted Unicode names share long prefixes (`LATIN SMALL LETTER ...`).
 
   Entries whose name field is a bracketed label (`<control>`, `<CJK Ideograph,
   First>` and similar algorithmically-named ranges) are omitted, since those are
@@ -547,15 +560,31 @@ defmodule Unicode.Utils do
       |> Enum.sort()
       |> Enum.dedup_by(&elem(&1, 0))
 
-    {name_iodata, offset_iodata, size} =
-      Enum.reduce(entries, {[], [], 0}, fn {name, codepoint}, {names, offsets, offset} ->
-        {[names, name], [offsets, <<offset::24, codepoint::24>>], offset + byte_size(name)}
+    {blob_iodata, restart_iodata, _previous, _offset, count} =
+      Enum.reduce(entries, {[], [], "", 0, 0}, fn
+        {name, codepoint}, {blob, restarts, _previous, offset, index}
+        when rem(index, @name_block_size) == 0 ->
+          record = <<byte_size(name)::8, name::binary, codepoint::24>>
+
+          {[blob, record], [restarts, <<offset::32>>], name, offset + byte_size(record),
+           index + 1}
+
+        {name, codepoint}, {blob, restarts, previous, offset, index} ->
+          shared = common_prefix_length(previous, name)
+          suffix = binary_part(name, shared, byte_size(name) - shared)
+          record = <<shared::8, byte_size(suffix)::8, suffix::binary, codepoint::24>>
+          {[blob, record], restarts, name, offset + byte_size(record), index + 1}
       end)
 
-    name_blob = IO.iodata_to_binary(name_iodata)
-    offsets = IO.iodata_to_binary([offset_iodata, <<size::24, 0::24>>])
-    {name_blob, offsets}
+    {IO.iodata_to_binary(blob_iodata), IO.iodata_to_binary(restart_iodata), count}
   end
+
+  defp common_prefix_length(first, second), do: common_prefix_length(first, second, 0)
+
+  defp common_prefix_length(<<char, first::binary>>, <<char, second::binary>>, length),
+    do: common_prefix_length(first, second, length + 1)
+
+  defp common_prefix_length(_first, _second, length), do: length
 
   @doc false
   def parse_file(path) do

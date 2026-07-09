@@ -8,24 +8,24 @@ defmodule Unicode.CharacterName do
   label such as `<control>`, or an algorithmically-named range (CJK ideographs,
   Hangul syllables), are not included.
 
-  The names are stored as a single sorted binary blob plus a fixed-width offset
-  index, and looked up with a binary search, so the table is compact (roughly
-  1.2MB) and no large map is materialised.
+  The names are prefix-compressed (front-coded) into a single sorted binary blob
+  with block restart points, and looked up with a binary search over the restart
+  names followed by a scan-decode within one block. This keeps the table compact
+  (about 0.4MB resident at runtime, versus roughly 1.2MB uncompressed) without
+  materialising a large map.
 
   """
 
   alias Unicode.Utils
 
-  # `@table` is only used to define the two binaries below, so it is not itself
-  # embedded in the compiled module. `@name_blob` and `@offsets` are the only
-  # literals that end up in the BEAM.
-  @table Utils.character_name_table()
-  @name_blob elem(@table, 0)
-  @offsets elem(@table, 1)
-
-  # Each `@offsets` record is 6 bytes; the last is a sentinel, so the number of
-  # names is `byte_size(@offsets) / 6 - 1`.
-  @count div(byte_size(@offsets), 6) - 1
+  # Bind the table to compile-time local variables rather than an intermediate
+  # module attribute, so only `@blob`/`@restarts` (each referenced once in the
+  # functions below) end up in the compiled module, not a duplicate tuple.
+  {blob, restarts, count} = Utils.character_name_table()
+  @blob blob
+  @restarts restarts
+  @count count
+  @block_count div(byte_size(restarts), 4)
 
   @doc """
   Returns the codepoint for a Unicode character name.
@@ -54,7 +54,9 @@ defmodule Unicode.CharacterName do
   """
   @spec to_codepoint(String.t()) :: {:ok, pos_integer()} | :error
   def to_codepoint(name) when is_binary(name) do
-    search(Utils.downcase_and_remove_whitespace(name), 0, @count - 1)
+    normalized = Utils.downcase_and_remove_whitespace(name)
+    block = find_block(normalized, 0, @block_count - 1)
+    scan_block(normalized, block)
   end
 
   @doc """
@@ -64,24 +66,62 @@ defmodule Unicode.CharacterName do
   @spec count() :: non_neg_integer()
   def count, do: @count
 
-  defp search(_name, low, high) when low > high do
-    :error
-  end
+  # Binary search for the last block whose first (restart) name is `<=` the
+  # query. The upper-biased midpoint guarantees termination.
+  defp find_block(_name, low, low), do: low
 
-  defp search(name, low, high) do
-    middle = div(low + high, 2)
-    {middle_name, codepoint} = entry(middle)
+  defp find_block(name, low, high) do
+    middle = div(low + high + 1, 2)
 
-    cond do
-      name == middle_name -> {:ok, codepoint}
-      name < middle_name -> search(name, low, middle - 1)
-      true -> search(name, middle + 1, high)
+    if block_first_name(middle) <= name do
+      find_block(name, middle, high)
+    else
+      find_block(name, low, middle - 1)
     end
   end
 
-  defp entry(index) do
-    <<offset::24, codepoint::24>> = binary_part(@offsets, index * 6, 6)
-    <<next_offset::24, _::24>> = binary_part(@offsets, (index + 1) * 6, 6)
-    {binary_part(@name_blob, offset, next_offset - offset), codepoint}
+  defp restart_offset(block) do
+    <<offset::32>> = binary_part(@restarts, block * 4, 4)
+    offset
+  end
+
+  defp block_first_name(block) do
+    offset = restart_offset(block)
+    <<name_length>> = binary_part(@blob, offset, 1)
+    binary_part(@blob, offset + 1, name_length)
+  end
+
+  # Decode the block's restart name in full, then scan its front-coded entries.
+  defp scan_block(query, block) do
+    offset = restart_offset(block)
+
+    block_end =
+      if block + 1 < @block_count, do: restart_offset(block + 1), else: byte_size(@blob)
+
+    <<name_length, name::binary-size(name_length), codepoint::24, rest::binary>> =
+      binary_part(@blob, offset, block_end - offset)
+
+    scan(query, name, codepoint, rest)
+  end
+
+  defp scan(query, name, codepoint, rest) do
+    cond do
+      query == name ->
+        {:ok, codepoint}
+
+      # Names are sorted, so once we pass the query it cannot be present.
+      query < name ->
+        :error
+
+      rest == <<>> ->
+        :error
+
+      true ->
+        <<shared, suffix_length, suffix::binary-size(suffix_length), codepoint::24,
+          next_rest::binary>> = rest
+
+        next_name = binary_part(name, 0, shared) <> suffix
+        scan(query, next_name, codepoint, next_rest)
+    end
   end
 end
