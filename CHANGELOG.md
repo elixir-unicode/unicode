@@ -16,7 +16,7 @@ This is a major release that folds the `unicode_guards` library into `unicode` a
 
 ### Enhancements
 
-* Adds `Unicode.CharacterName.to_codepoint/1`, which resolves a Unicode character name to its codepoint with loose matching. The name table is stored as a sorted binary blob with a binary search, so it is compact and only loaded when first used.
+* Adds `Unicode.CharacterName.to_codepoint/1`, which resolves a Unicode character name to its codepoint with loose matching. The name table is stored as a sorted binary blob with a binary search to keep it compact.
 
 * Codepoint lookup functions such as `Unicode.GeneralCategory.category/1`, `Unicode.Script.script/1` and the `Unicode.Property` boolean functions are now implemented with binary search over compact range tables instead of very large generated guard clauses. Compilation is an order of magnitude faster and codepoint lookups are approximately 10x faster.
 

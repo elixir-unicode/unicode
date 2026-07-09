@@ -9,8 +9,8 @@ defmodule Unicode.CharacterName do
   Hangul syllables), are not included.
 
   The names are stored as a single sorted binary blob plus a fixed-width offset
-  index, and looked up with a binary search, so the table is compact and no large
-  map is materialised. This module is only loaded when a name is first resolved.
+  index, and looked up with a binary search, so the table is compact (roughly
+  1.2MB) and no large map is materialised.
 
   """
 
