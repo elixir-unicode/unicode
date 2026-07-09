@@ -517,6 +517,46 @@ defmodule Unicode.Utils do
     end)
   end
 
+  @doc """
+  Returns the character-name lookup table as `{name_blob, offsets}`.
+
+  Character names are normalized with `downcase_and_remove_whitespace/1` (so
+  lookups are case/whitespace/`_`/`-` insensitive), sorted, and concatenated into
+  a single `name_blob` binary. `offsets` is a fixed-width index of
+  `<<start_offset::24, codepoint::24>>` records, sorted to match `name_blob`, with
+  a trailing sentinel whose offset is `byte_size(name_blob)`. This lets a caller
+  binary-search the names without materialising a large map (see
+  `Unicode.CharacterName`).
+
+  Entries whose name field is a bracketed label (`<control>`, `<CJK Ideograph,
+  First>` and similar algorithmically-named ranges) are omitted, since those are
+  not usable character names.
+
+  """
+  def character_name_table do
+    entries =
+      @unicode_data_path
+      |> parse_unicode_data()
+      |> Enum.flat_map(fn
+        {_codepoint, ["<" <> _label | _rest]} ->
+          []
+
+        {codepoint, [name | _rest]} ->
+          [{downcase_and_remove_whitespace(name), String.to_integer(codepoint, 16)}]
+      end)
+      |> Enum.sort()
+      |> Enum.dedup_by(&elem(&1, 0))
+
+    {name_iodata, offset_iodata, size} =
+      Enum.reduce(entries, {[], [], 0}, fn {name, codepoint}, {names, offsets, offset} ->
+        {[names, name], [offsets, <<offset::24, codepoint::24>>], offset + byte_size(name)}
+      end)
+
+    name_blob = IO.iodata_to_binary(name_iodata)
+    offsets = IO.iodata_to_binary([offset_iodata, <<size::24, 0::24>>])
+    {name_blob, offsets}
+  end
+
   @doc false
   def parse_file(path) do
     Enum.reduce(File.stream!(path), %{}, &parse_line/2)
