@@ -454,7 +454,7 @@ defmodule Unicode.Utils do
     |> Enum.map(fn {k, v} ->
       {k, Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
     end)
-    # TODO: These UCD enumerated properties appear in PropertyAliases but have no
+    # Note: These UCD enumerated properties appear in PropertyAliases but have no
     # backing data module, so `ensure_compiled?/1` drops them below and they
     # cannot be resolved via `Unicode.fetch_property/1`. Adding a data module for
     # each (named `Unicode.<CamelCasedProperty>`) makes it resolve automatically:
