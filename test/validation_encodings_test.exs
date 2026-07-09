@@ -175,5 +175,46 @@ defmodule Unicode.Validation.Encodings.Test do
         assert result == "�"
       end
     end
+
+    test "replaces a three byte sequence truncated mid-stream" do
+      # 0xE0 0xA0 are the first two bytes of a three byte sequence; the
+      # following "X" is not a continuation byte so the sequence is invalid.
+      assert Unicode.Validation.UTF8.replace_invalid(<<0xE0, 0xA0, "X">>) == "�X"
+    end
+
+    test "replaces a four byte sequence truncated after two bytes mid-stream" do
+      assert Unicode.Validation.UTF8.replace_invalid(<<0xF0, 0x90, "X">>) == "�X"
+    end
+
+    test "replaces a four byte sequence truncated after three bytes mid-stream" do
+      assert Unicode.Validation.UTF8.replace_invalid(<<0xF0, 0x90, 0x80, "X">>) == "�X"
+    end
+  end
+
+  describe "invalid full code units in little-endian encodings" do
+    test "utf16le replaces an unpaired surrogate code unit" do
+      # High surrogate U+D800 encoded little-endian; not a valid scalar value.
+      unpaired = <<0x00, 0xD8>>
+      replacement = :unicode.characters_to_binary("�", :utf8, {:utf16, :little})
+
+      assert Unicode.Validation.UTF16LE.replace_invalid(unpaired) == replacement
+    end
+
+    test "utf16le replaces an invalid code unit but keeps a following valid one" do
+      unpaired = <<0x00, 0xD8>>
+      valid = :unicode.characters_to_binary("a", :utf8, {:utf16, :little})
+      replacement = :unicode.characters_to_binary("�", :utf8, {:utf16, :little})
+
+      assert Unicode.Validation.UTF16LE.replace_invalid(<<unpaired::binary, valid::binary>>) ==
+               <<replacement::binary, valid::binary>>
+    end
+
+    test "utf32le replaces an out of range code unit" do
+      # U+110000 (out of range) encoded little-endian.
+      invalid = <<0x00, 0x00, 0x11, 0x00>>
+      replacement = :unicode.characters_to_binary("�", :utf8, {:utf32, :little})
+
+      assert Unicode.Validation.UTF32LE.replace_invalid(invalid) == replacement
+    end
   end
 end

@@ -36,6 +36,31 @@ defmodule Unicode.UtilsMore.Test do
       assert is_map(Utils.sentence_breaks())
       assert is_map(Utils.east_asian_width())
       assert is_map(Utils.indic_syllabic_categories())
+      assert is_map(Utils.indic_positional_categories())
+      assert is_map(Utils.ages())
+      assert is_map(Utils.numeric_types())
+      assert is_map(Utils.numeric_values())
+      assert is_map(Utils.decomposition_types())
+      assert is_map(Utils.hangul_syllable_types())
+      assert is_map(Utils.vertical_orientations())
+      assert is_map(Utils.joining_groups())
+      assert is_map(Utils.bidi_paired_bracket_types())
+    end
+
+    test "numeric_values/0 parses integers and fractions" do
+      values = Utils.numeric_values()
+
+      assert Map.has_key?(values, 7)
+      assert Map.has_key?(values, {1, 2})
+    end
+
+    test "value_aliases/2 maps alias tokens to known values" do
+      aliases = Utils.value_aliases("nt", [:decimal, :digit, :numeric])
+
+      assert aliases["de"] == :decimal
+      assert aliases["decimal"] == :decimal
+      # A line whose value is not present in the data (None) is skipped.
+      refute Map.has_key?(aliases, "none")
     end
 
     test "property_alias/0 and property_value_alias/0 parse to maps" do

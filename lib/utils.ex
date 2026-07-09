@@ -415,6 +415,264 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the Unicode codepoints with the `indic_positional_category`
+  name as the key and a list of codepoint ranges as the values.
+  """
+  @indic_positional_category_path Path.join(Unicode.data_dir(), "indic_positional_category.txt")
+  @external_resource @indic_positional_category_path
+  def indic_positional_categories do
+    parse_file(@indic_positional_category_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `age` (the version in which
+  the codepoint was first assigned) as the key and a list of codepoint ranges as
+  the values.
+  """
+  @derived_age_path Path.join(Unicode.data_dir(), "derived_age.txt")
+  @external_resource @derived_age_path
+  def ages do
+    parse_file(@derived_age_path)
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `numeric_type` name as the
+  key and a list of codepoint ranges as the values.
+  """
+  @numeric_type_path Path.join(Unicode.data_dir(), "numeric_type.txt")
+  @external_resource @numeric_type_path
+  def numeric_types do
+    parse_file(@numeric_type_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `decomposition_type` name as
+  the key and a list of codepoint ranges as the values.
+  """
+  @decomposition_type_path Path.join(Unicode.data_dir(), "decomposition_type.txt")
+  @external_resource @decomposition_type_path
+  def decomposition_types do
+    parse_file(@decomposition_type_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `hangul_syllable_type` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @hangul_syllable_type_path Path.join(Unicode.data_dir(), "hangul_syllable_type.txt")
+  @external_resource @hangul_syllable_type_path
+  def hangul_syllable_types do
+    parse_file(@hangul_syllable_type_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `vertical_orientation` name
+  as the key and a list of codepoint ranges as the values.
+  """
+  @vertical_orientation_path Path.join(Unicode.data_dir(), "vertical_orientation.txt")
+  @external_resource @vertical_orientation_path
+  def vertical_orientations do
+    parse_file(@vertical_orientation_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `joining_group` name as the
+  key and a list of codepoint ranges as the values.
+
+  The data is derived from `ArabicShaping.txt`, taking the fourth (joining group)
+  field of each entry.
+  """
+  @arabic_shaping_path Path.join(Unicode.data_dir(), "arabic_shaping.txt")
+  @external_resource @arabic_shaping_path
+  def joining_groups do
+    @arabic_shaping_path
+    |> File.stream!()
+    |> Enum.reduce(%{}, fn line, map ->
+      case String.trim(line) do
+        "#" <> _rest ->
+          map
+
+        "" ->
+          map
+
+        data ->
+          [codepoint, _name, _joining_type, joining_group] =
+            data |> String.split(";") |> Enum.map(&String.trim/1)
+
+          codepoint = String.to_integer(codepoint, 16)
+          group = joining_group |> String.downcase() |> String.to_atom()
+          Map.update(map, group, [{codepoint, codepoint}], &[{codepoint, codepoint} | &1])
+      end
+    end)
+    |> Enum.map(fn {group, ranges} -> {group, ranges |> Enum.reverse() |> compact_ranges()} end)
+    |> Map.new()
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `numeric_value` as the key and
+  a list of codepoint ranges as the values.
+
+  The value is an integer for whole numbers or a `{numerator, denominator}` tuple
+  for fractions. The data is derived from the fourth (exact value) field of
+  `DerivedNumericValues.txt`.
+  """
+  @numeric_values_path Path.join(Unicode.data_dir(), "numeric_values.txt")
+  @external_resource @numeric_values_path
+  def numeric_values do
+    @numeric_values_path
+    |> File.stream!()
+    |> Enum.reduce(%{}, fn line, map ->
+      case String.trim(line) do
+        "#" <> _rest ->
+          map
+
+        "" ->
+          map
+
+        data ->
+          [range, _representation, _blank, value] =
+            data
+            |> String.replace(~r/ *#.*/, "")
+            |> String.split(";")
+            |> Enum.map(&String.trim/1)
+
+          [first, last] = extract_codepoint_range(String.split(range, ".."))
+          value = parse_numeric_value(value)
+          Map.update(map, value, [{first, last}], &[{first, last} | &1])
+      end
+    end)
+    |> Enum.map(fn {value, ranges} -> {value, ranges |> Enum.reverse() |> compact_ranges()} end)
+    |> Map.new()
+  end
+
+  defp parse_numeric_value(value) do
+    case String.split(value, "/") do
+      [numerator, denominator] ->
+        {String.to_integer(numerator), String.to_integer(denominator)}
+
+      [integer] ->
+        String.to_integer(integer)
+    end
+  end
+
+  @doc """
+  Returns a map of the Unicode codepoints with the `bidi_paired_bracket_type`
+  name (`:open` or `:close`) as the key and a list of codepoint ranges as the
+  values.
+
+  The data is derived from `BidiBrackets.txt`.
+  """
+  @bidi_brackets_path Path.join(Unicode.data_dir(), "bidi_brackets.txt")
+  @external_resource @bidi_brackets_path
+  def bidi_paired_bracket_types do
+    @bidi_brackets_path
+    |> File.stream!()
+    |> Enum.flat_map(&parse_bidi_bracket_line/1)
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+    |> Map.new(fn {type, ranges} -> {type, compact_ranges(Enum.sort(ranges))} end)
+  end
+
+  defp parse_bidi_bracket_line(line) do
+    case strip_comment(line) do
+      "" ->
+        []
+
+      data ->
+        [codepoint, _paired, type] = data |> String.split(";") |> Enum.map(&String.trim/1)
+        codepoint = String.to_integer(codepoint, 16)
+        [{bracket_type(type), {codepoint, codepoint}}]
+    end
+  end
+
+  defp bracket_type("o"), do: :open
+  defp bracket_type("c"), do: :close
+
+  @doc """
+  Returns a map of the four normalization `Quick_Check` properties.
+
+  The result is keyed by property name (`:nfc_qc`, `:nfd_qc`, `:nfkc_qc` and
+  `:nfkd_qc`); each value is a map from the quick check value (`:no` or `:maybe`)
+  to a list of codepoint ranges. Codepoints not listed have the default value
+  `:yes`. The data is derived from `DerivedNormalizationProps.txt`.
+  """
+  @normalization_props_path Path.join(Unicode.data_dir(), "normalization_props.txt")
+  @external_resource @normalization_props_path
+  def quick_check_properties do
+    @normalization_props_path
+    |> File.stream!()
+    |> Enum.flat_map(&parse_quick_check_line/1)
+    |> Enum.group_by(fn {property, _value, _range} -> property end, fn {_property, value, range} ->
+      {value, range}
+    end)
+    |> Map.new(fn {property, pairs} -> {property, group_quick_check_ranges(pairs)} end)
+  end
+
+  defp parse_quick_check_line(line) do
+    with data when data != "" <- strip_comment(line),
+         [range, property, value] <- data |> String.split(";") |> Enum.map(&String.trim/1),
+         true <- String.ends_with?(property, "_QC") do
+      property = property |> String.downcase() |> String.to_atom()
+      [first, last] = extract_codepoint_range(String.split(range, ".."))
+      [{property, quick_check_value(value), {first, last}}]
+    else
+      _other -> []
+    end
+  end
+
+  defp quick_check_value("M"), do: :maybe
+  defp quick_check_value(_no), do: :no
+
+  defp group_quick_check_ranges(pairs) do
+    pairs
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+    |> Map.new(fn {value, ranges} -> {value, compact_ranges(Enum.sort(ranges))} end)
+  end
+
+  @doc """
+  Returns a map with the single key `:bidi_mirrored` and a list of codepoint
+  ranges as its value.
+
+  A codepoint is `Bidi_Mirrored` when the tenth field of its `UnicodeData.txt`
+  entry is `Y`. The shape matches the boolean property maps so it can be merged
+  into `Unicode.Property`.
+  """
+  def bidi_mirrored do
+    ranges =
+      @unicode_data_path
+      |> parse_unicode_data()
+      |> Enum.flat_map(fn {codepoint, fields} ->
+        if Enum.at(fields, 8) == "Y" do
+          point = String.to_integer(codepoint, 16)
+          [{point, point}]
+        else
+          []
+        end
+      end)
+      |> Enum.sort()
+      |> compact_ranges()
+
+    %{bidi_mirrored: ranges}
+  end
+
+  defp strip_comment(line) do
+    case String.trim(line) do
+      "#" <> _rest -> ""
+      trimmed -> trimmed |> String.replace(~r/ *#.*/, "") |> String.trim()
+    end
+  end
+
+  @doc """
   Returns a map of the property value aliases.
   """
   @property_alias_path Path.join(Unicode.data_dir(), "property_alias.txt")
@@ -441,6 +699,14 @@ defmodule Unicode.Utils do
     "incb" => Unicode.IndicConjunctBreak,
     "indicconjunctbreak" => Unicode.IndicConjunctBreak
   }
+
+  # The `Name` property is served by `Unicode.CharacterName`, whose module name
+  # does not follow the `Unicode.<CamelCasedProperty>` convention, so it is wired
+  # explicitly rather than derived from the property alias.
+  @character_name_server %{
+    "name" => Unicode.CharacterName,
+    "na" => Unicode.CharacterName
+  }
   @doc """
   Returns a mapping of property names and
   aliases to the module that serves that
@@ -452,7 +718,11 @@ defmodule Unicode.Utils do
     |> atomize_values
     |> add_canonical_alias()
     |> Enum.map(fn {k, v} ->
-      {k, Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
+      # Normalize the alias key the same way `Unicode.fetch_property/1` normalizes
+      # its lookup, so aliases containing underscores (for example `nfc_qc`) are
+      # reachable and not just their whitespace-stripped canonical form.
+      {downcase_and_remove_whitespace(k),
+       Module.concat(Unicode, Macro.camelize(Atom.to_string(v)))}
     end)
     # Note: These UCD enumerated properties appear in PropertyAliases but have no
     # backing data module, so `ensure_compiled?/1` drops them below and they
@@ -460,18 +730,14 @@ defmodule Unicode.Utils do
     # each (named `Unicode.<CamelCasedProperty>`) makes it resolve automatically:
     #
     #   * Script_Extensions (scx)  - UTS18 RL1.2 conformance MUST; needs set-of-scripts semantics
-    #   * Age (age)
-    #   * Numeric_Value (nv) and Numeric_Type (nt)
-    #   * Joining_Group (jg)
-    #   * Decomposition_Type (dt)
-    #   * Hangul_Syllable_Type (hst)
-    #   * Bidi_Paired_Bracket_Type (bpt)
-    #   * Indic_Positional_Category (InPC)
-    #   * Vertical_Orientation (vo)
-    #   * the *_Quick_Check properties (NFC_QC, NFD_QC, NFKC_QC, NFKD_QC)
+    #
+    # Age, Numeric_Type, Numeric_Value, Joining_Group, Decomposition_Type,
+    # Hangul_Syllable_Type, Bidi_Paired_Bracket_Type, Indic_Positional_Category
+    # and Vertical_Orientation now have backing modules and resolve here.
     |> Enum.filter(fn {_k, v} -> ensure_compiled?(v) end)
     |> Map.new()
     |> Map.merge(@indic_conjunct_break_server)
+    |> Map.merge(@character_name_server)
   end
 
   @doc """
@@ -671,6 +937,42 @@ defmodule Unicode.Utils do
             |> Enum.map(fn n -> String.trim(n) |> String.downcase() end)
             | acc
           ]
+      end
+    end)
+  end
+
+  @doc """
+  Builds the value-alias map for an enumerated property.
+
+  `category` is the lowercased property-value-alias category code (for example
+  `"nt"` for Numeric_Type). `known_values` is the list of canonical value atoms
+  actually present in the property data (the keys of the value-table map).
+
+  Every alias token on the same `PropertyValueAliases` line as a known value is
+  mapped, in normalized (downcased, whitespace/`_`/`-` removed) form, to that
+  known value. Lines whose values are not present in the data (for example a
+  default value that never appears explicitly) are skipped.
+
+  """
+  def value_aliases(category, known_values) do
+    known = MapSet.new(known_values)
+
+    property_value_alias()
+    |> Map.get(category, %{})
+    |> Enum.reduce(%{}, fn {token_a, token_b}, aliases ->
+      canonical =
+        cond do
+          MapSet.member?(known, maybe_atomize(token_a)) -> maybe_atomize(token_a)
+          MapSet.member?(known, maybe_atomize(token_b)) -> maybe_atomize(token_b)
+          true -> nil
+        end
+
+      if canonical do
+        aliases
+        |> Map.put(downcase_and_remove_whitespace(token_a), canonical)
+        |> Map.put(downcase_and_remove_whitespace(token_b), canonical)
+      else
+        aliases
       end
     end)
   end

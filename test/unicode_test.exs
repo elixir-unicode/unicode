@@ -18,6 +18,19 @@ defmodule Unicode.Test do
   doctest Unicode.BidiClass
   doctest Unicode.EastAsianWidth
   doctest Unicode.JoiningType
+  doctest Unicode.Age
+  doctest Unicode.NumericType
+  doctest Unicode.DecompositionType
+  doctest Unicode.HangulSyllableType
+  doctest Unicode.IndicPositionalCategory
+  doctest Unicode.VerticalOrientation
+  doctest Unicode.JoiningGroup
+  doctest Unicode.BidiPairedBracketType
+  doctest Unicode.NumericValue
+  doctest Unicode.NfcQuickCheck
+  doctest Unicode.NfdQuickCheck
+  doctest Unicode.NfkcQuickCheck
+  doctest Unicode.NfkdQuickCheck
   doctest Unicode.RangeSearch
   doctest Unicode.Category.QuoteMarks
   doctest Unicode.Guards

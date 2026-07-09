@@ -24,8 +24,12 @@ defmodule Unicode.Property do
   @all_and_derived_properties @properties
                               |> Map.merge(@derived_properties)
 
+  # `Bidi_Mirrored` is a boolean property sourced from field 10 of
+  # `UnicodeData.txt` rather than from PropList/DerivedCoreProperties, so it is
+  # merged in explicitly to make it a first class boolean property.
   @all_properties @all_and_derived_properties
                   |> Map.merge(Emoji.emoji())
+                  |> Map.merge(Utils.bidi_mirrored())
 
   @doc """
   Returns the map of Unicode

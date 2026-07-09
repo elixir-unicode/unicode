@@ -1,5 +1,23 @@
 # Changelog
 
+## Unicode v2.1.0
+
+This release closes a number of Unicode Character Database coverage gaps: several enumerated properties that appeared in `PropertyAliases.txt` but had no backing data are now resolvable through `Unicode.fetch_property/1` and have their own introspection modules.
+
+### Enhancements
+
+* Adds the enumerated property modules `Unicode.Age`, `Unicode.NumericType`, `Unicode.NumericValue`, `Unicode.DecompositionType`, `Unicode.HangulSyllableType`, `Unicode.IndicPositionalCategory`, `Unicode.VerticalOrientation`, `Unicode.JoiningGroup` and `Unicode.BidiPairedBracketType`, each with a codepoint lookup, range introspection and a top-level delegate on `Unicode`.
+
+* Adds the normalization quick check modules `Unicode.NfcQuickCheck`, `Unicode.NfdQuickCheck`, `Unicode.NfkcQuickCheck` and `Unicode.NfkdQuickCheck` (the `NFC_QC`, `NFD_QC`, `NFKC_QC` and `NFKD_QC` properties) with `Unicode.nfc_quick_check/1` and friends.
+
+* Adds `Bidi_Mirrored` as a first class boolean property, so `Unicode.Property.bidi_mirrored?/1` and `Unicode.properties/1` now report it.
+
+* The `Name` property now resolves through `Unicode.fetch_property/1` to `Unicode.CharacterName`.
+
+### Bug fixes
+
+* Property aliases containing an underscore (for example `nfc_qc`) are now reachable through `Unicode.fetch_property/1`, which previously only matched the whitespace-stripped canonical form.
+
 ## Unicode v2.0.0
 
 This is the changelog for Unicode v2.0.0 released on July 9th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)

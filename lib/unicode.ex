@@ -566,6 +566,361 @@ defmodule Unicode do
   defdelegate joining_type(codepoint_or_string), to: Unicode.JoiningType
 
   @doc """
+  Returns the `Joining_Group` of a codepoint or the list of joining groups for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, a single atom joining group name. Codepoints that are not cursively joined return `:no_joining_group`.
+
+  * For a string, a list of atom joining group names.
+
+  ### Examples
+
+      iex> Unicode.joining_group(0x0628)
+      :beh
+
+      iex> Unicode.joining_group(?A)
+      :no_joining_group
+
+  """
+  @doc since: "2.1.0"
+  @spec joining_group(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate joining_group(codepoint_or_string), to: Unicode.JoiningGroup
+
+  @doc """
+  Returns the `Age` (the Unicode version in which a codepoint was first assigned)
+  of a codepoint, or the list of ages for each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, a single atom version number. Unassigned codepoints return `:unassigned`.
+
+  * For a string, a list of atom version numbers.
+
+  ### Examples
+
+      iex> Unicode.age(?A)
+      :"1.1"
+
+      iex> Unicode.age(0x0378)
+      :unassigned
+
+  """
+  @doc since: "2.1.0"
+  @spec age(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate age(codepoint_or_string), to: Unicode.Age
+
+  @doc """
+  Returns the `Numeric_Type` of a codepoint or the list of numeric types for each
+  codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, one of `:decimal`, `:digit`, `:numeric` or `:none`.
+
+  * For a string, a list of atom numeric types.
+
+  ### Examples
+
+      iex> Unicode.numeric_type(?1)
+      :decimal
+
+      iex> Unicode.numeric_type(?A)
+      :none
+
+  """
+  @doc since: "2.1.0"
+  @spec numeric_type(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate numeric_type(codepoint_or_string), to: Unicode.NumericType
+
+  @doc """
+  Returns the `Numeric_Value` of a codepoint, or the list of numeric values for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, the numeric value as an integer, a `{numerator, denominator}` tuple for fractions, or `nil` if the codepoint has no numeric value.
+
+  * For a string, a list of numeric values.
+
+  ### Examples
+
+      iex> Unicode.numeric_value(?7)
+      7
+
+      iex> Unicode.numeric_value(?½)
+      {1, 2}
+
+      iex> Unicode.numeric_value(?A)
+      nil
+
+  """
+  @doc since: "2.1.0"
+  @spec numeric_value(codepoint_or_string) ::
+          Unicode.NumericValue.value() | [Unicode.NumericValue.value(), ...]
+  defdelegate numeric_value(codepoint_or_string), to: Unicode.NumericValue
+
+  @doc """
+  Returns the `Decomposition_Type` of a codepoint or the list of decomposition
+  types for each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, an atom decomposition type, or `:none` if the codepoint has no decomposition mapping.
+
+  * For a string, a list of atom decomposition types.
+
+  ### Examples
+
+      iex> Unicode.decomposition_type(0x00A0)
+      :nobreak
+
+      iex> Unicode.decomposition_type(?A)
+      :none
+
+  """
+  @doc since: "2.1.0"
+  @spec decomposition_type(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate decomposition_type(codepoint_or_string), to: Unicode.DecompositionType
+
+  @doc """
+  Returns the `Hangul_Syllable_Type` of a codepoint or the list of types for each
+  codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, one of `:l`, `:v`, `:t`, `:lv`, `:lvt` or `:na`.
+
+  * For a string, a list of atom hangul syllable types.
+
+  ### Examples
+
+      iex> Unicode.hangul_syllable_type(0xAC00)
+      :lv
+
+      iex> Unicode.hangul_syllable_type(?A)
+      :na
+
+  """
+  @doc since: "2.1.0"
+  @spec hangul_syllable_type(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate hangul_syllable_type(codepoint_or_string), to: Unicode.HangulSyllableType
+
+  @doc """
+  Returns the `Indic_Positional_Category` of a codepoint or the list of
+  categories for each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, an atom positional category, or `:na` if the property does not apply.
+
+  * For a string, a list of atom positional categories.
+
+  ### Examples
+
+      iex> Unicode.indic_positional_category(0x0903)
+      :right
+
+      iex> Unicode.indic_positional_category(?A)
+      :na
+
+  """
+  @doc since: "2.1.0"
+  @spec indic_positional_category(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate indic_positional_category(codepoint_or_string), to: Unicode.IndicPositionalCategory
+
+  @doc """
+  Returns the `Vertical_Orientation` of a codepoint or the list of orientations
+  for each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, one of `:u`, `:r`, `:tu` or `:tr`. Codepoints without an explicit assignment return `:r`.
+
+  * For a string, a list of atom orientations.
+
+  ### Examples
+
+      iex> Unicode.vertical_orientation(0x3042)
+      :u
+
+      iex> Unicode.vertical_orientation(?A)
+      :r
+
+  """
+  @doc since: "2.1.0"
+  @spec vertical_orientation(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate vertical_orientation(codepoint_or_string), to: Unicode.VerticalOrientation
+
+  @doc """
+  Returns the `Bidi_Paired_Bracket_Type` of a codepoint or the list of types for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, `:open`, `:close` or `:none`.
+
+  * For a string, a list of atom types.
+
+  ### Examples
+
+      iex> Unicode.bidi_paired_bracket_type(?\\()
+      :open
+
+      iex> Unicode.bidi_paired_bracket_type(?A)
+      :none
+
+  """
+  @doc since: "2.1.0"
+  @spec bidi_paired_bracket_type(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate bidi_paired_bracket_type(codepoint_or_string), to: Unicode.BidiPairedBracketType
+
+  @doc """
+  Returns the `NFC_Quick_Check` value of a codepoint or the list of values for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, `:no`, `:maybe` or the default `:yes`.
+
+  * For a string, a list of atom values.
+
+  ### Examples
+
+      iex> Unicode.nfc_quick_check(?A)
+      :yes
+
+      iex> Unicode.nfc_quick_check(0x0300)
+      :maybe
+
+  """
+  @doc since: "2.1.0"
+  @spec nfc_quick_check(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate nfc_quick_check(codepoint_or_string), to: Unicode.NfcQuickCheck
+
+  @doc """
+  Returns the `NFD_Quick_Check` value of a codepoint or the list of values for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, `:no` or the default `:yes`.
+
+  * For a string, a list of atom values.
+
+  ### Examples
+
+      iex> Unicode.nfd_quick_check(?A)
+      :yes
+
+      iex> Unicode.nfd_quick_check(0x00C0)
+      :no
+
+  """
+  @doc since: "2.1.0"
+  @spec nfd_quick_check(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate nfd_quick_check(codepoint_or_string), to: Unicode.NfdQuickCheck
+
+  @doc """
+  Returns the `NFKC_Quick_Check` value of a codepoint or the list of values for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, `:no`, `:maybe` or the default `:yes`.
+
+  * For a string, a list of atom values.
+
+  ### Examples
+
+      iex> Unicode.nfkc_quick_check(?A)
+      :yes
+
+      iex> Unicode.nfkc_quick_check(0x0300)
+      :maybe
+
+  """
+  @doc since: "2.1.0"
+  @spec nfkc_quick_check(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate nfkc_quick_check(codepoint_or_string), to: Unicode.NfkcQuickCheck
+
+  @doc """
+  Returns the `NFKD_Quick_Check` value of a codepoint or the list of values for
+  each codepoint in a string.
+
+  ### Arguments
+
+  * `codepoint_or_string` is a single integer codepoint or a `t:String.t/0`.
+
+  ### Returns
+
+  * For a codepoint, `:no` or the default `:yes`.
+
+  * For a string, a list of atom values.
+
+  ### Examples
+
+      iex> Unicode.nfkd_quick_check(?A)
+      :yes
+
+      iex> Unicode.nfkd_quick_check(0x00C0)
+      :no
+
+  """
+  @doc since: "2.1.0"
+  @spec nfkd_quick_check(codepoint_or_string) :: atom | [atom, ...]
+  defdelegate nfkd_quick_check(codepoint_or_string), to: Unicode.NfkdQuickCheck
+
+  @doc """
   Returns the list of properties of each codepoint
   in a given string or the list of properties for a
   given codepoint.

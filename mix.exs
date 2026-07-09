@@ -1,7 +1,7 @@
 defmodule Unicode.MixProject do
   use Mix.Project
 
-  @version "2.0.0"
+  @version "2.1.0"
 
   def project do
     [
@@ -35,10 +35,15 @@ defmodule Unicode.MixProject do
   #   time, never at library runtime.
   #
   # * Test support modules under `test/support` — test harness code.
+  #
+  # * `Unicode.DerivedCategory.Printable` — a compile-time data holder whose
+  #   only function is evaluated while building a module attribute, so it is
+  #   never called at runtime.
   defp coverage_ignore_modules do
     [
       ~r/^Mix\.Tasks\./,
-      Unicode.Validation.UTF8.Test.Helpers
+      Unicode.Validation.UTF8.Test.Helpers,
+      Unicode.DerivedCategory.Printable
     ]
   end
 

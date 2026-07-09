@@ -19,7 +19,20 @@ defmodule Unicode.PropertyModules.Test do
     {Unicode.JoiningType, :joining_type, 0x0628, :d, 0x0640, :c},
     {Unicode.LineBreak, :line_break, ?\n, :lf, ?A, :al},
     {Unicode.SentenceBreak, :sentence_break, ?A, :upper, ?\n, :lf},
-    {Unicode.WordBreak, :word_break, ?A, :aletter, ?\n, :lf}
+    {Unicode.WordBreak, :word_break, ?A, :aletter, ?\n, :lf},
+    {Unicode.Age, :age, ?A, :"1.1", 0x0378, :unassigned},
+    {Unicode.NumericType, :numeric_type, ?1, :decimal, ?A, :none},
+    {Unicode.DecompositionType, :decomposition_type, 0x00A0, :nobreak, ?A, :none},
+    {Unicode.HangulSyllableType, :hangul_syllable_type, 0xAC00, :lv, ?A, :na},
+    {Unicode.IndicPositionalCategory, :indic_positional_category, 0x0903, :right, ?A, :na},
+    {Unicode.VerticalOrientation, :vertical_orientation, 0x3042, :u, ?A, :r},
+    {Unicode.JoiningGroup, :joining_group, 0x0628, :beh, ?A, :no_joining_group},
+    {Unicode.BidiPairedBracketType, :bidi_paired_bracket_type, ?(, :open, ?A, :none},
+    {Unicode.NumericValue, :numeric_value, ?7, 7, ?A, nil},
+    {Unicode.NfcQuickCheck, :nfc_quick_check, 0x0300, :maybe, ?A, :yes},
+    {Unicode.NfdQuickCheck, :nfd_quick_check, 0x00C0, :no, ?A, :yes},
+    {Unicode.NfkcQuickCheck, :nfkc_quick_check, 0x0300, :maybe, ?A, :yes},
+    {Unicode.NfkdQuickCheck, :nfkd_quick_check, 0x00C0, :no, ?A, :yes}
   ]
 
   for {module, lookup_function, codepoint, expected, default_codepoint, default_value} <-
@@ -90,6 +103,35 @@ defmodule Unicode.PropertyModules.Test do
 
     test "combining class fetches by integer" do
       assert {:ok, _ranges} = Unicode.CanonicalCombiningClass.fetch(230)
+    end
+  end
+
+  describe "property server resolution" do
+    test "the name property resolves to Unicode.CharacterName" do
+      assert Unicode.fetch_property("name") == {:ok, Unicode.CharacterName}
+      assert Unicode.fetch_property("na") == {:ok, Unicode.CharacterName}
+    end
+
+    test "newly added enumerated properties resolve to their modules" do
+      assert Unicode.fetch_property("age") == {:ok, Unicode.Age}
+      assert Unicode.fetch_property("nt") == {:ok, Unicode.NumericType}
+      assert Unicode.fetch_property("nv") == {:ok, Unicode.NumericValue}
+      assert Unicode.fetch_property("jg") == {:ok, Unicode.JoiningGroup}
+      assert Unicode.fetch_property("dt") == {:ok, Unicode.DecompositionType}
+      assert Unicode.fetch_property("hst") == {:ok, Unicode.HangulSyllableType}
+      assert Unicode.fetch_property("bpt") == {:ok, Unicode.BidiPairedBracketType}
+      assert Unicode.fetch_property("inpc") == {:ok, Unicode.IndicPositionalCategory}
+      assert Unicode.fetch_property("vo") == {:ok, Unicode.VerticalOrientation}
+      assert Unicode.fetch_property("nfc_qc") == {:ok, Unicode.NfcQuickCheck}
+      assert Unicode.fetch_property("nfd_qc") == {:ok, Unicode.NfdQuickCheck}
+      assert Unicode.fetch_property("nfkc_qc") == {:ok, Unicode.NfkcQuickCheck}
+      assert Unicode.fetch_property("nfkd_qc") == {:ok, Unicode.NfkdQuickCheck}
+    end
+
+    test "bidi_mirrored is a resolvable boolean property" do
+      assert Unicode.Property.bidi_mirrored?(?\() == true
+      assert Unicode.Property.bidi_mirrored?(?A) == false
+      assert :bidi_mirrored in Unicode.Property.known_properties()
     end
   end
 
