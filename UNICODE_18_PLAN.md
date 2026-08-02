@@ -219,6 +219,8 @@ The critical detail: the UCD default is that `scx` equals `sc` for any codepoint
 
 * `unicode_set/README.md:388` — correct the stale claim about `Age` / `Numeric_Value` / `Numeric_Type` (§1.3), and remove `scx` from that list now that Phase 4 has landed.
 
+* **Delete `unicode_set`'s `LC` workaround.** `Unicode.GeneralCategory` now derives the `LC` (`Cased_Letter`) group, so the two clauses in `unicode_set/lib/set/property.ex` that resolve `"lc"` / `"cased_letter"` locally — one at the `:script_or_category` head, one at the `gc=` head — and their `cased_letter_ranges/0` helper are all redundant. Both carry comments naming this library as the reason. Removing them lets `\p{gc=LC}` fall through to `Unicode.fetch_property/1` like every other category. Do this in the same change as the dependency bump, since the workaround is still needed against `unicode 2.0.0`.
+
 Also worth a compile-and-test pass, in dependency order: `unicode_guards`, `unicode_string`, `unicode_transform`, `unicode_idna`, `unicode_unihan`. The seven new Unihan `k*` source properties (§1.1) are `unicode_unihan`'s to absorb, not ours.
 
 ### Phase 6 — Release gating

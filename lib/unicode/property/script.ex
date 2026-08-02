@@ -62,11 +62,11 @@ defmodule Unicode.Script do
   """
   @type t :: unquote(@known_scripts |> Enum.sort() |> Enum.reduce(&{:|, [], [&1, &2]}))
 
-  @script_alias Utils.property_value_alias()
-                |> Map.get("sc")
-                |> Utils.invert_map()
-                |> Utils.atomize_values()
-                |> Utils.downcase_keys_and_remove_whitespace()
+  # `Utils.value_aliases/2` rather than inverting the alias map. Inversion is lossy on a
+  # many-to-one map: `sc ; Copt ; Coptic ; Qaac` collapsed to a single entry naming `:qaac`, which
+  # is not a script in the data, so `fetch("copt")` and `fetch("qaac")` both failed and `"coptic"`
+  # was missing from the map entirely.
+  @script_alias Utils.value_aliases("sc", @known_scripts)
                 |> Utils.add_canonical_alias()
 
   @doc """

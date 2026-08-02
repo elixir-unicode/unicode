@@ -16,6 +16,8 @@ defmodule Unicode.GeneralCategory do
   @categories Utils.categories()
               |> Utils.remove_annotations()
 
+  # The single-letter group categories fall out of the UCD naming scheme, which prefixes each base
+  # category with its group's letter (`Lu`, `Ll`, `Lt`, `Lm`, `Lo` all belong to `L`).
   @super_categories @categories
                     |> Map.keys()
                     |> Enum.map(&to_string/1)
@@ -26,7 +28,24 @@ defmodule Unicode.GeneralCategory do
                     end)
                     |> Map.new()
 
-  @all_categories Map.merge(@categories, @super_categories)
+  # `LC` (Cased_Letter) is the one General_Category group whose name is not a single letter, so the
+  # grouping above cannot produce it — it is a *subset* of `L`, not a partition of it. Its
+  # membership is fixed by definition in UAX #44, but the ranges are unioned from the current data
+  # so the group tracks each Unicode release.
+  #
+  # `PropertyValueAliases.txt` does document the membership of every group (`gc ; LC ; Cased_Letter
+  # # Ll | Lt | Lu`), but only in a trailing comment, whose formatting Unicode does not guarantee.
+  # Parsing it would put every group at risk of a silent change, to derive the one this states.
+  @grouped_categories %{Lc: [:Lu, :Ll, :Lt]}
+
+  @group_categories Map.new(@grouped_categories, fn {group, members} ->
+                      {group,
+                       members |> Enum.flat_map(&Map.fetch!(@categories, &1)) |> Enum.sort()}
+                    end)
+
+  @all_categories @categories
+                  |> Map.merge(@super_categories)
+                  |> Map.merge(@group_categories)
                   |> Map.merge(Derived.categories())
 
   @category_table Unicode.RangeSearch.new_value_table(@categories)

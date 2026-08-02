@@ -65,11 +65,10 @@ defmodule Unicode.Block do
                            &{Utils.downcase_and_remove_whitespace(&1), &1}
                          )
 
-  @block_alias Utils.property_value_alias()
-               |> Map.get("blk")
-               |> Utils.invert_map()
-               |> Utils.atomize_values()
-               |> Utils.downcase_keys_and_remove_whitespace()
+  # `Utils.value_aliases/2` rather than inverting the alias map. Inversion is lossy on a
+  # many-to-one map: `blk ; Latin_1_Sup ; Latin_1_Supplement ; Latin_1` collapsed to a single entry
+  # naming `:latin_1`, which is not a block in the data, so `fetch("latin1sup")` failed.
+  @block_alias Utils.value_aliases("blk", Map.keys(@blocks))
                |> Utils.add_canonical_alias()
                |> Map.merge(@block_canonical_alias)
 

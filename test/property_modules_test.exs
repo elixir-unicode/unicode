@@ -97,6 +97,81 @@ defmodule Unicode.PropertyModules.Test do
       assert Unicode.Script.fetch("latn") == Unicode.Script.fetch(:latin)
     end
 
+    test "the LC group category resolves and is exactly Lu, Ll and Lt" do
+      # `LC` is the only General_Category group whose name is not a single letter, so it cannot come
+      # from the first-letter grouping that derives `L`, `N`, `P` and the rest.
+      assert {:ok, ranges} = Unicode.GeneralCategory.fetch(:Lc)
+      assert Unicode.GeneralCategory.fetch("lc") == {:ok, ranges}
+      assert Unicode.GeneralCategory.fetch("Cased_Letter") == {:ok, ranges}
+      assert :Lc in Unicode.GeneralCategory.known_categories()
+
+      assert Unicode.GeneralCategory.count(:Lc) ==
+               Unicode.GeneralCategory.count(:Lu) + Unicode.GeneralCategory.count(:Ll) +
+                 Unicode.GeneralCategory.count(:Lt)
+
+      # A subset of `L`, which also includes the uncased `Lm` and `Lo`.
+      assert Unicode.GeneralCategory.count(:Lc) < Unicode.GeneralCategory.count(:L)
+
+      cased? = fn codepoint ->
+        Enum.any?(ranges, fn {first, last} -> codepoint in first..last end)
+      end
+
+      assert cased?.(?A)
+      assert cased?.(?a)
+      assert cased?.(0x01C5)
+      refute cased?.(0x02B0)
+      refute cased?.(0x4E00)
+    end
+
+    test "adding LC does not change codepoint lookup" do
+      # `category/1` must keep returning the base category, not the group.
+      assert Unicode.GeneralCategory.category(?A) == :Lu
+      assert Unicode.GeneralCategory.category(?a) == :Ll
+    end
+
+    test "a script named on a line with more than two aliases resolves by every spelling" do
+      # `sc ; Copt ; Coptic ; Qaac` carries a short code, the canonical name and an ISO 15924 alias.
+      # Building the alias map by inverting the many-to-one alias map collapsed these to a single
+      # entry naming `:qaac`, which is not a script in the data, so the short code failed to resolve
+      # and the canonical name was absent from the map altogether.
+      assert Unicode.Script.fetch("copt") == Unicode.Script.fetch(:coptic)
+      assert Unicode.Script.fetch("qaac") == Unicode.Script.fetch(:coptic)
+      assert Unicode.Script.fetch("Coptic") == Unicode.Script.fetch(:coptic)
+    end
+
+    test "a block named on a line with more than two aliases resolves by every spelling" do
+      assert Unicode.Block.fetch("latin1sup") == Unicode.Block.fetch(:latin_1_supplement)
+      assert Unicode.Block.fetch("latin1") == Unicode.Block.fetch(:latin_1_supplement)
+      assert Unicode.Block.fetch("Latin-1 Supplement") == Unicode.Block.fetch(:latin_1_supplement)
+
+      assert Unicode.Block.fetch("cyrillicsupplementary") ==
+               Unicode.Block.fetch(:cyrillic_supplement)
+    end
+
+    test "every alias Unicode publishes for a script or block resolves to that value" do
+      # Derived from the data rather than a fixed list, so an alias added by a future Unicode
+      # release is covered without editing this test.
+      for {module, category, known} <- [
+            {Unicode.Script, "sc", Unicode.Script.known_scripts()},
+            {Unicode.Block, "blk", Unicode.Block.known_blocks()}
+          ] do
+        by_code =
+          Unicode.Utils.property_value_alias()
+          |> Map.fetch!(category)
+          |> Enum.group_by(fn {_alias, code} -> code end, fn {alias, _code} -> alias end)
+
+        for {code, aliases} <- by_code,
+            spellings = [code | aliases],
+            canonical = Enum.find(spellings, &(Unicode.Utils.maybe_atomize(&1) in known)),
+            canonical != nil,
+            spelling <- spellings do
+          assert module.fetch(spelling) ==
+                   module.fetch(Unicode.Utils.maybe_atomize(canonical)),
+                 "#{inspect(module)} could not resolve #{inspect(spelling)} to #{canonical}"
+        end
+      end
+    end
+
     test "block fetch resolves names with whitespace" do
       assert Unicode.Block.fetch("Basic Latin") == Unicode.Block.fetch(:basic_latin)
     end

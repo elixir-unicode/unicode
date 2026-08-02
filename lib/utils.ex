@@ -1273,28 +1273,40 @@ defmodule Unicode.Utils do
   known value. Lines whose values are not present in the data (for example a
   default value that never appears explicitly) are skipped.
 
+  A line may carry more than two names — `sc ; Copt ; Coptic ; Qaac` gives the
+  short code, the canonical name and an ISO 15924 alias — so the tokens are
+  regrouped by their short code and the whole group is resolved together. This
+  is what makes every spelling reach the one name that is actually present in
+  the data. Inverting the alias map instead loses entries, because it is
+  many-to-one, and elects whichever name it happens to see last.
+
   """
   def value_aliases(category, known_values) do
     known = MapSet.new(known_values)
 
     property_value_alias()
     |> Map.get(category, %{})
-    |> Enum.reduce(%{}, fn {token_a, token_b}, aliases ->
-      canonical =
-        cond do
-          MapSet.member?(known, maybe_atomize(token_a)) -> maybe_atomize(token_a)
-          MapSet.member?(known, maybe_atomize(token_b)) -> maybe_atomize(token_b)
-          true -> nil
-        end
-
-      if canonical do
-        aliases
-        |> Map.put(downcase_and_remove_whitespace(token_a), canonical)
-        |> Map.put(downcase_and_remove_whitespace(token_b), canonical)
-      else
-        aliases
-      end
+    |> Enum.group_by(fn {_alias, code} -> code end, fn {alias, _code} -> alias end)
+    |> Enum.reduce(%{}, fn {code, aliases}, resolved ->
+      resolve_alias_group([code | aliases], known, resolved)
     end)
+  end
+
+  defp resolve_alias_group(tokens, known, resolved) do
+    case Enum.find_value(tokens, &known_value(&1, known)) do
+      nil ->
+        resolved
+
+      canonical ->
+        Enum.reduce(tokens, resolved, fn token, resolved ->
+          Map.put(resolved, downcase_and_remove_whitespace(token), canonical)
+        end)
+    end
+  end
+
+  defp known_value(token, known) do
+    value = maybe_atomize(token)
+    if MapSet.member?(known, value), do: value
   end
 
   # Take the atom values of the map

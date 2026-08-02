@@ -30,6 +30,10 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 * Property aliases containing an underscore (for example `nfc_qc`) are now reachable through `Unicode.fetch_property/1`, which previously only matched the whitespace-stripped canonical form.
 
+* Adds the `LC` (`Cased_Letter`) general category, the union of `Lu`, `Ll` and `Lt`. It is the only General_Category group whose name is not a single letter, so it was not produced by the derivation that yields `L`, `N`, `P` and the rest, and `Unicode.GeneralCategory.fetch("lc")` returned `:error` despite the alias being advertised.
+
+* Scripts and blocks whose `PropertyValueAliases` line carries more than two names now resolve by every spelling. `Unicode.Script.fetch/1` failed for `"copt"` and `"qaac"`, and `Unicode.Block.fetch/1` for `"latin1sup"` and `"cyrillicsupplementary"`, because the alias map was built by inverting a many-to-one map and elected a name absent from the data.
+
 * `Unicode.version/0` no longer reports a stale version after the data files are updated. It derives the version from `blocks.txt` at compile time but did not declare it as an `@external_resource`, so the module was not recompiled when the data changed.
 
 * `mix unicode.download` no longer requests a non-existent emoji URL. The emoji files are versioned separately from the UCD and `Public/emoji/17.0/` was never published, so the previous version-interpolated path returned 404 and the files had to be updated by hand.
