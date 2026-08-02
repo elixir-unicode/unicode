@@ -18,12 +18,17 @@ defmodule Unicode.CharacterName.Test do
     assert CharacterName.to_codepoint("SNOWMAN") == {:ok, 0x2603}
   end
 
-  test "returns :error for unknown names and for algorithmic / control names" do
+  test "returns :error for unknown names and for control names" do
     assert CharacterName.to_codepoint("Not A Real Name") == :error
-    # Control characters have no formal Name property (only Name_Alias, which is
-    # not loaded), and CJK ideographs are algorithmic, so both are absent.
+    # Control characters have no formal Name property, only Name_Alias, which is not loaded.
     assert CharacterName.to_codepoint("NULL") == :error
-    assert CharacterName.to_codepoint("CJK UNIFIED IDEOGRAPH-4E00") == :error
+  end
+
+  test "resolves algorithmically derived names" do
+    # These are absent from the name table — they are `<..., First>`/`<..., Last>` ranges in
+    # UnicodeData.txt — and are derived by rule instead. See character_name_derived_test.exs.
+    assert CharacterName.to_codepoint("CJK UNIFIED IDEOGRAPH-4E00") == {:ok, 0x4E00}
+    assert CharacterName.to_codepoint("HANGUL SYLLABLE GA") == {:ok, 0xAC00}
   end
 
   test "the table is non-trivial in size" do

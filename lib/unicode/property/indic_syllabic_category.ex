@@ -165,7 +165,7 @@ defmodule Unicode.IndicSyllabicCategory do
   ### Examples
 
       iex> Unicode.IndicSyllabicCategory.count(:bindu)
-      99
+      101
 
   """
   @impl Unicode.Property.Behaviour

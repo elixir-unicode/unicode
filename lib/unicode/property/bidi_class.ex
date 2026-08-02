@@ -165,7 +165,7 @@ defmodule Unicode.BidiClass do
   ### Examples
 
       iex> Unicode.BidiClass.count(:al)
-      1478
+      1502
 
   """
   @impl Unicode.Property.Behaviour

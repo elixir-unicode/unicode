@@ -164,7 +164,7 @@ defmodule Unicode.LineBreak do
   ### Examples
 
       iex> Unicode.LineBreak.count(:al)
-      26954
+      27614
 
   """
   @impl Unicode.Property.Behaviour

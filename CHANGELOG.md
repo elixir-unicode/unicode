@@ -6,6 +6,18 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 ### Enhancements
 
+* Updates the underlying data to [Unicode 18.0](https://www.unicode.org/versions/Unicode18.0.0/), adding the `Chisoi`, `Jurchen`, `Proto_Cuneiform` and `Seal` scripts, eight new blocks and ten new `Crown_*` joining groups. Until Unicode 18.0 is formally accepted the data is taken from the draft tree and remains subject to change.
+
+* Adds `Unicode.ScriptExtensions` for the `Script_Extensions` (`scx`) property, the last UCD enumerated property without a backing module and a UTS #18 RL1.2 conformance requirement. `Unicode.ScriptExtensions.script_extensions/1` returns the set of scripts a codepoint is used with, defaulting to its `Script` value where the UCD lists no explicit set.
+
+* `Unicode.CharacterName.to_codepoint/2` accepts a `:fuzzy` option that resolves a misspelled name by `String.jaro_distance/2`, either as `true` for the default distance of `0.8` or as an explicit distance. It succeeds only where one name is strictly closest than all others, so an ambiguous query returns `:error` rather than guessing.
+
+* Adds `Unicode.CharacterName.to_name/1`, the reverse of `to_codepoint/1`, returning the `Name` property of a codepoint. Each name is still stored only once — the original is reconstructed from the normalized form plus separator positions — so reverse lookup adds about 410KB rather than a second name table, and leaves `to_codepoint/1` unchanged in speed.
+
+* `Unicode.CharacterName.to_codepoint/1` now resolves algorithmically derived names — CJK and Tangut ideographs, Hangul syllables, and the Seal and Jurchen characters — covering a further 131,576 characters. The names are computed from the UAX #44 derivation rules on a table-lookup miss rather than stored, adding under 4KB.
+
+* `mix unicode.download` now resolves the UCD and emoji trees through independent release channels, settable per run with `--release` / `--emoji-release`, by environment variable, or in application config. Adds `--into` to download to a scratch directory, `--dry-run`, and a post-download check that every data file reports the same Unicode version.
+
 * Adds the enumerated property modules `Unicode.Age`, `Unicode.NumericType`, `Unicode.NumericValue`, `Unicode.DecompositionType`, `Unicode.HangulSyllableType`, `Unicode.IndicPositionalCategory`, `Unicode.VerticalOrientation`, `Unicode.JoiningGroup` and `Unicode.BidiPairedBracketType`, each with a codepoint lookup, range introspection and a top-level delegate on `Unicode`.
 
 * Adds the normalization quick check modules `Unicode.NfcQuickCheck`, `Unicode.NfdQuickCheck`, `Unicode.NfkcQuickCheck` and `Unicode.NfkdQuickCheck` (the `NFC_QC`, `NFD_QC`, `NFKC_QC` and `NFKD_QC` properties) with `Unicode.nfc_quick_check/1` and friends.
@@ -17,6 +29,10 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 ### Bug fixes
 
 * Property aliases containing an underscore (for example `nfc_qc`) are now reachable through `Unicode.fetch_property/1`, which previously only matched the whitespace-stripped canonical form.
+
+* `Unicode.version/0` no longer reports a stale version after the data files are updated. It derives the version from `blocks.txt` at compile time but did not declare it as an `@external_resource`, so the module was not recompiled when the data changed.
+
+* `mix unicode.download` no longer requests a non-existent emoji URL. The emoji files are versioned separately from the UCD and `Public/emoji/17.0/` was never published, so the previous version-interpolated path returned 404 and the files had to be updated by hand.
 
 ## Unicode v2.0.0
 

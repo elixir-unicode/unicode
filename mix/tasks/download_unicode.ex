@@ -1,7 +1,63 @@
 if File.exists?(Unicode.data_dir()) do
   defmodule Mix.Tasks.Unicode.Download do
+    # The release channels the files currently in `data/` were generated from. Bump these when
+    # `data/` is regenerated against a new Unicode release.
+    #
+    # The emoji default is `latest`, not a version, and deliberately so: the emoji files are
+    # versioned on their own schedule and `Public/emoji/<version>/` is frequently absent. There
+    # is no `Public/emoji/17.0/` directory at all — the Unicode 17.0 emoji files were only ever
+    # published under `latest/`, which is why the previous version-interpolating URL 404'd and
+    # `data/emoji_sequences.txt` had to be patched by hand in commit 2e7423d.
+    @default_release "17.0.0"
+    @default_emoji_release "latest"
+
     @moduledoc """
-    Downloads the required Unicode files to support Unicode
+    Downloads the Unicode Character Database files required to build this library.
+
+    Files are fetched from two independently versioned trees on `unicode.org`: the Unicode Character
+    Database (UCD) and the emoji data files. Each tree has its own *release channel*, so the UCD may
+    be taken from one release while the emoji files are taken from another. That separation is not
+    hypothetical — the emoji files are published on their own schedule and have previously lagged a
+    UCD release by weeks, which required patching `data/` by hand.
+
+    A release channel is either a version string such as `"17.0.0"`, or the literal `"draft"` which
+    selects the pre-release tree at `https://www.unicode.org/Public/draft/`. The draft tree carries
+    no version segment in its path at all, which is why the two roots are resolved through functions
+    rather than by interpolating a version into a URL template.
+
+    ### Usage
+
+        mix unicode.download
+        mix unicode.download --release draft
+        mix unicode.download --release 18.0.0 --emoji-release draft
+        mix unicode.download --release draft --into tmp/unicode_18
+        mix unicode.download --release draft --dry-run
+
+    ### Options
+
+    * `--release` is the release channel for the UCD tree. The default is the first of the
+      `UNICODE_RELEASE` environment variable, the `:release` key of the `:unicode` application
+      environment, or `#{@default_release}`.
+
+    * `--emoji-release` is the release channel for the emoji sequence files. The default is the
+      first of the `UNICODE_EMOJI_RELEASE` environment variable, the `:emoji_release` key of the
+      `:unicode` application environment, the value resolved for `--release` if that is a named
+      channel, or `#{@default_emoji_release}`. A version string does not propagate from `--release`
+      because the emoji tree is versioned separately and often has no matching directory — there is
+      no `Public/emoji/17.0/`, for example.
+
+    * `--into` is the directory to download into. The default is `Unicode.data_dir/0`. Downloading
+      into a scratch directory allows a candidate release to be diffed against the current data
+      before adopting it.
+
+    * `--dry-run` prints the resolved URL and destination of each file without downloading anything.
+
+    ### Returns
+
+    * `:ok` in all cases. Individual download failures are logged and do not halt the run, so that
+      one unavailable file — common in a partially populated draft tree — does not discard the
+      files that did download.
+
     """
 
     use Mix.Task
@@ -9,81 +65,161 @@ if File.exists?(Unicode.data_dir()) do
 
     @shortdoc "Download Unicode data files"
 
-    @unicode_full_release "17.0.0"
-    @unicode_minor_release String.split(@unicode_full_release, ".")
-                           |> Enum.take(2)
-                           |> Enum.join(".")
+    @draft_release "draft"
+    @latest_release "latest"
 
-    @root_url "https://www.unicode.org/Public/#{@unicode_full_release}/ucd/"
+    # Channels that exist under both the UCD and emoji trees, and so propagate from `--release`
+    # to `--emoji-release` when the latter is not given. A version string does not propagate.
+    @named_releases [@draft_release, @latest_release]
 
     @unicode_unsafe_https "UNICODE_UNSAFE_HTTPS"
     @unicode_default_timeout "120000"
     @unicode_default_connection_timeout "60000"
 
+    @switches [release: :string, emoji_release: :string, into: :string, dry_run: :boolean]
+
+    # Each entry is `{root, source_path, destination_file}` where `root` selects which of the two
+    # release channels the file hangs off. The distinction matters and is easy to lose: `emoji-data.txt`
+    # lives under the *UCD* root at `ucd/emoji/`, while `emoji-sequences.txt` lives under the separate
+    # emoji root. Conflating the two is what made the Unicode 17.0 emoji update a manual patch.
+    @files [
+      {:ucd, "UnicodeData.txt", "unicode_data.txt"},
+      {:ucd, "DoNotEmit.txt", "do_not_emit.txt"},
+      {:ucd, "extracted/DerivedGeneralCategory.txt", "categories.txt"},
+      {:ucd, "Blocks.txt", "blocks.txt"},
+      {:ucd, "Scripts.txt", "scripts.txt"},
+      {:ucd, "ScriptExtensions.txt", "script_extensions.txt"},
+      {:ucd, "DerivedCoreProperties.txt", "derived_properties.txt"},
+      {:ucd, "extracted/DerivedCombiningClass.txt", "combining_class.txt"},
+      {:ucd, "extracted/DerivedBidiClass.txt", "bidi_class.txt"},
+      {:ucd, "extracted/DerivedJoiningType.txt", "joining_type.txt"},
+      {:ucd, "emoji/emoji-data.txt", "emoji.txt"},
+      {:ucd, "PropertyValueAliases.txt", "property_value_alias.txt"},
+      {:ucd, "PropList.txt", "properties.txt"},
+      {:ucd, "PropertyAliases.txt", "property_alias.txt"},
+      {:ucd, "LineBreak.txt", "line_break.txt"},
+      {:ucd, "auxiliary/WordBreakProperty.txt", "word_break.txt"},
+      {:ucd, "auxiliary/GraphemeBreakProperty.txt", "grapheme_break.txt"},
+      {:ucd, "auxiliary/SentenceBreakProperty.txt", "sentence_break.txt"},
+      {:ucd, "IndicSyllabicCategory.txt", "indic_syllabic_category.txt"},
+      {:ucd, "IndicPositionalCategory.txt", "indic_positional_category.txt"},
+      {:ucd, "DerivedAge.txt", "derived_age.txt"},
+      {:ucd, "extracted/DerivedNumericType.txt", "numeric_type.txt"},
+      {:ucd, "extracted/DerivedNumericValues.txt", "numeric_values.txt"},
+      {:ucd, "extracted/DerivedDecompositionType.txt", "decomposition_type.txt"},
+      {:ucd, "HangulSyllableType.txt", "hangul_syllable_type.txt"},
+      {:ucd, "Jamo.txt", "jamo.txt"},
+      {:ucd, "VerticalOrientation.txt", "vertical_orientation.txt"},
+      {:ucd, "ArabicShaping.txt", "arabic_shaping.txt"},
+      {:ucd, "BidiBrackets.txt", "bidi_brackets.txt"},
+      {:ucd, "DerivedNormalizationProps.txt", "normalization_props.txt"},
+      {:ucd, "CaseFolding.txt", "case_folding.txt"},
+      {:ucd, "SpecialCasing.txt", "special_casing.txt"},
+      {:ucd, "EastAsianWidth.txt", "east_asian_width.txt"},
+      {:emoji, "emoji-sequences.txt", "emoji_sequences.txt"},
+      {:emoji, "emoji-zwj-sequences.txt", "emoji_zwj_sequences.txt"}
+    ]
+
     @doc false
-    def run(_) do
+    def run(argv) do
+      {options, _argv, _invalid} = OptionParser.parse(argv, switches: @switches)
+
       Application.ensure_all_started(:inets)
       Application.ensure_all_started(:ssl)
 
-      Enum.each(required_files(), &download_file/1)
+      release = release(options)
+      emoji_release = emoji_release(options)
+      destination_dir = destination_dir(options)
+      files = required_files(release, emoji_release, destination_dir)
+
+      if options[:dry_run] do
+        Enum.each(files, fn {url, destination} -> Mix.shell().info("#{url} -> #{destination}") end)
+      else
+        Logger.info(
+          "Downloading Unicode UCD release #{inspect(release)} and emoji release " <>
+            "#{inspect(emoji_release)} into #{inspect(destination_dir)}"
+        )
+
+        File.mkdir_p!(destination_dir)
+        Enum.each(files, &download_file/1)
+        verify_versions(files, release)
+      end
+
+      :ok
     end
 
-    defp required_files do
-      [
-        {Path.join(root_url(), "/UnicodeData.txt"), data_path("unicode_data.txt")},
-        {Path.join(root_url(), "/DoNotEmit.txt"), data_path("do_not_emit.txt")},
-        {Path.join(root_url(), "/extracted/DerivedGeneralCategory.txt"),
-         data_path("categories.txt")},
-        {Path.join(root_url(), "/Blocks.txt"), data_path("blocks.txt")},
-        {Path.join(root_url(), "/Scripts.txt"), data_path("scripts.txt")},
-        {Path.join(root_url(), "/DerivedCoreProperties.txt"),
-         data_path("derived_properties.txt")},
-        {Path.join(root_url(), "/extracted/DerivedCombiningClass.txt"),
-         data_path("combining_class.txt")},
-        {Path.join(root_url(), "/extracted/DerivedBidiClass.txt"), data_path("bidi_class.txt")},
-        {Path.join(root_url(), "/extracted/DerivedJoiningType.txt"),
-         data_path("joining_type.txt")},
-        {Path.join(root_url(), "/emoji/emoji-data.txt"), data_path("emoji.txt")},
-        {Path.join(root_url(), "/PropertyValueAliases.txt"),
-         data_path("property_value_alias.txt")},
-        {Path.join(root_url(), "/PropList.txt"), data_path("properties.txt")},
-        {Path.join(root_url(), "/PropertyAliases.txt"), data_path("property_alias.txt")},
-        {Path.join(root_url(), "/LineBreak.txt"), data_path("line_break.txt")},
-        {Path.join(root_url(), "/auxiliary/WordBreakProperty.txt"), data_path("word_break.txt")},
-        {Path.join(root_url(), "/auxiliary/GraphemeBreakProperty.txt"),
-         data_path("grapheme_break.txt")},
-        {Path.join(root_url(), "/auxiliary/SentenceBreakProperty.txt"),
-         data_path("sentence_break.txt")},
-        {Path.join(root_url(), "/IndicSyllabicCategory.txt"),
-         data_path("indic_syllabic_category.txt")},
-        {Path.join(root_url(), "/IndicPositionalCategory.txt"),
-         data_path("indic_positional_category.txt")},
-        {Path.join(root_url(), "/DerivedAge.txt"), data_path("derived_age.txt")},
-        {Path.join(root_url(), "/extracted/DerivedNumericType.txt"),
-         data_path("numeric_type.txt")},
-        {Path.join(root_url(), "/extracted/DerivedNumericValues.txt"),
-         data_path("numeric_values.txt")},
-        {Path.join(root_url(), "/extracted/DerivedDecompositionType.txt"),
-         data_path("decomposition_type.txt")},
-        {Path.join(root_url(), "/HangulSyllableType.txt"), data_path("hangul_syllable_type.txt")},
-        {Path.join(root_url(), "/VerticalOrientation.txt"),
-         data_path("vertical_orientation.txt")},
-        {Path.join(root_url(), "/ArabicShaping.txt"), data_path("arabic_shaping.txt")},
-        {Path.join(root_url(), "/BidiBrackets.txt"), data_path("bidi_brackets.txt")},
-        {Path.join(root_url(), "/DerivedNormalizationProps.txt"),
-         data_path("normalization_props.txt")},
-        {Path.join(root_url(), "/CaseFolding.txt"), data_path("case_folding.txt")},
-        {Path.join(root_url(), "/SpecialCasing.txt"), data_path("special_casing.txt")},
-        {Path.join(root_url(), "/EastAsianWidth.txt"), data_path("east_asian_width.txt")},
-        {"https://unicode.org/Public/emoji/#{@unicode_minor_release}/emoji-sequences.txt",
-         data_path("emoji_sequences.txt")},
-        {"https://unicode.org/Public/emoji/#{@unicode_minor_release}/emoji-zwj-sequences.txt",
-         data_path("emoji_zwj_sequences.txt")}
-      ]
+    @doc """
+    Returns the list of `{url, destination}` tuples that `run/1` will download.
+
+    ### Arguments
+
+    * `release` is the release channel for the UCD tree. Either a version string such as `"17.0.0"`
+      or the literal `"draft"`.
+
+    * `emoji_release` is the release channel for the emoji sequence files, in the same form.
+
+    * `destination_dir` is the directory the files will be written into.
+
+    ### Returns
+
+    * A list of `{url, destination_path}` tuples.
+
+    ### Examples
+
+        iex> [{url, _destination} | _rest] =
+        ...>   Mix.Tasks.Unicode.Download.required_files("17.0.0", "17.0.0", "data")
+        iex> url
+        "https://www.unicode.org/Public/17.0.0/ucd/UnicodeData.txt"
+
+        iex> [{url, _destination} | _rest] =
+        ...>   Mix.Tasks.Unicode.Download.required_files("draft", "draft", "data")
+        iex> url
+        "https://www.unicode.org/Public/draft/ucd/UnicodeData.txt"
+
+    """
+    @spec required_files(String.t(), String.t(), String.t()) :: [{String.t(), String.t()}]
+    def required_files(release, emoji_release, destination_dir) do
+      Enum.map(@files, fn {root, source, destination} ->
+        {Path.join(root_url(root, release, emoji_release), source),
+         Path.join(destination_dir, destination)}
+      end)
     end
 
-    def root_url do
-      @root_url
+    @doc false
+    def root_url(:ucd, release, _emoji_release), do: ucd_root(release)
+    def root_url(:emoji, _release, emoji_release), do: emoji_root(emoji_release)
+
+    defp ucd_root(@draft_release), do: "https://www.unicode.org/Public/draft/ucd/"
+    defp ucd_root(release), do: "https://www.unicode.org/Public/#{release}/ucd/"
+
+    defp emoji_root(@draft_release), do: "https://www.unicode.org/Public/draft/emoji/"
+    defp emoji_root(@latest_release), do: "https://www.unicode.org/Public/emoji/latest/"
+
+    defp emoji_root(release),
+      do: "https://www.unicode.org/Public/emoji/#{minor_release(release)}/"
+
+    defp minor_release(release) do
+      release |> String.split(".") |> Enum.take(2) |> Enum.join(".")
+    end
+
+    defp release(options) do
+      options[:release] || System.get_env("UNICODE_RELEASE") ||
+        Application.get_env(:unicode, :release) || @default_release
+    end
+
+    defp emoji_release(options) do
+      options[:emoji_release] || System.get_env("UNICODE_EMOJI_RELEASE") ||
+        Application.get_env(:unicode, :emoji_release) || default_emoji_release(release(options))
+    end
+
+    # A named channel exists in both trees, so `--release draft` implies draft emoji too. A version
+    # string does not propagate, because the emoji tree is versioned separately and often has no
+    # matching directory; fall back to the pinned emoji default instead of constructing a 404.
+    defp default_emoji_release(release) when release in @named_releases, do: release
+    defp default_emoji_release(_version), do: @default_emoji_release
+
+    defp destination_dir(options) do
+      options[:into] || Unicode.data_dir()
     end
 
     defp download_file({url, destination}) do
@@ -95,6 +231,62 @@ if File.exists?(Unicode.data_dir()) do
 
         error ->
           error
+      end
+    end
+
+    # Most UCD files carry their version in the first line, as `# Blocks-18.0.0.txt`. The emoji files
+    # and `UnicodeData.txt` do not, and are skipped by the check.
+    @version_header ~r/^#\s+\S+-(?<version>\d+\.\d+\.\d+)\.txt/
+
+    # A draft tree is updated piecemeal, so a download can straddle two Unicode versions. Nothing
+    # downstream would notice: `Unicode.version/0` reads only `blocks.txt`. Report it here instead.
+    defp verify_versions(files, release) do
+      files
+      |> Enum.map(fn {_url, destination} -> file_version(destination) end)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.uniq()
+      |> report_versions(release)
+    end
+
+    defp report_versions([], _release) do
+      Logger.warning("No downloaded data file carried a version header; download not verified.")
+    end
+
+    defp report_versions([version], @draft_release) do
+      Logger.info("All versioned data files report Unicode #{version}")
+    end
+
+    defp report_versions([version], release) when version == release do
+      Logger.info("All versioned data files report Unicode #{version}")
+    end
+
+    defp report_versions([version], release) do
+      Logger.warning(
+        "Requested Unicode release #{inspect(release)} but the downloaded files " <>
+          "report #{inspect(version)}."
+      )
+    end
+
+    defp report_versions(versions, _release) do
+      Logger.warning(
+        "Downloaded data files report more than one Unicode version: #{inspect(versions)}. " <>
+          "The source tree is likely partially updated; re-run the download once it settles."
+      )
+    end
+
+    defp file_version(path) do
+      case File.stream!(path) |> Enum.take(1) do
+        [line] -> extract_version(line)
+        [] -> nil
+      end
+    rescue
+      File.Error -> nil
+    end
+
+    defp extract_version(line) do
+      case Regex.named_captures(@version_header, line) do
+        %{"version" => version} -> version
+        nil -> nil
       end
     end
 
@@ -128,13 +320,13 @@ if File.exists?(Unicode.data_dir()) do
     * `:timeout` is the number of milliseconds available
       for the request to complete. The default is
       #{inspect(@unicode_default_timeout)}. This option may also be
-      set with the `CLDR_HTTP_TIMEOUT` environment variable.
+      set with the `UNICODE_HTTP_TIMEOUT` environment variable.
 
     * `:connection_timeout` is the number of milliseconds
       available for the a connection to be estabklished to
       the remote host. The default is #{inspect(@unicode_default_connection_timeout)}.
       This option may also be set with the
-      `CLDR_HTTP_CONNECTION_TIMEOUT` environment variable.
+      `UNICODE_HTTP_CONNECTION_TIMEOUT` environment variable.
 
     ### Returns
 
@@ -149,7 +341,7 @@ if File.exists?(Unicode.data_dir()) do
 
     ### Unsafe HTTPS
 
-    If the environment variable `CLDR_UNSAFE_HTTPS` is
+    If the environment variable `UNICODE_UNSAFE_HTTPS` is
     set to anything other than `FALSE`, `false`, `nil`
     or `NIL` then no peer verification of certificates
     is performed. Setting this variable is not recommended
@@ -251,13 +443,13 @@ if File.exists?(Unicode.data_dir()) do
     * `:timeout` is the number of milliseconds available
       for the request to complete. The default is
       #{inspect(@unicode_default_timeout)}. This option may also be
-      set with the `CLDR_HTTP_TIMEOUT` environment variable.
+      set with the `UNICODE_HTTP_TIMEOUT` environment variable.
 
     * `:connection_timeout` is the number of milliseconds
       available for the a connection to be estabklished to
       the remote host. The default is #{inspect(@unicode_default_connection_timeout)}.
       This option may also be set with the
-      `CLDR_HTTP_CONNECTION_TIMEOUT` environment variable.
+      `UNICODE_HTTP_CONNECTION_TIMEOUT` environment variable.
 
     * `:https_proxy` is the URL of an https proxy to be used. The
       default is `nil`.
@@ -275,7 +467,7 @@ if File.exists?(Unicode.data_dir()) do
 
     ### Unsafe HTTPS
 
-    If the environment variable `CLDR_UNSAFE_HTTPS` is
+    If the environment variable `UNICODE_UNSAFE_HTTPS` is
     set to anything other than `FALSE`, `false`, `nil`
     or `NIL` then no peer verification of certificates
     is performed. Setting this variable is not recommended
@@ -545,12 +737,12 @@ if File.exists?(Unicode.data_dir()) do
 
     defp http_opts(hostname, options) do
       default_timeout =
-        "TZWORLD_HTTP_TIMEOUT"
+        "UNICODE_HTTP_TIMEOUT"
         |> System.get_env(@unicode_default_timeout)
         |> String.to_integer()
 
       default_connection_timeout =
-        "TZWORLD_HTTP_CONNECTION_TIMEOUT"
+        "UNICODE_HTTP_CONNECTION_TIMEOUT"
         |> System.get_env(@unicode_default_connection_timeout)
         |> String.to_integer()
 
@@ -652,10 +844,6 @@ if File.exists?(Unicode.data_dir()) do
 
     def otp_version do
       :erlang.system_info(:otp_release) |> List.to_integer()
-    end
-
-    defp data_path(filename) do
-      Path.join(Unicode.data_dir(), filename)
     end
   end
 end

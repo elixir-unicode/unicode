@@ -126,6 +126,34 @@ defmodule Unicode.PropertyModules.Test do
       assert Unicode.fetch_property("nfd_qc") == {:ok, Unicode.NfdQuickCheck}
       assert Unicode.fetch_property("nfkc_qc") == {:ok, Unicode.NfkcQuickCheck}
       assert Unicode.fetch_property("nfkd_qc") == {:ok, Unicode.NfkdQuickCheck}
+      assert Unicode.fetch_property("scx") == {:ok, Unicode.ScriptExtensions}
+      assert Unicode.fetch_property("script_extensions") == {:ok, Unicode.ScriptExtensions}
+    end
+
+    test "every enumerated property in the UCD has a backing module" do
+      # `Unicode.Utils.property_servers/0` drops any property whose `Unicode.<CamelCasedProperty>`
+      # module does not exist, so an unimplemented enumerated property is silently unresolvable.
+      # Asserting the full set here means the next Unicode release that adds one fails a test
+      # rather than requiring a manual diff of `PropertyAliases.txt` to notice.
+      enumerated =
+        Path.join(Unicode.data_dir(), "property_alias.txt")
+        |> File.read!()
+        |> String.split("# Enumerated Properties")
+        |> Enum.at(1)
+        |> String.split("# Binary Properties")
+        |> Enum.at(0)
+        |> String.split("\n")
+        |> Enum.reject(&(String.starts_with?(&1, "#") or &1 == ""))
+        |> Enum.map(&(String.split(&1, ";") |> hd() |> String.trim()))
+
+      assert enumerated != []
+
+      unresolvable =
+        Enum.reject(enumerated, fn property ->
+          match?({:ok, _module}, Unicode.fetch_property(String.downcase(property)))
+        end)
+
+      assert unresolvable == []
     end
 
     test "bidi_mirrored is a resolvable boolean property" do

@@ -16,172 +16,13 @@ defmodule Unicode do
   @typedoc "Unicode UTF encodings"
   @type encoding :: :utf8 | :utf16 | :utf16be | :utf16le | :utf32 | :utf32be | :utf32le
 
-  @typedoc "The valid scripts as of Unicode 15"
-  @type script ::
-          :tangsa
-          | :runic
-          | :greek
-          | :myanmar
-          | :cherokee
-          | :palmyrene
-          | :elymaic
-          | :latin
-          | :kannada
-          | :deseret
-          | :old_hungarian
-          | :psalter_pahlavi
-          | :tagbanwa
-          | :wancho
-          | :khmer
-          | :bengali
-          | :soyombo
-          | :chakma
-          | :inscriptional_pahlavi
-          | :carian
-          | :tai_viet
-          | :georgian
-          | :oriya
-          | :meroitic_cursive
-          | :meroitic_hieroglyphs
-          | :braille
-          | :nandinagari
-          | :vai
-          | :adlam
-          | :mahajani
-          | :tirhuta
-          | :mro
-          | :zanabazar_square
-          | :cuneiform
-          | :vithkuqi
-          | :newa
-          | :yezidi
-          | :osage
-          | :linear_a
-          | :hiragana
-          | :mende_kikakui
-          | :cyrillic
-          | :hatran
-          | :anatolian_hieroglyphs
-          | :limbu
-          | :balinese
-          | :ethiopic
-          | :new_tai_lue
-          | :dives_akuru
-          | :old_uyghur
-          | :saurashtra
-          | :linear_b
-          | :mandaic
-          | :tibetan
-          | :caucasian_albanian
-          | :avestan
-          | :tangut
-          | :siddham
-          | :duployan
-          | :kawi
-          | :common
-          | :thai
-          | :shavian
-          | :tamil
-          | :old_persian
-          | :nag_mundari
-          | :ol_chiki
-          | :samaritan
-          | :tagalog
-          | :grantha
-          | :gujarati
-          | :ugaritic
-          | :khitan_small_script
-          | :nyiakeng_puachue_hmong
-          | :buhid
-          | :syriac
-          | :old_sogdian
-          | :khudawadi
-          | :lepcha
-          | :lycian
-          | :phags_pa
-          | :bopomofo
-          | :old_permic
-          | :phoenician
-          | :katakana
-          | :dogra
-          | :javanese
-          | :glagolitic
-          | :tai_le
-          | :old_turkic
-          | :old_south_arabian
-          | :takri
-          | :inscriptional_parthian
-          | :signwriting
-          | :osmanya
-          | :syloti_nagri
-          | :sogdian
-          | :egyptian_hieroglyphs
-          | :gunjala_gondi
-          | :sora_sompeng
-          | :arabic
-          | :modi
-          | :inherited
-          | :chorasmian
-          | :manichaean
-          | :medefaidrin
-          | :imperial_aramaic
-          | :nko
-          | :cypriot
-          | :bamum
-          | :han
-          | :masaram_gondi
-          | :ahom
-          | :hanifi_rohingya
-          | :coptic
-          | :lao
-          | :cham
-          | :malayalam
-          | :lisu
-          | :yi
-          | :old_italic
-          | :gothic
-          | :cypro_minoan
-          | :pau_cin_hau
-          | :canadian_aboriginal
-          | :mongolian
-          | :sharada
-          | :tai_tham
-          | :hanunoo
-          | :old_north_arabian
-          | :lydian
-          | :rejang
-          | :warang_citi
-          | :kharoshthi
-          | :brahmi
-          | :sinhala
-          | :batak
-          | :telugu
-          | :gurmukhi
-          | :kayah_li
-          | :marchen
-          | :pahawh_hmong
-          | :armenian
-          | :bassa_vah
-          | :multani
-          | :nabataean
-          | :toto
-          | :hangul
-          | :devanagari
-          | :khojki
-          | :kaithi
-          | :thaana
-          | :nushu
-          | :sundanese
-          | :bhaiksuki
-          | :ogham
-          | :makasar
-          | :elbasan
-          | :miao
-          | :meetei_mayek
-          | :hebrew
-          | :buginese
-          | :tifinagh
-          | :unknown
+  @typedoc """
+  A Unicode script name.
+
+  Delegates to `t:Unicode.Script.t/0`, which is generated from the script data at compile time so
+  that new scripts in each Unicode release are picked up automatically.
+  """
+  @type script :: Unicode.Script.t()
 
   @doc false
   @data_dir Path.join(__DIR__, "../data") |> Path.expand()
@@ -199,10 +40,17 @@ defmodule Unicode do
   ### Examples
 
       iex> Unicode.version()
-      {17, 0, 0}
+      {18, 0, 0}
 
   """
-  @version File.read!("data/blocks.txt")
+  # Derived from the version header of `blocks.txt` rather than hardcoded. The `@external_resource`
+  # is essential: without it Mix has no idea this module depends on the data file and will not
+  # recompile when `data/` is updated, leaving `version/0` silently reporting the previous release.
+  @blocks_path Path.join(@data_dir, "blocks.txt")
+  @external_resource @blocks_path
+
+  @version @blocks_path
+           |> File.read!()
            |> String.split("\n")
            |> Enum.at(0)
            |> String.replace("# Blocks-", "")

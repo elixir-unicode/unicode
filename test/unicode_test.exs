@@ -5,6 +5,7 @@ defmodule Unicode.Test do
   doctest Unicode.Property
   doctest Unicode.GeneralCategory
   doctest Unicode.Script
+  doctest Unicode.ScriptExtensions
   doctest Unicode.Block
   doctest Unicode.Emoji
   doctest Unicode.CanonicalCombiningClass

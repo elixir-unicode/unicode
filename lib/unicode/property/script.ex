@@ -54,6 +54,14 @@ defmodule Unicode.Script do
     @known_scripts
   end
 
+  @typedoc """
+  A Unicode script name.
+
+  Generated from the script data at compile time, so it tracks each Unicode release automatically
+  rather than being hand-maintained.
+  """
+  @type t :: unquote(@known_scripts |> Enum.sort() |> Enum.reduce(&{:|, [], [&1, &2]}))
+
   @script_alias Utils.property_value_alias()
                 |> Map.get("sc")
                 |> Utils.invert_map()

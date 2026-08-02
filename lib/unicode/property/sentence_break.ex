@@ -165,7 +165,7 @@ defmodule Unicode.SentenceBreak do
   ### Examples
 
       iex> Unicode.SentenceBreak.count(:extend)
-      2643
+      2682
 
   """
   @impl Unicode.Property.Behaviour

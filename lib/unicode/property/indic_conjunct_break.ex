@@ -181,7 +181,7 @@ defmodule Unicode.IndicConjunctBreak do
   ### Examples
 
       iex> Unicode.IndicConjunctBreak.count(:linker)
-      20
+      23
 
   """
   @impl Unicode.Property.Behaviour
