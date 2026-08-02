@@ -6,6 +6,9 @@ defmodule Unicode.Test do
   doctest Unicode.GeneralCategory
   doctest Unicode.Script
   doctest Unicode.ScriptExtensions
+  doctest Unicode.LinkTerm
+  doctest Unicode.LinkEmail
+  doctest Unicode.LinkBracket
   doctest Unicode.Block
   doctest Unicode.Emoji
   doctest Unicode.CanonicalCombiningClass

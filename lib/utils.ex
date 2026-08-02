@@ -150,6 +150,88 @@ defmodule Unicode.Utils do
   end
 
   @doc """
+  Returns a map of the `Link_Term` property with the value name as the key and a list of codepoint
+  ranges as the values.
+
+  `Link_Term` drives the link termination algorithm of
+  [UTS #58](https://www.unicode.org/reports/tr58/). Codepoints absent from the file take the
+  default value `:hard`, which is most of them — the file lists only the characters that can appear
+  inside a link or bracket it.
+
+  """
+  @link_term_path Path.join(Unicode.data_dir(), "link_term.txt")
+  @external_resource @link_term_path
+  def link_terms do
+    parse_file(@link_term_path)
+    |> downcase_keys()
+    |> atomize_keys()
+  end
+
+  @doc """
+  Returns the codepoint ranges of the `Link_Email` property.
+
+  `Link_Email` is a binary property listing the characters valid in the local part of an email
+  address, per [UTS #58](https://www.unicode.org/reports/tr58/). The file carries no value field —
+  a codepoint is either listed or it is not — so this returns a plain range list rather than the
+  `%{value => ranges}` map the enumerated properties use.
+
+  """
+  @link_email_path Path.join(Unicode.data_dir(), "link_email.txt")
+  @external_resource @link_email_path
+  def link_emails do
+    @link_email_path
+    |> File.stream!()
+    |> Enum.flat_map(fn
+      <<"#", _rest::bitstring>> -> []
+      <<"\n", _rest::bitstring>> -> []
+      line -> [codepoint_range(line)]
+    end)
+    |> merge_ranges()
+  end
+
+  @doc """
+  Returns the `Link_Bracket` property as a map of closing codepoint to opening codepoint.
+
+  Unlike the other link properties this is a codepoint-valued mapping rather than a set of ranges,
+  so it does not fit `Unicode.Property.Behaviour`. It is used by the
+  [UTS #58](https://www.unicode.org/reports/tr58/) termination algorithm to decide whether a
+  closing bracket matches the innermost open one.
+
+  """
+  @link_bracket_path Path.join(Unicode.data_dir(), "link_bracket.txt")
+  @external_resource @link_bracket_path
+  def link_brackets do
+    @link_bracket_path
+    |> File.stream!()
+    |> Enum.flat_map(fn
+      <<"#", _rest::bitstring>> -> []
+      <<"\n", _rest::bitstring>> -> []
+      line -> [bracket_pair(line)]
+    end)
+    |> Map.new()
+  end
+
+  defp bracket_pair(line) do
+    [close, open] =
+      line
+      |> String.split("#")
+      |> hd()
+      |> String.split(";")
+      |> Enum.map(&(String.trim(&1) |> String.to_integer(16)))
+
+    {close, open}
+  end
+
+  # The first field of a line, as an inclusive `{first, last}` tuple. A single codepoint gives a
+  # range of one.
+  defp codepoint_range(line) do
+    case line |> String.split("#") |> hd() |> String.trim() |> String.split("..") do
+      [single] -> {String.to_integer(single, 16), String.to_integer(single, 16)}
+      [first, last] -> {String.to_integer(first, 16), String.to_integer(last, 16)}
+    end
+  end
+
+  @doc """
   Returns a map of the Unicode codepoints with the `block` name
   as the key and a list of codepoint ranges as the values.
 
@@ -824,6 +906,15 @@ defmodule Unicode.Utils do
     "indicconjunctbreak" => Unicode.IndicConjunctBreak
   }
 
+  # `Link_Term` is defined by UTS #58 rather than the UCD, so it is absent from `PropertyAliases`
+  # and has to be wired explicitly. Only this one of the three link properties is served here:
+  # `Link_Email` is binary and `Link_Bracket` maps codepoints to codepoints, so neither has the
+  # `fetch(value)` semantics that `Unicode.fetch_property/1` callers rely on.
+  @link_term_server %{
+    "linkterm" => Unicode.LinkTerm,
+    "link_term" => Unicode.LinkTerm
+  }
+
   # The `Name` property is served by `Unicode.CharacterName`, whose module name
   # does not follow the `Unicode.<CamelCasedProperty>` convention, so it is wired
   # explicitly rather than derived from the property alias.
@@ -857,6 +948,7 @@ defmodule Unicode.Utils do
     |> Enum.filter(fn {_k, v} -> ensure_compiled?(v) end)
     |> Map.new()
     |> Map.merge(@indic_conjunct_break_server)
+    |> Map.merge(@link_term_server)
     |> Map.merge(@character_name_server)
   end
 

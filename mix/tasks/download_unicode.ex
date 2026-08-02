@@ -78,8 +78,8 @@ if File.exists?(Unicode.data_dir()) do
 
     @switches [release: :string, emoji_release: :string, into: :string, dry_run: :boolean]
 
-    # Each entry is `{root, source_path, destination_file}` where `root` selects which of the two
-    # release channels the file hangs off. The distinction matters and is easy to lose: `emoji-data.txt`
+    # Each entry is `{root, source_path, destination_file}` where `root` selects which tree the file
+    # hangs off — the UCD, the separately versioned emoji tree, or the UTS #58 linkification tree. The distinction matters and is easy to lose: `emoji-data.txt`
     # lives under the *UCD* root at `ucd/emoji/`, while `emoji-sequences.txt` lives under the separate
     # emoji root. Conflating the two is what made the Unicode 17.0 emoji update a manual patch.
     @files [
@@ -117,7 +117,10 @@ if File.exists?(Unicode.data_dir()) do
       {:ucd, "SpecialCasing.txt", "special_casing.txt"},
       {:ucd, "EastAsianWidth.txt", "east_asian_width.txt"},
       {:emoji, "emoji-sequences.txt", "emoji_sequences.txt"},
-      {:emoji, "emoji-zwj-sequences.txt", "emoji_zwj_sequences.txt"}
+      {:emoji, "emoji-zwj-sequences.txt", "emoji_zwj_sequences.txt"},
+      {:linkification, "LinkTerm.txt", "link_term.txt"},
+      {:linkification, "LinkBracket.txt", "link_bracket.txt"},
+      {:linkification, "LinkEmail.txt", "link_email.txt"}
     ]
 
     @doc false
@@ -188,9 +191,18 @@ if File.exists?(Unicode.data_dir()) do
     @doc false
     def root_url(:ucd, release, _emoji_release), do: ucd_root(release)
     def root_url(:emoji, _release, emoji_release), do: emoji_root(emoji_release)
+    def root_url(:linkification, release, _emoji_release), do: linkification_root(release)
 
     defp ucd_root(@draft_release), do: "https://www.unicode.org/Public/draft/ucd/"
     defp ucd_root(release), do: "https://www.unicode.org/Public/#{release}/ucd/"
+
+    # The UTS #58 data is versioned with the release rather than on its own schedule like emoji, so
+    # it follows the UCD channel and its path is shaped the same way.
+    defp linkification_root(@draft_release),
+      do: "https://www.unicode.org/Public/draft/linkification/"
+
+    defp linkification_root(release),
+      do: "https://www.unicode.org/Public/#{release}/linkification/"
 
     defp emoji_root(@draft_release), do: "https://www.unicode.org/Public/draft/emoji/"
     defp emoji_root(@latest_release), do: "https://www.unicode.org/Public/emoji/latest/"

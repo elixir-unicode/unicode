@@ -30,6 +30,8 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 * Property aliases containing an underscore (for example `nfc_qc`) are now reachable through `Unicode.fetch_property/1`, which previously only matched the whitespace-stripped canonical form.
 
+* Adds the [UTS #58](https://www.unicode.org/reports/tr58/) link properties `Unicode.LinkTerm`, `Unicode.LinkEmail` and `Unicode.LinkBracket`, which together drive link detection in flowing text. `mix unicode.download` gains a `linkification` tree alongside the UCD and emoji trees to fetch them.
+
 * Adds the `LC` (`Cased_Letter`) general category, the union of `Lu`, `Ll` and `Lt`. It is the only General_Category group whose name is not a single letter, so it was not produced by the derivation that yields `L`, `N`, `P` and the rest, and `Unicode.GeneralCategory.fetch("lc")` returned `:error` despite the alias being advertised.
 
 * Scripts and blocks whose `PropertyValueAliases` line carries more than two names now resolve by every spelling. `Unicode.Script.fetch/1` failed for `"copt"` and `"qaac"`, and `Unicode.Block.fetch/1` for `"latin1sup"` and `"cyrillicsupplementary"`, because the alias map was built by inverting a many-to-one map and elected a name absent from the data.
