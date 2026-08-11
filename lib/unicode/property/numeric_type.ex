@@ -155,7 +155,7 @@ defmodule Unicode.NumericType do
   ### Examples
 
       iex> Unicode.NumericType.count(:decimal)
-      780
+      770
 
   """
   @impl Unicode.Property.Behaviour

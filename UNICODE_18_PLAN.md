@@ -325,3 +325,19 @@ Success requires one name to be *strictly* closest, not merely above the thresho
 Names too different in length to reach the threshold are skipped using `jaro <= (2 + shorter / longer) / 3`, which holds when every character of the shorter string matches in place.
 
 **An optimization that had to be reverted.** Raising that bound to the best distance seen so far, rather than the fixed threshold, cut a fuzzy hit from 346ms to 217ms. It also broke the single-match guarantee. The bound is mathematically tight, so a name that *exactly* achieves it is excluded by one unit in the last place: for `LATIN SMALL LETTER`, the length ratio is `16/17 = 0.9411764705882353` while `3 × 0.9803921568627451 - 2 = 0.9411764705882355`. Every single-letter Latin name ties at that distance, and pruning them turned a correctly ambiguous `:error` into a confident `{:ok, 97}`. A wrong answer is worse than a slow one, so the prefilter stays pinned to the fixed threshold, with a tolerance added against the same rounding. `test/character_name_fuzzy_test.exs` asserts the bound never excludes a name that clears the threshold.
+
+---
+
+## 7. Data refresh, 3 August 2026
+
+The data integrated on 2 August was dated **2026-02-03** — alpha-era, predating the beta review entirely. The draft tree now serves **2026-07-08**, and the difference matters.
+
+**`Chisoi` has been withdrawn.** It is gone from `Blocks.txt`, `Scripts.txt` (5 occurrences to 0) and `PropertyValueAliases.txt` (`sc ; Chis`), and `UnicodeData.txt` drops 41,381 to 41,341 lines. This is exactly what the beta phase permits: the repertoire is closed to *additions* once beta opens, but a character new in the version may still be removed. Unicode 18 therefore adds **3 scripts** (Jurchen, Proto_Cuneiform, Seal) and **7 blocks**, not 4 and 8.
+
+Nothing else in the script, block, age or joining-group sets changed. Six `count/1` doctests shifted, and the UTS #58 link properties moved slightly (`LinkTerm` −2 lines, `LinkEmail` −2, `ScriptExtensions` +1) without disturbing conformance in `text`, which still passes 344/344 and 55/55.
+
+### Two things worth carrying into September
+
+**`Public/18.0.0/` already resolves.** It is a 302 alias onto `Public/draft/`, and `:httpc` follows it, so `mix unicode.download --release 18.0.0` succeeds *today* and silently returns draft data. Phase 6 step 3 — "re-run at 18.0.0 and diff" — would therefore report a false all-clear if run before the release. Check the `# Date:` header of `data/blocks.txt` rather than trusting the exit status.
+
+**Stable is not final.** The [beta announcement](http://blog.unicode.org/2026/05/unicode-180-beta-review-opens-for.html) says the repertoire "is considered stable. No new characters will be added" — but characters new in the version can still be removed, as Chisoi was. Re-pull once more shortly before **16 September 2026** and expect the possibility of further withdrawals.

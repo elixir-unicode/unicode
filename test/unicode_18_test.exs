@@ -10,8 +10,11 @@ defmodule Unicode.Unicode18.Test do
   use ExUnit.Case, async: true
 
   # {script, a codepoint within it}
+  #
+  # Chisoi was in the alpha data but was removed during the beta review, which is exactly the change
+  # the beta period allows — the repertoire is closed to *additions* once beta opens, but characters
+  # new in the version may still be withdrawn.
   @new_scripts [
-    {:chisoi, 0x16D80},
     {:jurchen, 0x18E00},
     {:proto_cuneiform, 0x125A8},
     {:seal, 0x3D000}
@@ -21,7 +24,6 @@ defmodule Unicode.Unicode18.Test do
   @new_blocks [
     {:bengali_supplement, 0x11DF0},
     {:archaic_cuneiform_numerals, 0x12550},
-    {:chisoi, 0x16D80},
     {:jurchen, 0x18E00},
     {:jurchen_radicals, 0x191A0},
     {:musical_symbols_supplement, 0x1D250},
@@ -46,7 +48,6 @@ defmodule Unicode.Unicode18.Test do
   @new_character_names [
     {"BENGALI SIGN COMBINING ANUSVARA ABOVE", 0x11DF0},
     {"CUNEIFORM NUMERIC SIGN ONE N01", 0x12550},
-    {"CHISOI LETTER A", 0x16D80},
     {"JURCHEN RADICAL-01", 0x191A0},
     {"MUSICAL SYMBOL COMBINING FLAG-6", 0x1D250},
     {"LEIBNIZIAN EQUALS SIGN", 0x1DB00}
@@ -117,7 +118,7 @@ defmodule Unicode.Unicode18.Test do
 
     test "codepoints new in this release report age 18.0" do
       assert Unicode.Age.age(0x3D000) == :"18.0"
-      assert Unicode.Age.age(0x16D80) == :"18.0"
+      assert Unicode.Age.age(0x18E00) == :"18.0"
     end
   end
 

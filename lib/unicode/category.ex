@@ -203,7 +203,7 @@ defmodule Unicode.GeneralCategory do
       2366
 
       iex> Unicode.GeneralCategory.count(:Nd)
-      780
+      770
 
   """
   @impl Unicode.Property.Behaviour

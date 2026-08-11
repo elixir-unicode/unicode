@@ -89,7 +89,6 @@ defmodule Unicode.CharacterName.ToName.Test do
 
     test "names in the blocks new in Unicode 18 resolve" do
       assert CharacterName.to_name(0x11DF0) == {:ok, "BENGALI SIGN COMBINING ANUSVARA ABOVE"}
-      assert CharacterName.to_name(0x16D80) == {:ok, "CHISOI LETTER A"}
       assert CharacterName.to_name(0x1DB00) == {:ok, "LEIBNIZIAN EQUALS SIGN"}
     end
   end

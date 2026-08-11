@@ -6,7 +6,7 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 ### Enhancements
 
-* Updates the underlying data to [Unicode 18.0](https://www.unicode.org/versions/Unicode18.0.0/), adding the `Chisoi`, `Jurchen`, `Proto_Cuneiform` and `Seal` scripts, eight new blocks and ten new `Crown_*` joining groups. Until Unicode 18.0 is formally accepted the data is taken from the draft tree and remains subject to change.
+* Updates the underlying data to [Unicode 18.0](https://www.unicode.org/versions/Unicode18.0.0/), adding the `Jurchen`, `Proto_Cuneiform` and `Seal` scripts, seven new blocks and ten new `Crown_*` joining groups. Until Unicode 18.0 is released on 16 September 2026 the data is taken from the draft tree; the repertoire is stable in the sense that no characters will be added, but one new in the alpha data (`Chisoi`) was withdrawn during the beta review, so further removals remain possible.
 
 * Adds `Unicode.ScriptExtensions` for the `Script_Extensions` (`scx`) property, the last UCD enumerated property without a backing module and a UTS #18 RL1.2 conformance requirement. `Unicode.ScriptExtensions.script_extensions/1` returns the set of scripts a codepoint is used with, defaulting to its `Script` value where the UCD lists no explicit set.
 

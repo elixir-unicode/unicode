@@ -165,7 +165,7 @@ defmodule Unicode.WordBreak do
   ### Examples
 
       iex> Unicode.WordBreak.count(:aletter)
-      34516
+      34488
 
   """
   @impl Unicode.Property.Behaviour
