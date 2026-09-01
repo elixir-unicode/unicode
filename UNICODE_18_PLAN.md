@@ -341,3 +341,86 @@ Nothing else in the script, block, age or joining-group sets changed. Six `count
 **`Public/18.0.0/` already resolves.** It is a 302 alias onto `Public/draft/`, and `:httpc` follows it, so `mix unicode.download --release 18.0.0` succeeds *today* and silently returns draft data. Phase 6 step 3 — "re-run at 18.0.0 and diff" — would therefore report a false all-clear if run before the release. Check the `# Date:` header of `data/blocks.txt` rather than trusting the exit status.
 
 **Stable is not final.** The [beta announcement](http://blog.unicode.org/2026/05/unicode-180-beta-review-opens-for.html) says the repertoire "is considered stable. No new characters will be added" — but characters new in the version can still be removed, as Chisoi was. Re-pull once more shortly before **16 September 2026** and expect the possibility of further withdrawals.
+
+---
+
+## 8. Review against the UAX changes, 3 August 2026
+
+This plan has a blind spot worth naming before the detail: **it is entirely a data plan.** §1.1 asks whether Unicode 18 adds properties, §1.2 enumerates new property *values*, and Phase 5 treats the downstream libraries as a compile-and-test pass. Nothing in it asks whether any *algorithm* changed. For Unicode 18 that omission matters, because three segmentation changes land — and none of them shows up in a property-value diff.
+
+All three were verified against the current draft data and the proposed updates. All three are confirmed. Critically, **none of them requires a change to `unicode`**: this library ships property values, not segmentation algorithms, so the data refresh already absorbed everything it owns. Every one lands in `unicode_string`, which implements UAX #14 and UAX #29.
+
+### 8.1 Indic_Conjunct_Break now derives from Script_Extensions — data only, already absorbed
+
+Confirmed in the data. `InCB` assignments rose from 506 to 516 between 17.0 and the current draft, gaining Linkers at `1CF5..1CF6` and `11A3A`, Consonants at `11B0A` and `11DF1`, and several widened `Extend` ranges.
+
+The mechanism is exactly as described. U+1CF5 and U+1CF6 have `sc=Common` but `scx=[Bengali]`, so a `Script`-based derivation excludes them and a `Script_Extensions`-based one admits them. That is the signature of the switch, and it is why the count rose rather than merely shifted.
+
+Because `Unicode.IndicConjunctBreak` reads `DerivedCoreProperties.txt`, this arrived with the July refresh and needs no code change here. It does change what `unicode_string` sees, since more characters are now Linkers.
+
+### 8.2 GB9c revised — `unicode_string` is currently non-conformant
+
+[UAX #29 revision 48](https://www.unicode.org/reports/tr29/proposed.html), dated 2026-06-12, adds a second clause to GB9c:
+
+```
+\p{InCB=Linker} \p{InCB=Extend}* × \p{InCB=Consonant}
+```
+
+with no preceding `InCB=Consonant` required, per Unicode document 187-C47. The Unicode 17 text (revision 47) has only the context-requiring form.
+
+`unicode_string` implements the old rule and demonstrably fails the new one:
+
+```elixir
+# U+094D DEVANAGARI VIRAMA (Linker) + U+0915 DEVANAGARI KA (Consonant)
+Unicode.String.split(<<0x094D::utf8, 0x0915::utf8>>, break: :grapheme)
+#=> ["्", "क"]     # two clusters; Unicode 18 requires one
+```
+
+The cause is precise and the fix is small. `next_incb_state/2` in `lib/unicode/string/break/grapheme.ex` only enters the `:linker` state from `:consonant`:
+
+```elixir
+defp next_incb_state(:consonant, :linker), do: :linker   # Linker reachable only after a Consonant
+defp next_incb_state(_state, _), do: :none
+```
+
+A Linker in any other context falls through to `:none`, so the `× Consonant` decision never fires. Making a Linker enter `:linker` unconditionally implements the revised rule.
+
+### 8.3 LB12a and the dash reassignments — a latent approximation worth re-examining
+
+[UAX #14 revision 56](https://unicode.org/reports/tr14/proposed.html), also 2026-06-12. Five `Line_Break` assignments changed between 17.0 and the current draft:
+
+| Codepoint | 17.0 | 18.0 draft |
+| --- | --- | --- |
+| `00AD` SOFT HYPHEN | `BA` | `HH` |
+| `2012..2013` FIGURE DASH, EN DASH | `HH` | `BA` |
+| `0387` GREEK ANO TELEIA | `AL` | `IS` |
+| `00B7` MIDDLE DOT | `AI` | `IS` |
+| `1F7F1..1F7FF` | `ID` | `AL` |
+
+Note that `HH` (`Unambiguous_Hyphen`) is **not** a new value — it existed in 17.0 with ten assigned codepoints, and still has ten. What changed is its membership: SOFT HYPHEN joined, and the figure and en dashes left.
+
+The specification says rules LB12a and LB21 "treat HH like BA, preserving their old behavior". `unicode_string` instead folds the class wholesale, in `@lb1_map`:
+
+```elixir
+# The unicode dep classifies U+2010 etc. as :hh; UAX #14 itself
+# uses :hy (Hyphen). Treat them identically.
+hh: :hy
+```
+
+That fold happens to give the right answer for LB12a and LB21, since both exclude `BA` and `HY` alike. It is worth re-examining rather than assuming, for two reasons. The comment shows it was written as a convenience when HH held only the unambiguous hyphens; SOFT HYPHEN moving into HH now routes it through every `HY`-specific rule, including the numeric productions of LB25, where `BA` and `HY` genuinely differ. And in the other direction the en and figure dashes stop being folded and become `BA` outright.
+
+Neither of those is a property-value change, so neither would have been caught by the checks this plan describes.
+
+### 8.4 What this means for sequencing
+
+`unicode_string` is currently on `unicode 2.0.0`, so it still sees Unicode 17 data: U+00AD reports `:ba` and U+2013 reports `:hh` there. All of the above arrives at once when it takes 2.1.0 — the property reassignments silently, the rule changes only if someone implements them.
+
+Phase 5 should therefore be amended. "A compile-and-test pass" is the wrong instruction for `unicode_string` in this release; it needs:
+
+* GB9c amended in `next_incb_state/2` (§8.2), which is the only outright conformance failure found.
+
+* The `hh: :hy` fold reviewed against revision 56 (§8.3), specifically LB21a and the LB25 numeric productions.
+
+* Its UAX #29 and UAX #14 conformance suites re-run against the new data — `GraphemeBreakTest.txt` and `LineBreakTest.txt` are the authority here, and the same vendoring approach used for UTS #58 in `text` would make that repeatable.
+
+Nothing in §§8.1–8.3 blocks publishing `unicode` 2.1.0. They block calling the *ecosystem* Unicode 18-ready, which is a different claim and one this plan did not previously distinguish.
