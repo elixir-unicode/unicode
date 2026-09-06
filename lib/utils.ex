@@ -1634,7 +1634,14 @@ defmodule Unicode.Utils do
   """
   def add_default_value(map, default_value) do
     assigned = map |> Map.values() |> union_ranges()
-    Map.put(map, default_value, difference_ranges([{0x0, 0x10FFFF}], assigned))
+    unassigned = difference_ranges([{0x0, 0x10FFFF}], assigned)
+
+    # The value may already be present. `Line_Break` lists some XX ranges
+    # explicitly even though XX is also its `@missing` default, so the two sets
+    # have to be merged; replacing would silently drop the explicit ranges.
+    Map.update(map, default_value, unassigned, fn existing ->
+      union_ranges([existing, unassigned])
+    end)
   end
 
   @doc false

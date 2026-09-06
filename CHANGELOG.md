@@ -6,7 +6,7 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 ### Enhancements
 
-* Resolves the property value that a UCD `@missing` annotation declares as the default. `Grapheme_Cluster_Break`, `Word_Break` and `Sentence_Break` now answer `Other` (and its `XX` alias), which the data files declare but never list as a data row.
+* Resolves the property value that a UCD `@missing` annotation declares as the default. `Grapheme_Cluster_Break`, `Word_Break` and `Sentence_Break` now answer `Other` (and its `XX` alias), and `Line_Break` answers `XX`, for every codepoint the data files do not list. `Line_Break` previously covered only 358,578 of the 1,114,112 codepoints; the remainder, including all private use, resolved only through a lookup fallback and was invisible to anything enumerating the property. Where a value is both listed explicitly and named as the `@missing` default, as `XX` is for `Line_Break`, the two sets are merged rather than replaced.
 
 * Adds the `age` property value aliases from `PropertyValueAliases.txt`, so `Unicode.Age.fetch("V18_0")` resolves the same set as `Unicode.Age.fetch("18.0")`.
 

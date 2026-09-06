@@ -12,8 +12,12 @@ defmodule Unicode.LineBreak do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; XX` - see `Utils.add_default_value/2`. The data file
+  # lists some XX ranges explicitly, but those cover only a fraction of the
+  # codepoints the annotation assigns to XX.
   @line_breaks Utils.line_breaks()
                |> Utils.remove_annotations()
+               |> Utils.add_default_value(:xx)
 
   @line_break_table Unicode.RangeSearch.new_value_table(@line_breaks)
 
