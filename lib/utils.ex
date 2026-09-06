@@ -1608,6 +1608,35 @@ defmodule Unicode.Utils do
     |> Map.new()
   end
 
+  @doc """
+  Adds the property value that a UCD data file declares as the default for
+  every codepoint it does not list explicitly.
+
+  Several UCD files carry an `@missing` annotation such as
+  `# @missing: 0000..10FFFF; Other`, meaning that any codepoint absent from
+  the file has that value. Because the value never appears as a data row it
+  is otherwise absent from the parsed map, so `\p{Word_Break=Other}` and
+  friends cannot be resolved.
+
+  ### Arguments
+
+  * `map` is a map of property value to a list of codepoint ranges as
+    2-tuples. Annotations must already be removed.
+
+  * `default_value` is the atom naming the value the `@missing` annotation
+    declares.
+
+  ### Returns
+
+  * `map` with `default_value` added, holding every codepoint not assigned
+    to some other value.
+
+  """
+  def add_default_value(map, default_value) do
+    assigned = map |> Map.values() |> union_ranges()
+    Map.put(map, default_value, difference_ranges([{0x0, 0x10FFFF}], assigned))
+  end
+
   @doc false
   def remove_annotations(data) do
     data

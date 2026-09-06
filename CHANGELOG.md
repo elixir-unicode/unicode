@@ -6,6 +6,10 @@ This release closes a number of Unicode Character Database coverage gaps: severa
 
 ### Enhancements
 
+* Resolves the property value that a UCD `@missing` annotation declares as the default. `Grapheme_Cluster_Break`, `Word_Break` and `Sentence_Break` now answer `Other` (and its `XX` alias), which the data files declare but never list as a data row.
+
+* Adds the `age` property value aliases from `PropertyValueAliases.txt`, so `Unicode.Age.fetch("V18_0")` resolves the same set as `Unicode.Age.fetch("18.0")`.
+
 * Updates the underlying data to [Unicode 18.0](https://www.unicode.org/versions/Unicode18.0.0/), adding the `Jurchen`, `Proto_Cuneiform` and `Seal` scripts, seven new blocks and ten new `Crown_*` joining groups. Until Unicode 18.0 is released on 16 September 2026 the data is taken from the draft tree; the repertoire is stable in the sense that no characters will be added, but one new in the alpha data (`Chisoi`) was withdrawn during the beta review, so further removals remain possible.
 
 * Adds `Unicode.ScriptExtensions` for the `Script_Extensions` (`scx`) property, the last UCD enumerated property without a backing module and a UTS #18 RL1.2 conformance requirement. `Unicode.ScriptExtensions.script_extensions/1` returns the set of scripts a codepoint is used with, defaulting to its `Script` value where the UCD lists no explicit set.

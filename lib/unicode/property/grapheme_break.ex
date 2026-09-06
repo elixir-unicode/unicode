@@ -12,8 +12,10 @@ defmodule Unicode.GraphemeClusterBreak do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Other` - see `Utils.add_default_value/2`.
   @grapheme_breaks Utils.grapheme_breaks()
                    |> Utils.remove_annotations()
+                   |> Utils.add_default_value(:other)
 
   @grapheme_break_table Unicode.RangeSearch.new_value_table(@grapheme_breaks)
 

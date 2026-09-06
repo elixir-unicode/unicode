@@ -52,24 +52,40 @@ defmodule Unicode.Age do
     @known_ages
   end
 
+  # Unlike most properties, `PropertyValueAliases.txt` lists the age alias
+  # first and the canonical name second (`age; 1.1 ; V1_1` is parsed as
+  # `{"v1_1", "1.1"}`), so this map needs no inversion.
+  @age_alias Utils.property_value_alias()
+             |> Map.get("age")
+             |> Utils.atomize_values()
+             |> Utils.downcase_keys_and_remove_whitespace()
+             |> Utils.add_canonical_alias()
+
   @doc """
   Returns a map of aliases for Unicode ages.
 
-  The `Age` property has no value aliases, so this returns an empty map. It exists to satisfy the `Unicode.Property.Behaviour`.
+  An alias is an alternative name for referring to an age. `PropertyValueAliases.txt`
+  gives each age a `V<major>_<minor>` alias, so `"V18_0"` is an alias for `:"18.0"`.
+  Alias keys are normalised by downcasing and removing whitespace and underscores,
+  the same normalisation `fetch/1` and `get/1` apply to their argument, so `"V18_0"`
+  is stored and looked up as `"v180"`. Aliases are resolved by `fetch/1` and `get/1`.
 
   ### Returns
 
-  * An empty map.
+  * A map of age aliases to the canonical age name.
 
   ### Examples
 
-      iex> Unicode.Age.aliases()
-      %{}
+      iex> Unicode.Age.aliases() |> Map.get("v11")
+      :"1.1"
+
+      iex> Unicode.Age.fetch("V18_0") == Unicode.Age.fetch("18.0")
+      true
 
   """
   @impl Unicode.Property.Behaviour
   def aliases do
-    %{}
+    @age_alias
   end
 
   @doc """
@@ -100,7 +116,12 @@ defmodule Unicode.Age do
   end
 
   def fetch(age) do
-    Map.fetch(ages(), Utils.maybe_atomize(age))
+    normalized = Utils.downcase_and_remove_whitespace(age)
+
+    case Map.fetch(aliases(), normalized) do
+      {:ok, canonical} -> Map.fetch(ages(), canonical)
+      :error -> Map.fetch(ages(), Utils.maybe_atomize(age))
+    end
   end
 
   @doc """

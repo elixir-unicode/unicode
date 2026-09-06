@@ -12,8 +12,10 @@ defmodule Unicode.SentenceBreak do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Other` - see `Utils.add_default_value/2`.
   @sentence_breaks Utils.sentence_breaks()
                    |> Utils.remove_annotations()
+                   |> Utils.add_default_value(:other)
 
   @sentence_break_table Unicode.RangeSearch.new_value_table(@sentence_breaks)
 
