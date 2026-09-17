@@ -8,7 +8,7 @@ if File.exists?(Unicode.data_dir()) do
     # is no `Public/emoji/17.0/` directory at all — the Unicode 17.0 emoji files were only ever
     # published under `latest/`, which is why the previous version-interpolating URL 404'd and
     # `data/emoji_sequences.txt` had to be patched by hand in commit 2e7423d.
-    @default_release "17.0.0"
+    @default_release "18.0.0"
     @default_emoji_release "latest"
 
     @moduledoc """

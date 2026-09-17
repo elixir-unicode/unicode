@@ -119,3 +119,10 @@ jobs:
     - name: Run dialyzer
       if: ${{ matrix.lint }}
       run: mix dialyzer
+
+    # Step: Build the documentation and fail on any doc warning (broken
+    # references, malformed sections, unresolvable links). Runs in the
+    # release env so dev-only modules are excluded.
+    - name: Check docs
+      if: ${{ matrix.lint }}
+      run: MIX_ENV=release mix docs --warnings-as-errors
