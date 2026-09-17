@@ -52,14 +52,14 @@ jobs:
 
     # Step: Check out the code.
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
 
     # Step: Define how to cache deps. Restores existing cache if present.
     # Cache keys include the OTP and Elixir versions so matrix entries
     # never share BEAMs compiled by a different toolchain.
     - name: Cache deps
       id: cache-deps
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-elixir-deps
       with:
@@ -73,7 +73,7 @@ jobs:
     # project's downloaded deps every run.
     - name: Cache compiled build
       id: cache-build
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       env:
         cache-name: cache-compiled-build
       with:
