@@ -57,14 +57,14 @@ iex> length(Unicode.Script.known_scripts())
 
 Codepoint sets are returned as a list of inclusive `{first, last}` ranges rather than a list of codepoints, which is how the database itself is organised and what makes the tables small enough to compile in.
 
-**`Unicode.property_servers/0`** maps every property name and alias to the module that serves it, which is how a property named at runtime — from configuration, a query, or a set expression — is resolved. The keys are normalized the same way property names are matched, so any spelling of a name finds its module.
+**`Unicode.fetch_property/1`** resolves a property named at runtime — from configuration, a query, or a set expression — to the module that serves it, from where its values and ranges can be read. `Unicode.property_servers/0` returns the whole map of names to modules.
 
 ```elixir
-iex> Unicode.property_servers() |> Map.get("sc")
-Unicode.Script
+iex> Unicode.fetch_property("sc")
+{:ok, Unicode.Script}
 
-iex> Unicode.property_servers() |> Map.get("jt")
-Unicode.JoiningType
+iex> Unicode.fetch_property("jt")
+{:ok, Unicode.JoiningType}
 ```
 
 ## Naming a property value

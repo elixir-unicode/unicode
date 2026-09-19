@@ -109,8 +109,76 @@ defmodule Unicode.MixProject do
       groups_for_extras: [
         Guides: Path.wildcard("guides/*.md")
       ],
+      groups_for_modules: groups_for_modules(),
       formatters: ["html", "markdown"],
       skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]
+    ]
+  end
+
+  # `Unicode` is the entry point and stays at the top level; every other documented module is
+  # grouped so that nothing lands in ExDoc's ungrouped catch-all. `test/docs_test.exs` asserts the
+  # lists stay complete, so a module added in a later release fails a test rather than quietly
+  # appearing at the bottom of the sidebar.
+  defp groups_for_modules do
+    [
+      "Character properties": [
+        Unicode.Age,
+        Unicode.Block,
+        Unicode.CanonicalCombiningClass,
+        Unicode.DecompositionType,
+        Unicode.EastAsianWidth,
+        Unicode.GeneralCategory,
+        Unicode.HangulSyllableType,
+        Unicode.NumericType,
+        Unicode.NumericValue,
+        Unicode.Property,
+        Unicode.Script,
+        Unicode.ScriptExtensions,
+        Unicode.VerticalOrientation
+      ],
+      "Bidirectional and shaping": [
+        Unicode.BidiClass,
+        Unicode.BidiPairedBracketType,
+        Unicode.JoiningGroup,
+        Unicode.JoiningType
+      ],
+      Segmentation: [
+        Unicode.GraphemeClusterBreak,
+        Unicode.LineBreak,
+        Unicode.SentenceBreak,
+        Unicode.WordBreak
+      ],
+      "Indic properties": [
+        Unicode.IndicConjunctBreak,
+        Unicode.IndicPositionalCategory,
+        Unicode.IndicSyllabicCategory
+      ],
+      Normalization: [
+        Unicode.NfcQuickCheck,
+        Unicode.NfdQuickCheck,
+        Unicode.NfkcQuickCheck,
+        Unicode.NfkdQuickCheck
+      ],
+      "Character names": [
+        Unicode.CharacterName
+      ],
+      "Link detection": [
+        Unicode.LinkBracket,
+        Unicode.LinkEmail,
+        Unicode.LinkTerm
+      ],
+      Guards: [
+        Unicode.Guards
+      ],
+      Internals: [
+        Unicode.Category.QuoteMarks,
+        Unicode.GeneralCategory.Derived,
+        Unicode.Property.Behaviour,
+        Unicode.RangeSearch
+      ],
+      "Mix tasks": [
+        Mix.Tasks.Unicode.Download
+      ]
     ]
   end
 

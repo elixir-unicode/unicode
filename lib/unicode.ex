@@ -134,12 +134,69 @@ defmodule Unicode do
     Unicode.Property.servers()
   end
 
-  @doc false
+  @doc """
+  Returns the module that serves a property.
+
+  This resolves a property named at runtime — from configuration, a query, or a Unicode set
+  expression — to the module holding its data, from where its values and codepoint ranges can be
+  read. The name is matched the same way property values are: case, whitespace, `-` and `_` are
+  ignored, and both the short and long forms of a name resolve.
+
+  ### Arguments
+
+  * `property` is a property name or alias as a string, such as `"sc"` or `"Script"`.
+
+  ### Returns
+
+  * `{:ok, module}` where `module` serves the property, or
+
+  * `:error` if the property is not known.
+
+  ### Examples
+
+      iex> Unicode.fetch_property("sc")
+      {:ok, Unicode.Script}
+
+      iex> Unicode.fetch_property("General_Category")
+      {:ok, Unicode.GeneralCategory}
+
+      iex> Unicode.fetch_property("not a property")
+      :error
+
+  """
+  @doc since: "2.2.0"
+  @spec fetch_property(String.t()) :: {:ok, module()} | :error
   def fetch_property(property) when is_binary(property) do
     Map.fetch(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
 
-  @doc false
+  @doc """
+  Returns the module that serves a property.
+
+  The same lookup as `fetch_property/1`, for when a missing property is not an error worth
+  matching on.
+
+  ### Arguments
+
+  * `property` is a property name or alias as a string, such as `"sc"` or `"Script"`.
+
+  ### Returns
+
+  * The module that serves the property, or
+
+  * `nil` if the property is not known.
+
+  ### Examples
+
+      iex> Unicode.get_property("scx")
+      Unicode.ScriptExtensions
+
+      iex> Unicode.get_property("not a property")
+      nil
+
+  """
+  @doc since: "2.2.0"
+  @spec get_property(String.t()) :: module() | nil
   def get_property(property) when is_binary(property) do
     Map.get(property_servers(), Utils.downcase_and_remove_whitespace(property))
   end
