@@ -5,8 +5,21 @@ defmodule Unicode.CharacterName do
   Names are taken from the `Name` field of the Unicode Character Database
   (`UnicodeData.txt`). `to_codepoint/1` matches them loosely: case, whitespace,
   `_` and `-` are ignored (as in `\\N{...}` name lookups). Codepoints whose name
-  is a bracketed label such as `<control>` have no `Name` property and are not
-  resolvable in either direction.
+  is a bracketed label such as `<control>` have no `Name` property, so `to_name/1`
+  does not resolve them, but the names they are known by are recorded as aliases
+  and `to_codepoint/1` does.
+
+  ### Name aliases
+
+  `NameAliases.txt` gives additional names for the characters that need them,
+  because a `Name` can never change once published: the control characters, which
+  have no `Name`, and the characters whose published name contains an error.
+  `to_codepoint/1` resolves all five alias types, so `NULL`, `LINE FEED`, `LF`,
+  `BYTE ORDER MARK` and `LATIN CAPITAL LETTER GHA` each name their character.
+
+  Aliases are consulted only after the `Name` property and the derivation rules,
+  so a name always wins over an alias spelled the same way. `aliases/1` returns
+  the aliases of a codepoint with their types.
 
   The names are prefix-compressed (front-coded) into a single sorted binary blob
   with block restart points, and looked up with a binary search over the restart
@@ -55,6 +68,15 @@ defmodule Unicode.CharacterName do
   # Jaro distance used when `fuzzy: true` is given without an explicit threshold.
   @default_jaro_distance 0.8
 
+  # `Name_Alias` from `NameAliases.txt`. A few hundred names for a few hundred codepoints, so a
+  # plain map rather than the front-coded blob the forty thousand listed names need.
+  @name_aliases Utils.name_aliases()
+
+  @alias_codepoints for {codepoint, aliases} <- @name_aliases,
+                        {_type, name} <- aliases,
+                        into: %{},
+                        do: {Utils.downcase_and_remove_whitespace(name), codepoint}
+
   @doc """
   Returns the codepoint for a Unicode character name.
 
@@ -91,7 +113,9 @@ defmodule Unicode.CharacterName do
 
   Matching is against the listed names only; algorithmically derived names such as
   `CJK UNIFIED IDEOGRAPH-4E00` are not fuzzy-matched, since a near miss on the hexadecimal part
-  would name a different character.
+  would name a different character. Name aliases are matched exactly for the same reason: many are
+  abbreviations of two or three letters, where a single character difference is another abbreviation
+  rather than a typo.
 
   Fuzzy matching scans every name and is several thousand times slower than an exact lookup. It is
   only attempted after an exact lookup has failed, so supplying the option costs nothing when the
@@ -107,6 +131,12 @@ defmodule Unicode.CharacterName do
 
       iex> Unicode.CharacterName.to_codepoint("Not A Real Name")
       :error
+
+      iex> Unicode.CharacterName.to_codepoint("NULL")
+      {:ok, 0}
+
+      iex> Unicode.CharacterName.to_codepoint("LF")
+      {:ok, 10}
 
       iex> Unicode.CharacterName.to_codepoint("LATIN SMALL LETER A", fuzzy: true)
       {:ok, 97}
@@ -124,10 +154,17 @@ defmodule Unicode.CharacterName do
     block = find_block(normalized, 0, @block_count - 1)
 
     with :error <- scan_block(normalized, block),
-         :error <- derived_codepoint(normalized) do
+         :error <- derived_codepoint(normalized),
+         :error <- alias_codepoint(normalized) do
       fuzzy_codepoint(normalized, jaro_distance(options))
     end
   end
+
+  # Aliases are consulted after the `Name` property and the derivation rules, so a name always wins
+  # over an alias of the same spelling. No such collision exists in Unicode 18.0 - no alias spells a
+  # name of another character, and no two aliases share a spelling - but the order fixes the answer
+  # if a later release introduces one.
+  defp alias_codepoint(normalized), do: Map.fetch(@alias_codepoints, normalized)
 
   defp jaro_distance(options) do
     case Keyword.get(options, :fuzzy, false) do
@@ -156,7 +193,8 @@ defmodule Unicode.CharacterName do
   * `{:ok, name}` where `name` is the `Name` property of the codepoint, or
 
   * `:error` if the codepoint has no name. That includes control characters, surrogates, private
-    use characters and unassigned codepoints, whose `Name` property is empty.
+    use characters and unassigned codepoints, whose `Name` property is empty. `aliases/1` returns
+    the names a control character is known by, which is what `to_codepoint/1` resolves.
 
   ### Notes
 
@@ -186,6 +224,45 @@ defmodule Unicode.CharacterName do
       {:ok, name} -> {:ok, name}
       :error -> listed_name(codepoint)
     end
+  end
+
+  @doc """
+  Returns the `Name_Alias` values of a codepoint.
+
+  A character's `Name` can never change once published, so `NameAliases.txt` carries the additional
+  names a character needs: the control characters, which have no `Name` at all, and the characters
+  whose published name contains an error.
+
+  ### Arguments
+
+  * `codepoint` is a codepoint in the range `0..0x10FFFF`.
+
+  ### Returns
+
+  * A list of `{type, name}` tuples in the order the Unicode Character Database lists them, where
+    `type` is one of `:correction`, `:control`, `:alternate`, `:figment` or `:abbreviation`.
+
+  * An empty list if the codepoint has no aliases.
+
+  ### Examples
+
+      iex> Unicode.CharacterName.aliases(0x0000)
+      [control: "NULL", abbreviation: "NUL"]
+
+      iex> Unicode.CharacterName.aliases(0x01A2)
+      [correction: "LATIN CAPITAL LETTER GHA"]
+
+      iex> Unicode.CharacterName.aliases(0xFEFF)
+      [alternate: "BYTE ORDER MARK", abbreviation: "BOM", abbreviation: "ZWNBSP"]
+
+      iex> Unicode.CharacterName.aliases(?A)
+      []
+
+  """
+  @doc since: "2.2.0"
+  @spec aliases(non_neg_integer()) :: [{atom(), String.t()}]
+  def aliases(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
+    Map.get(@name_aliases, codepoint, [])
   end
 
   # Binary search for the last block whose first (restart) name is `<=` the

@@ -1260,6 +1260,50 @@ defmodule Unicode.Utils do
     {List.to_tuple(leading), List.to_tuple(vowel), List.to_tuple(["" | trailing])}
   end
 
+  # The five `Name_Alias` types, mapped explicitly rather than atomized from the file, so that a
+  # type introduced by a future release fails the build instead of passing through unnoticed.
+  @name_alias_types %{
+    "correction" => :correction,
+    "control" => :control,
+    "alternate" => :alternate,
+    "figment" => :figment,
+    "abbreviation" => :abbreviation
+  }
+
+  @doc """
+  Returns the `Name_Alias` property as a map of codepoint to its aliases.
+
+  `NameAliases.txt` gives additional names for codepoints that need one: the control characters
+  have no `Name` at all, and a handful of characters carry a correction for a name that was
+  published with an error and, under the Unicode name stability policy, can never be changed.
+
+  ### Returns
+
+  * A map of codepoint to a list of `{type, name}` tuples in the order the file lists them, where
+    `type` is one of `:correction`, `:control`, `:alternate`, `:figment` or `:abbreviation`.
+
+  """
+  @name_aliases_path Path.join(Unicode.data_dir(), "name_aliases.txt")
+  @external_resource @name_aliases_path
+  def name_aliases do
+    @name_aliases_path
+    |> File.stream!()
+    |> Enum.flat_map(fn
+      <<"#", _rest::bitstring>> ->
+        []
+
+      <<"\n", _rest::bitstring>> ->
+        []
+
+      line ->
+        [codepoint, name, type] =
+          line |> String.split("#") |> hd() |> String.split(";") |> Enum.map(&String.trim/1)
+
+        [{String.to_integer(codepoint, 16), {Map.fetch!(@name_alias_types, type), name}}]
+    end)
+    |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+  end
+
   defp common_prefix_length(first, second), do: common_prefix_length(first, second, 0)
 
   defp common_prefix_length(<<char, first::binary>>, <<char, second::binary>>, length),

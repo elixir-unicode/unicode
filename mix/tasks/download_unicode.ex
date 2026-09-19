@@ -84,6 +84,7 @@ if File.exists?(Unicode.data_dir()) do
     # emoji root. Conflating the two is what made the Unicode 17.0 emoji update a manual patch.
     @files [
       {:ucd, "UnicodeData.txt", "unicode_data.txt"},
+      {:ucd, "NameAliases.txt", "name_aliases.txt"},
       {:ucd, "DoNotEmit.txt", "do_not_emit.txt"},
       {:ucd, "extracted/DerivedGeneralCategory.txt", "categories.txt"},
       {:ucd, "Blocks.txt", "blocks.txt"},

@@ -18,10 +18,14 @@ defmodule Unicode.CharacterName.Test do
     assert CharacterName.to_codepoint("SNOWMAN") == {:ok, 0x2603}
   end
 
-  test "returns :error for unknown names and for control names" do
+  test "returns :error for an unknown name" do
     assert CharacterName.to_codepoint("Not A Real Name") == :error
-    # Control characters have no formal Name property, only Name_Alias, which is not loaded.
-    assert CharacterName.to_codepoint("NULL") == :error
+  end
+
+  test "resolves a control character through its Name_Alias" do
+    # Control characters have no formal Name property, only Name_Alias. See
+    # character_name_alias_test.exs for the alias types and their precedence.
+    assert CharacterName.to_codepoint("NULL") == {:ok, 0x0000}
   end
 
   test "resolves algorithmically derived names" do
