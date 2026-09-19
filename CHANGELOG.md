@@ -2,6 +2,8 @@
 
 ## Unicode v2.2.0
 
+This is the changelog for Unicode v2.2.0 released on September 20th, 2026.  For older changelogs please consult the release tag on [GitHub](https://github.com/elixir-unicode/unicode/tags)
+
 This release makes every property value the Unicode Character Database declares resolvable, including the values a data file supplies only through an `@missing` annotation.
 
 ### Enhancements
