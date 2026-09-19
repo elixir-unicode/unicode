@@ -113,6 +113,21 @@ jobs:
       if: ${{ matrix.lint }}
       run: mix test --cover
 
+    # Step: Cache the dialyzer PLT. Keyed on the toolchain as well as the
+    # lockfile, since a PLT records the BEAM that built it and cannot be
+    # shared across them. The restore-keys prefix lets a dependency bump
+    # start from the previous PLT and update it incrementally rather than
+    # building one from scratch. The path matches the env dialyzer runs in,
+    # which is the `MIX_ENV: test` this workflow sets for every step.
+    - name: Cache dialyzer PLT
+      if: ${{ matrix.lint }}
+      uses: actions/cache@v6
+      with:
+        path: _build/test/dialyxir_*
+        key: plt-${{ matrix.elixir }}-${{ matrix.otp }}-${{ hashFiles('mix.lock') }}
+        restore-keys: |
+          plt-${{ matrix.elixir }}-${{ matrix.otp }}-
+
     # Step: Execute dialyzer. Runs on the lint entry only; a single
     # analysis per change is sufficient and avoids rebuilding a PLT for
     # every toolchain in the matrix.
