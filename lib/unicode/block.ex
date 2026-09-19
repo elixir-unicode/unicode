@@ -12,8 +12,10 @@ defmodule Unicode.Block do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; No_Block` - see `Utils.add_default_value/2`.
   @blocks Utils.blocks()
           |> Utils.remove_annotations()
+          |> Utils.add_default_value(:no_block)
 
   @block_table Unicode.RangeSearch.new_value_table(@blocks)
 
@@ -233,7 +235,10 @@ defmodule Unicode.Block do
       {0, 12255}
 
   """
+  # `:no_block` is the `@missing` default covering every codepoint that no block contains, so it is
+  # excluded here: these are the ranges that some block assigns.
   @assigned @blocks
+            |> Map.delete(:no_block)
             |> Map.values()
             |> Enum.map(&hd/1)
             |> Enum.sort()

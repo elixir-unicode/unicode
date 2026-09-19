@@ -12,8 +12,11 @@ defmodule Unicode.HangulSyllableType do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Not_Applicable` - see `Utils.add_default_value/2`. The data file
+  # names its values with the short aliases, so `NA` is the key form.
   @hangul_syllable_types Utils.hangul_syllable_types()
                          |> Utils.remove_annotations()
+                         |> Utils.add_default_value(:na)
 
   @hangul_syllable_type_table Unicode.RangeSearch.new_value_table(@hangul_syllable_types)
 

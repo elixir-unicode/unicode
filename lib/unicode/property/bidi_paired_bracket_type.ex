@@ -12,7 +12,9 @@ defmodule Unicode.BidiPairedBracketType do
 
   alias Unicode.Utils
 
-  @bidi_paired_bracket_types Utils.bidi_paired_bracket_types()
+  # `BidiBrackets.txt` carries no `@missing` line, but UAX #44 gives `None` as the default value
+  # of `Bidi_Paired_Bracket_Type` - see `Utils.add_default_value/2`.
+  @bidi_paired_bracket_types Utils.bidi_paired_bracket_types() |> Utils.add_default_value(:none)
 
   @bidi_paired_bracket_type_table Unicode.RangeSearch.new_value_table(@bidi_paired_bracket_types)
 
@@ -26,7 +28,7 @@ defmodule Unicode.BidiPairedBracketType do
   ### Examples
 
       iex> Unicode.BidiPairedBracketType.bidi_paired_bracket_types() |> Map.keys() |> Enum.sort()
-      [:close, :open]
+      [:close, :none, :open]
 
   """
   def bidi_paired_bracket_types do

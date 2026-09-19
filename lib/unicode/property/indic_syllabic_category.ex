@@ -12,8 +12,10 @@ defmodule Unicode.IndicSyllabicCategory do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Other` - see `Utils.add_default_value/2`.
   @indic_syllabic_categories Utils.indic_syllabic_categories()
                              |> Utils.remove_annotations()
+                             |> Utils.add_default_value(:other)
 
   @indic_syllabic_category_table Unicode.RangeSearch.new_value_table(@indic_syllabic_categories)
 

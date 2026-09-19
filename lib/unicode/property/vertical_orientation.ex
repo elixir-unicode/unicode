@@ -12,8 +12,11 @@ defmodule Unicode.VerticalOrientation do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; R` - see `Utils.add_default_value/2`. The data file lists some R
+  # ranges explicitly, and the annotation assigns R to every codepoint it omits.
   @vertical_orientations Utils.vertical_orientations()
                          |> Utils.remove_annotations()
+                         |> Utils.add_default_value(:r)
 
   @vertical_orientation_table Unicode.RangeSearch.new_value_table(@vertical_orientations)
 

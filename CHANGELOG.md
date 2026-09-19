@@ -1,5 +1,27 @@
 # Changelog
 
+## Unicode v2.2.0
+
+This release makes every property value the Unicode Character Database declares resolvable, including the values a data file supplies only through an `@missing` annotation.
+
+### Enhancements
+
+* Resolves the default value of fifteen further properties, so `\p{jt=U}`, `\p{bpt=None}`, `\p{sc=Unknown}`, `\p{age=NA}` and their companions now answer. Every property's values together account for all 1,114,112 codepoints, where before only five did.
+
+* Applies the range-specific defaults `BidiClass.txt` declares, so an unassigned codepoint in a right-to-left block resolves as `R` or `AL` rather than `L`.
+
+* Resolves `Joining_Group` values from any spelling, including the `Crown_Ain` form `PropertyValueAliases.txt` uses. 73 of the 116 values previously resolved from neither spelling.
+
+* Resolves binary property aliases that contain a separator, such as `Bidi_M`, `Gr_Base` and `Pat_Syn`, which the lookup normalised but the alias table did not.
+
+### Bug fixes
+
+* `Unicode.EastAsianWidth.east_asian_width_category/1` returns the UCD default `:n`, rather than `:other` which is not a value of the property, for codepoints `EastAsianWidth.txt` omits.
+
+### Notes
+
+* `known_*/0` and `count/1` include the default value for the affected properties, so those lists and counts are larger than in 2.1.0.
+
 ## Unicode v2.1.0
 
 This release closes a number of Unicode Character Database coverage gaps: several enumerated properties that appeared in `PropertyAliases.txt` but had no backing data are now resolvable through `Unicode.fetch_property/1` and have their own introspection modules.

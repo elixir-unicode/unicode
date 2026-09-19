@@ -12,7 +12,10 @@ defmodule Unicode.NfkdQuickCheck do
 
   alias Unicode.Utils
 
-  @nfkd_quick_check Utils.quick_check_properties() |> Map.fetch!(:nfkd_qc)
+  # `@missing: 0000..10FFFF; NFKD_QC; Yes` - see `Utils.add_default_value/2`.
+  @nfkd_quick_check Utils.quick_check_properties()
+                    |> Map.fetch!(:nfkd_qc)
+                    |> Utils.add_default_value(:yes)
 
   @nfkd_quick_check_table Unicode.RangeSearch.new_value_table(@nfkd_quick_check)
 
@@ -26,7 +29,7 @@ defmodule Unicode.NfkdQuickCheck do
   ### Examples
 
       iex> Unicode.NfkdQuickCheck.nfkd_quick_check() |> Map.keys() |> Enum.sort()
-      [:no]
+      [:no, :yes]
 
   """
   def nfkd_quick_check do

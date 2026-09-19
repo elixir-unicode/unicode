@@ -12,7 +12,10 @@ defmodule Unicode.JoiningGroup do
 
   alias Unicode.Utils
 
-  @joining_groups Utils.joining_groups()
+  # `ArabicShaping.txt` carries no `@missing` line, but UAX #44 gives `No_Joining_Group` as the
+  # default value of `Joining_Group`, which `joining_group/1` has always reported as
+  # `:no_joining_group` - see `Utils.add_default_value/2`.
+  @joining_groups Utils.joining_groups() |> Utils.add_default_value(:no_joining_group)
 
   @joining_group_table Unicode.RangeSearch.new_value_table(@joining_groups)
 

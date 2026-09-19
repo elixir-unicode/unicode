@@ -12,8 +12,11 @@ defmodule Unicode.JoiningType do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Non_Joining` - see `Utils.add_default_value/2`. The data file
+  # names its values with the short aliases, so `U` is the key form.
   @joining_types Utils.joining_types()
                  |> Utils.remove_annotations()
+                 |> Utils.add_default_value(:u)
 
   @joining_type_table Unicode.RangeSearch.new_value_table(@joining_types)
 
@@ -47,7 +50,7 @@ defmodule Unicode.JoiningType do
   ### Examples
 
       iex> Unicode.JoiningType.known_joining_types() |> Enum.sort()
-      [:c, :d, :l, :r, :t]
+      [:c, :d, :l, :r, :t, :u]
 
   """
   @known_joining_types Map.keys(@joining_types)

@@ -12,8 +12,10 @@ defmodule Unicode.NumericType do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; None` - see `Utils.add_default_value/2`.
   @numeric_types Utils.numeric_types()
                  |> Utils.remove_annotations()
+                 |> Utils.add_default_value(:none)
 
   @numeric_type_table Unicode.RangeSearch.new_value_table(@numeric_types)
 
@@ -27,7 +29,7 @@ defmodule Unicode.NumericType do
   ### Examples
 
       iex> Unicode.NumericType.numeric_types() |> Map.keys() |> Enum.sort()
-      [:decimal, :digit, :numeric]
+      [:decimal, :digit, :none, :numeric]
 
   """
   def numeric_types do

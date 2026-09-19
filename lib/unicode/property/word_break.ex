@@ -206,6 +206,6 @@ defmodule Unicode.WordBreak do
   end
 
   def word_break(codepoint) when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    Unicode.RangeSearch.find(@word_break_table, codepoint, :xx)
+    Unicode.RangeSearch.find(@word_break_table, codepoint, :other)
   end
 end

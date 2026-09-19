@@ -12,7 +12,10 @@ defmodule Unicode.NfcQuickCheck do
 
   alias Unicode.Utils
 
-  @nfc_quick_check Utils.quick_check_properties() |> Map.fetch!(:nfc_qc)
+  # `@missing: 0000..10FFFF; NFC_QC; Yes` - see `Utils.add_default_value/2`.
+  @nfc_quick_check Utils.quick_check_properties()
+                   |> Map.fetch!(:nfc_qc)
+                   |> Utils.add_default_value(:yes)
 
   @nfc_quick_check_table Unicode.RangeSearch.new_value_table(@nfc_quick_check)
 
@@ -26,7 +29,7 @@ defmodule Unicode.NfcQuickCheck do
   ### Examples
 
       iex> Unicode.NfcQuickCheck.nfc_quick_check() |> Map.keys() |> Enum.sort()
-      [:maybe, :no]
+      [:maybe, :no, :yes]
 
   """
   def nfc_quick_check do

@@ -12,8 +12,10 @@ defmodule Unicode.DecompositionType do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; None` - see `Utils.add_default_value/2`.
   @decomposition_types Utils.decomposition_types()
                        |> Utils.remove_annotations()
+                       |> Utils.add_default_value(:none)
 
   @decomposition_type_table Unicode.RangeSearch.new_value_table(@decomposition_types)
 

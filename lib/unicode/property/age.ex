@@ -12,8 +12,10 @@ defmodule Unicode.Age do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Unassigned` - see `Utils.add_default_value/2`.
   @ages Utils.ages()
         |> Utils.remove_annotations()
+        |> Utils.add_default_value(:unassigned)
 
   @age_table Unicode.RangeSearch.new_value_table(@ages)
 
@@ -52,13 +54,11 @@ defmodule Unicode.Age do
     @known_ages
   end
 
-  # Unlike most properties, `PropertyValueAliases.txt` lists the age alias
-  # first and the canonical name second (`age; 1.1 ; V1_1` is parsed as
-  # `{"v1_1", "1.1"}`), so this map needs no inversion.
-  @age_alias Utils.property_value_alias()
-             |> Map.get("age")
-             |> Utils.atomize_values()
-             |> Utils.downcase_keys_and_remove_whitespace()
+  # Unlike most properties, `PropertyValueAliases.txt` lists the age alias first and the canonical
+  # name second (`age; 1.1 ; V1_1`), and its `age; NA ; Unassigned` line names the default this
+  # module adds. Resolving each line against the values actually present maps every spelling to the
+  # key the data uses, whichever field it came from, so neither ordering needs special handling.
+  @age_alias Utils.value_aliases("age", @known_ages)
              |> Utils.add_canonical_alias()
 
   @doc """

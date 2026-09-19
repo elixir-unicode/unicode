@@ -12,8 +12,16 @@ defmodule Unicode.BidiClass do
 
   alias Unicode.Utils
 
+  # `BidiClass.txt` declares a general default of `Left_To_Right` and narrower defaults of
+  # `Right_To_Left`, `Arabic_Letter` and `European_Terminator` for the blocks of the right-to-left
+  # scripts, so that an unassigned codepoint in those blocks still has a sensible direction - see
+  # `Utils.add_missing_defaults/3`.
+  @bidi_class_path Path.join(Unicode.data_dir(), "bidi_class.txt")
+  @external_resource @bidi_class_path
+
   @bidi_classes Utils.bidi_classes()
                 |> Utils.remove_annotations()
+                |> Utils.add_missing_defaults(@bidi_class_path, "bc")
 
   @bidi_class_table Unicode.RangeSearch.new_value_table(@bidi_classes)
 
@@ -165,7 +173,7 @@ defmodule Unicode.BidiClass do
   ### Examples
 
       iex> Unicode.BidiClass.count(:al)
-      1502
+      1716
 
   """
   @impl Unicode.Property.Behaviour

@@ -12,8 +12,11 @@ defmodule Unicode.EastAsianWidth do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; N` - see `Utils.add_default_value/2`. The data file lists some N
+  # ranges explicitly, and the annotation assigns N to every codepoint it omits.
   @east_asian_width_categories Utils.east_asian_width()
                                |> Utils.remove_annotations()
+                               |> Utils.add_default_value(:n)
 
   @east_asian_width_table Unicode.RangeSearch.new_value_table(@east_asian_width_categories)
 
@@ -209,6 +212,6 @@ defmodule Unicode.EastAsianWidth do
 
   def east_asian_width_category(codepoint)
       when is_integer(codepoint) and codepoint in 0..0x10FFFF do
-    Unicode.RangeSearch.find(@east_asian_width_table, codepoint, :other)
+    Unicode.RangeSearch.find(@east_asian_width_table, codepoint, :n)
   end
 end

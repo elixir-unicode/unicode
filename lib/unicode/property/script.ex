@@ -12,8 +12,10 @@ defmodule Unicode.Script do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Unknown` - see `Utils.add_default_value/2`.
   @scripts Utils.scripts()
            |> Utils.remove_annotations()
+           |> Utils.add_default_value(:unknown)
 
   @script_table Unicode.RangeSearch.new_value_table(@scripts)
 

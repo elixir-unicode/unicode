@@ -12,8 +12,11 @@ defmodule Unicode.IndicPositionalCategory do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Not_Applicable` - see `Utils.add_default_value/2`. `indic_positional_category/1`
+  # has always reported this default as `:na`, so that is the key form.
   @indic_positional_categories Utils.indic_positional_categories()
                                |> Utils.remove_annotations()
+                               |> Utils.add_default_value(:na)
 
   @indic_positional_category_table Unicode.RangeSearch.new_value_table(
                                      @indic_positional_categories

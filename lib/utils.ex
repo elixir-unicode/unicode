@@ -75,6 +75,9 @@ defmodule Unicode.Utils do
     |> Map.merge(explicit, fn _scripts, default, explicit ->
       merge_ranges(default ++ explicit)
     end)
+    # `@missing: 0000..10FFFF; <script>` - a codepoint the file omits takes its `Script` value, and
+    # a codepoint no script claims is `Unknown`, the same default `Unicode.Script` carries.
+    |> add_default_value([:unknown])
   end
 
   # `%{"Bopo Latn" => ranges}` from the file becomes `%{[:bopomofo, :latin] => ranges}`. Grouped
@@ -1374,7 +1377,11 @@ defmodule Unicode.Utils do
 
   """
   def value_aliases(category, known_values) do
-    known = MapSet.new(known_values)
+    # A data file may spell a value differently from `PropertyValueAliases`:
+    # `ArabicShaping.txt` writes `AFRICAN FEH` where the alias file writes
+    # `African_Feh`. Both sides are matched in normalized form so that the
+    # spelling the data happens to use is reachable from either.
+    known = Map.new(known_values, &{downcase_and_remove_whitespace(&1), &1})
 
     property_value_alias()
     |> Map.get(category, %{})
@@ -1385,7 +1392,7 @@ defmodule Unicode.Utils do
   end
 
   defp resolve_alias_group(tokens, known, resolved) do
-    case Enum.find_value(tokens, &known_value(&1, known)) do
+    case Enum.find_value(tokens, &Map.get(known, downcase_and_remove_whitespace(&1))) do
       nil ->
         resolved
 
@@ -1394,11 +1401,6 @@ defmodule Unicode.Utils do
           Map.put(resolved, downcase_and_remove_whitespace(token), canonical)
         end)
     end
-  end
-
-  defp known_value(token, known) do
-    value = maybe_atomize(token)
-    if MapSet.member?(known, value), do: value
   end
 
   # Take the atom values of the map
@@ -1606,6 +1608,115 @@ defmodule Unicode.Utils do
   def atomize_values(map) do
     Enum.map(map, fn {k, v} -> {k, String.to_atom(conform_key(v))} end)
     |> Map.new()
+  end
+
+  @doc """
+  Returns the default values a UCD data file declares in its `@missing`
+  annotations, in file order.
+
+  Most files carry a single annotation covering the whole code space, but
+  `BidiClass.txt` also carries narrower ones giving particular blocks a
+  different default, and those later annotations win for the range they name.
+
+  ### Arguments
+
+  * `path` is the path of a UCD data file.
+
+  ### Returns
+
+  * A list of `{{first, last}, value_name}` tuples, where `value_name` is the
+    property value as the annotation spells it.
+
+  """
+  def missing_defaults(path) do
+    path
+    |> File.stream!()
+    |> Enum.filter(&String.contains?(&1, "@missing:"))
+    |> Enum.map(fn line ->
+      [range | fields] =
+        line
+        |> String.split("@missing:")
+        |> List.last()
+        |> String.split(";")
+        |> Enum.map(&String.trim/1)
+
+      [first, last] = range |> String.split("..") |> extract_codepoint_range()
+      {{first, last}, List.last(fields)}
+    end)
+  end
+
+  @doc """
+  Adds the default values a UCD data file declares in its `@missing`
+  annotations to every codepoint the file does not list explicitly.
+
+  This is the range-aware form of `add_default_value/2`, for a file whose
+  annotations give different defaults to different parts of the code space.
+
+  ### Arguments
+
+  * `map` is a map of property value to a list of codepoint ranges as
+    2-tuples. Annotations must already be removed.
+
+  * `path` is the path of the UCD data file to read the annotations from.
+
+  * `category` is the property-value-alias category code, used to resolve the
+    value names the annotations use to the keys the data uses.
+
+  ### Returns
+
+  * `map` with each declared default added, holding the codepoints in its range
+    that are not assigned to some other value.
+
+  """
+  def add_missing_defaults(map, path, category) do
+    aliases = value_aliases(category, Map.keys(map))
+
+    path
+    |> missing_defaults()
+    |> Enum.flat_map(fn {range, name} ->
+      case Map.fetch(aliases, downcase_and_remove_whitespace(name)) do
+        {:ok, value} -> [{range, value}]
+        :error -> []
+      end
+    end)
+    |> then(&add_default_values(map, &1))
+  end
+
+  @doc """
+  Adds default values for given ranges to every codepoint not listed explicitly.
+
+  Later defaults override earlier ones for the range they name, which is how
+  the `@missing` annotations of `BidiClass.txt` are meant to be read.
+
+  ### Arguments
+
+  * `map` is a map of property value to a list of codepoint ranges as
+    2-tuples. Annotations must already be removed.
+
+  * `defaults` is a list of `{{first, last}, value}` tuples, in file order,
+    where `value` is a key of `map`.
+
+  ### Returns
+
+  * `map` with each default added, holding the codepoints in its range that are
+    not assigned to some other value.
+
+  """
+  def add_default_values(map, defaults) do
+    assigned = map |> Map.values() |> union_ranges()
+    unassigned = difference_ranges([{0x0, 0x10FFFF}], assigned)
+
+    defaults
+    |> Enum.reduce(%{}, fn {range, value}, acc ->
+      acc = Map.new(acc, fn {value, ranges} -> {value, difference_ranges(ranges, [range])} end)
+      Map.update(acc, value, [range], &union_ranges([&1, [range]]))
+    end)
+    |> Enum.reduce(map, fn {value, ranges}, map ->
+      case difference_ranges(ranges, difference_ranges([{0x0, 0x10FFFF}], unassigned)) do
+        [] -> map
+        ranges -> Map.update(map, value, ranges, &union_ranges([&1, ranges]))
+      end
+    end)
   end
 
   @doc """

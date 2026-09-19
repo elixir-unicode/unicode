@@ -187,7 +187,7 @@ The package can be installed by adding `unicode` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:unicode, "~> 2.1"}
+    {:unicode, "~> 2.2"}
   ]
 end
 ```

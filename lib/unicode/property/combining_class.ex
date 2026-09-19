@@ -12,8 +12,11 @@ defmodule Unicode.CanonicalCombiningClass do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; Not_Reordered` - see `Utils.add_default_value/2`. Combining
+  # classes are keyed by their numeric class, so `Not_Reordered` is `0`.
   @combining_classes Utils.combining_classes()
                      |> Utils.remove_annotations()
+                     |> Utils.add_default_value(0)
 
   @combining_class_table Unicode.RangeSearch.new_value_table(@combining_classes)
 

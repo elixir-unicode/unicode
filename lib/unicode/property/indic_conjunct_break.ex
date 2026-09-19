@@ -12,6 +12,7 @@ defmodule Unicode.IndicConjunctBreak do
 
   alias Unicode.Utils
 
+  # `@missing: 0000..10FFFF; InCB; None` - see `Utils.add_default_value/2`.
   @indic_conjunct_breaks Utils.derived_properties()
                          |> Map.fetch!(:incb)
                          |> Enum.map(fn {from, to, [value | _category_and_name]} ->
@@ -25,6 +26,7 @@ defmodule Unicode.IndicConjunctBreak do
                          |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
                          |> Enum.map(fn {value, range} -> {value, Enum.sort(range)} end)
                          |> Map.new()
+                         |> Utils.add_default_value(:none)
 
   @indic_conjunct_break_table Unicode.RangeSearch.new_value_table(@indic_conjunct_breaks)
 
@@ -38,7 +40,7 @@ defmodule Unicode.IndicConjunctBreak do
   ### Examples
 
       iex> Unicode.IndicConjunctBreak.indic_conjunct_break() |> Map.keys() |> Enum.sort()
-      [:consonant, :extend, :linker]
+      [:consonant, :extend, :linker, :none]
 
   """
 
@@ -58,7 +60,7 @@ defmodule Unicode.IndicConjunctBreak do
   ### Examples
 
       iex> Unicode.IndicConjunctBreak.known_indic_conjunct_breaks() |> Enum.sort()
-      [:consonant, :extend, :linker]
+      [:consonant, :extend, :linker, :none]
 
   """
   @known_indic_conjunct_breaks Map.keys(@indic_conjunct_breaks)

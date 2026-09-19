@@ -95,8 +95,12 @@ defmodule Unicode.Property do
       :alphabetic
 
   """
+  # Alias keys come verbatim from `PropertyAliases.txt`, where they may contain `_` (`Bidi_M`,
+  # `Pat_Syn`), while `fetch/1` normalizes the name it is given. Without normalizing the keys the
+  # aliases carrying a separator are unreachable, because the lookup asks for `bidim`.
   @property_alias Utils.property_alias()
                   |> Utils.atomize_values()
+                  |> Utils.downcase_keys_and_remove_whitespace()
                   |> Utils.add_canonical_alias()
 
   @impl Unicode.Property.Behaviour
