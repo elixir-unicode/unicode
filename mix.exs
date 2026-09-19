@@ -102,8 +102,12 @@ defmodule Unicode.MixProject do
       logo: "logo.png",
       extras: [
         "README.md",
+        "guides/introduction.md",
         "LICENSE.md",
         "CHANGELOG.md"
+      ],
+      groups_for_extras: [
+        Guides: Path.wildcard("guides/*.md")
       ],
       formatters: ["html", "markdown"],
       skip_undefined_reference_warnings_on: ["changelog", "CHANGELOG.md"]

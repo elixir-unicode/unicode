@@ -18,6 +18,8 @@ However since Elixir strings are declared to be [UTF-8 encoded Unicode strings](
 
 The Elixir standard library does not provide introspection beyond that required to support casing (String.downcase/1, String.upcase/1, String.capitalize/1).  This library aims to *fill in the blanks* a little bit.
 
+The [introduction guide](guides/introduction.md) is a tour of the API: looking up a property, enumerating one, character names, guards and working with text.
+
 ### Unicode version
 
 As of unicode version 2.1.0, [Unicode 18.0](https://www.unicode.org/versions/Unicode18.0.0/) forms the underlying data. Unicode 18.0 was released on 16 September 2026 and the data is taken from the final release. The previous release, [unicode 2.0.0](https://hex.pm/packages/unicode/2.0.0), was built on Unicode 17.0.
@@ -45,8 +47,8 @@ These functions return the codepoints as list of 2-tuples for the given property
 * `Unicode.Block.blocks/0`
 * `Unicode.Script.scripts/0`
 * `Unicode.GeneralCategory.categories/0`
-* `Unicode.CombiningClass.combining_classes/0`
-* `Unicode.GraphemeBreak.grapheme_breaks/0`
+* `Unicode.CanonicalCombiningClass.combining_classes/0`
+* `Unicode.GraphemeClusterBreak.grapheme_breaks/0`
 * `Unicode.LineBreak.line_breaks/0`
 * `Unicode.SentenceBreak.sentence_breaks/0`
 * `Unicode.IndicSyllabicCategory.indic_syllabic_categories/0`

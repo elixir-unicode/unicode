@@ -16,6 +16,8 @@ This release makes every property value the Unicode Character Database declares 
 
 * Resolves binary property aliases that contain a separator, such as `Bidi_M`, `Gr_Base` and `Pat_Syn`, which the lookup normalised but the alias table did not.
 
+* Adds an [introduction guide](guides/introduction.md) covering the shape of the API: the three ways to reach a property, naming property values, character names, script extensions and the guards. Its examples run as doctests.
+
 * Loads `NameAliases.txt`, so `Unicode.CharacterName.to_codepoint/2` resolves the names of the control characters, which have no `Name` property, along with abbreviations such as `LF` and the corrections for characters whose published name contains an error. `Unicode.CharacterName.aliases/1` returns a codepoint's aliases with their types.
 
 ### Bug fixes
